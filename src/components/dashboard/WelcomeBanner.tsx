@@ -18,19 +18,19 @@ export default function WelcomeBanner({
   onButtonClick
 }: WelcomeBannerProps) {
   return (
-    <div className="bg-gradient-to-r from-[#1E40AF] to-[#059669] rounded-lg p-4 sm:p-6 text-white relative overflow-hidden w-full h-auto lg:w-[910px] lg:h-[194px] lg:mr-[112px]">
-      {/* Banner Image - Hidden on mobile, visible on desktop */}
-      <div className="hidden lg:block absolute left-0 top-0 h-full">
-        <Image
-          src="/bannerImg.png"
-          alt="Students studying"
-          width={200}
-          height={194}
-          className="h-full w-auto object-cover"
-        />
-      </div>
-      
-      <div className="relative z-10 lg:ml-[200px]">
+  <div className="bg-gradient-to-r from-[#1E40AF] to-[#059669] rounded-lg p-4 sm:p-6 text-white relative overflow-hidden w-full h-auto lg:w-[910px] lg:h-[194px] lg:mr-[112px]">
+    {/* Banner Image - Hidden on mobile, visible on desktop */}
+    <div className="hidden lg:block absolute right-4 top-4">
+      <Image
+        src="/bannerImg.png"
+        alt="Students studying"
+        width={137}
+        height={126}
+        className="object-cover"
+      />
+    </div>
+    
+    <div className="relative z-10 lg:pr-[180px]">
         <h1 className="text-xl sm:text-2xl font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Welcome back, {userName}!
         </h1>
