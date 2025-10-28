@@ -45,28 +45,32 @@ export function AssignmentsDueSection({
     switch (status) {
       case 'urgent':
         return {
-          iconBg: 'bg-red-100',
+          cardBg: 'bg-red-50',
+          iconBg: 'bg-red-50',
           iconColor: 'text-red-600',
           button: 'bg-red-500 hover:bg-red-600 text-white',
           buttonText: 'Urgent'
         };
       case 'due-soon':
         return {
-          iconBg: 'bg-yellow-100',
+          cardBg: 'bg-yellow-50',
+          iconBg: 'bg-yellow-50',
           iconColor: 'text-yellow-600',
           button: 'bg-yellow-500 hover:bg-yellow-600 text-white',
           buttonText: 'Due Soon'
         };
       case 'upcoming':
         return {
-          iconBg: 'bg-gray-100',
+          cardBg: 'bg-gray-50',
+          iconBg: 'bg-gray-50',
           iconColor: 'text-gray-600',
           button: 'bg-gray-200 text-gray-500',
           buttonText: ''
         };
       default:
         return {
-          iconBg: 'bg-gray-100',
+          cardBg: 'bg-gray-50',
+          iconBg: 'bg-gray-50',
           iconColor: 'text-gray-600',
           button: 'bg-gray-200 text-gray-500',
           buttonText: ''
@@ -89,8 +93,8 @@ export function AssignmentsDueSection({
         {assignments.map((assignment) => {
           const statusClasses = getStatusClasses(assignment.status);
           return (
-            <div key={assignment.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-              <div className={`w-12 h-12 ${statusClasses.iconBg} rounded-full flex items-center justify-center mr-4`}>
+            <div key={assignment.id} className={`flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow ${statusClasses.cardBg}`}>
+              <div className={`w-12 h-12 ${statusClasses.iconBg} rounded-lg flex items-center justify-center mr-4`}>
                 <Icon icon={assignment.icon} className={`w-6 h-6 ${statusClasses.iconColor}`} />
               </div>
               

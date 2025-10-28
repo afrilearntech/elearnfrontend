@@ -23,7 +23,16 @@ export default function TellUsAboutYourself() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-    router.push('/dashboard');
+    
+    const gradeNumber = parseInt(formData.gradeLevel);
+    
+    if (gradeNumber >= 1 && gradeNumber <= 5) {
+      router.push('/dashboard/elementary');
+    } else if (gradeNumber >= 6 && gradeNumber <= 10) {
+      router.push('/dashboard');
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   return (

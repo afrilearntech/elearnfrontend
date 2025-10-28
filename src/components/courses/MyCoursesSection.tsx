@@ -80,7 +80,7 @@ export function MyCoursesSection({
         <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
           My Courses
         </h2>
-        <a href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+        <a href="/courses/all" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
           View all courses
         </a>
       </div>
