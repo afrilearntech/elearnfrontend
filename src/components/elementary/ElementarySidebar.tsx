@@ -30,14 +30,6 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
       hoverColor: 'hover:opacity-90'
     },
     {
-      id: 'videos',
-      title: 'Lesson Videos',
-      icon: '▶️',
-      href: '/videos',
-      bgColor: 'bg-[#FEE2E2]',
-      hoverColor: 'hover:opacity-90'
-    },
-    {
       id: 'quizzes',
       title: 'Quizzes & Games',
       icon: '⭐',
@@ -81,7 +73,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
 
   return (
     <>
-      <aside className="hidden lg:block bg-white w-[320px] h-screen border-r border-[#E5E7EB] shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+      <aside className="hidden lg:block bg-white w-[320px] border-r border-[#E5E7EB] shadow-[2px_0_4px_rgba(0,0,0,0.1)] sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="h-full flex flex-col">
           <nav className="flex-1 pl-4 pr-4 pt-4 pb-4 space-y-4">
             {navigationItems.map((item) => (

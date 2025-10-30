@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
@@ -10,6 +11,14 @@ export default function SubjectLessonDetail() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const handleMenuClose = () => setIsMobileMenuOpen(false);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const videoSources = [
+    '/__mocks__/Addition using sets.mp4',
+    '/__mocks__/Addition using sets 2.mp4',
+    '/__mocks__/Adjectives 2.mp4',
+    '/__mocks__/Dis Joint Sets 2.mp4',
+  ];
+  const [videoSrc, setVideoSrc] = useState<string>(videoSources[0]);
 
   return (
     <div className="min-h-screen">
@@ -20,8 +29,8 @@ export default function SubjectLessonDetail() {
         <main className="flex-1 bg-gradient-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE]">
           <div className="p-4 lg:p-8">
             {/* Header progress card */}
-            <div className="bg-white/60 rounded-xl shadow-md px-6 py-4 ml-8 mr-8 h-[187px] flex flex-col justify-between border" style={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}>
-              <div className="flex items-center justify-between">
+            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 ml-4 lg:ml-8 mr-4 lg:mr-8 h-auto lg:h-[187px] flex flex-col justify-between border" style={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center space-x-3">
                   <div className="w-[55px] h-[60px] rounded-lg bg-gradient-to-r from-[#3B82F6] to-[#10B981] flex items-center justify-center">
                     <Image src="/settings.png" alt="settings" width={27} height={32} />
@@ -33,10 +42,10 @@ export default function SubjectLessonDetail() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <span className="inline-flex items-center justify-center w-[108px] h-[34px] rounded-full bg-[#10B981]/20 text-[#10B981] text-[14px]" style={{ fontFamily: 'Poppins, sans-serif' }}>Lesson 3 of 8</span>
-                  <button className="w-[164px] h-[40px] rounded-full bg-[#F97316] text-white text-[14px] flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <Link href="/subjects" className="w-[164px] h-[40px] rounded-full bg-[#F97316] text-white text-[14px] flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     <Icon icon="mdi:arrow-left" width={18} height={18} />
                     Back to Subjects
-                  </button>
+                  </Link>
                 </div>
               </div>
               <div className="mt-3">
@@ -47,7 +56,7 @@ export default function SubjectLessonDetail() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-6 ml-8 mr-8">
+            <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-6 ml-4 lg:ml-8 mr-4 lg:mr-8">
               {/* Main video/content */}
               <div>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -55,24 +64,40 @@ export default function SubjectLessonDetail() {
                     <div className="text-[16px] font-semibold">Watch & Learn!</div>
                     <div className="text-[12px] opacity-90">Get ready for an exciting science experiment!</div>
                   </div>
-                  <div className="relative h-[280px] w-full bg-gray-100">
-                    <Image src="/grade3.png" alt="lesson" fill className="object-cover" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
-                        <Icon icon="mdi:play" width={28} height={28} className="text-[#F59E0B]" />
-                      </div>
-                    </div>
+                  <div className="relative h-[220px] sm:h-[320px] lg:h-[460px] w-full bg-gray-100">
+                    {isVideoOpen ? (
+                      <video
+                        className="w-full h-full object-cover"
+                        src={encodeURI(videoSrc)}
+                        controls
+                        autoPlay
+                      />
+                    ) : (
+                      <>
+                        <Image src="/grade3.png" alt="lesson" fill className="object-cover" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={() => setIsVideoOpen(true)}
+                            className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F59E0B]"
+                            aria-label="Play video"
+                          >
+                            <Icon icon="mdi:play" width={28} height={28} className="text-[#F59E0B]" />
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div className="p-6">
-                    <h3 className="text-[16px] font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Inside the Science Laboratory 🧪</h3>
-                    <p className="text-[13px] text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Inside the Science Laboratory 🧪</h3>
+                    <p className="text-[12px] sm:text-[13px] text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       This video takes us inside a science lab. We will see tools like test tubes, beakers, and microscopes. We learn what scientists do in the lab, how they mix liquids, and how to stay safe by wearing gloves and coats. It’s a fun way to see how science helps us learn new things!
                     </p>
                     <div className="flex items-center gap-4 mt-4">
-                      <button className="flex-1 h-10 rounded-lg bg-gradient-to-r from-[#10B981] to-[#3B82F6] text-white text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <button className="flex-1 h-10 rounded-lg bg-gradient-to-r from-[#10B981] to-[#3B82F6] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                         <Icon icon="mdi:chevron-right-circle" /> Next Lesson
                       </button>
-                      <button className="flex-1 h-10 rounded-lg bg-gradient-to-r from-[#FB923C] to-[#EF4444] text-white text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <button className="flex-1 h-10 rounded-lg bg-gradient-to-r from-[#FB923C] to-[#EF4444] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                         <Icon icon="mdi:clipboard-text" /> Try Quiz
                       </button>
                     </div>
