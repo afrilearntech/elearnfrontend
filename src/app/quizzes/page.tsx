@@ -128,10 +128,10 @@ export default function QuizzesPage() {
       <div className="flex">
         <ElementarySidebar activeItem="quizzes" isMobileMenuOpen={isMobileMenuOpen} onMobileMenuClose={handleMenuClose} />
 
-        <main className="flex-1 bg-gradient-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE]">
+        <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
           <div className="p-4 lg:p-8">
             {/* Heading and toggle */}
-            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:py-5 ml-4 lg:ml-8 mr-4 lg:mr-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:py-5 sm:ml-8 sm:mr-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
               <div>
                 <div className="text-[20px] sm:text-[22px] lg:text-[24px] font-semibold text-[#7C3AED]">Games & Quizzes!</div>
                 <div className="text-[14px] sm:text-[15px] text-[#4B5563] mt-1">Test what you learned with fun games and quizzes!</div>
@@ -163,7 +163,7 @@ export default function QuizzesPage() {
 
             {activeTab === 'quizzes' ? (
               // Quizzes grid
-              <div className="ml-4 lg:ml-8 mr-4 lg:mr-8 mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+              <div className="sm:ml-8 sm:mr-8 mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                 {cards.map((c) => (
                   <div
                     key={c.title}
@@ -198,7 +198,7 @@ export default function QuizzesPage() {
               </div>
             ) : (
               // Games hero banner
-              <div className="ml-4 lg:ml-8 mr-4 lg:mr-8 mt-6">
+              <div className="sm:ml-8 sm:mr-8 mt-6">
                 {!showGame ? (
                   <div className="bg-white/70 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.08)] px-4 sm:px-6 py-6 sm:py-10 border-2" style={{ borderColor: '#FACC15' }}>
                     <div className="text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>

@@ -10,7 +10,7 @@ interface ElementaryNavbarProps {
 
 export default function ElementaryNavbar({ onMenuToggle }: ElementaryNavbarProps) {
   return (
-    <nav className="bg-gradient-to-r from-[#3AB0FF] to-[#00D68F] w-full h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-50">
+    <nav className="bg-linear-to-r from-[#3AB0FF] to-[#00D68F] w-full h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-50">
       <div className="flex items-center space-x-3">
         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
           <Image
@@ -33,7 +33,8 @@ export default function ElementaryNavbar({ onMenuToggle }: ElementaryNavbarProps
       
       <button
         onClick={onMenuToggle}
-        className="lg:hidden p-2 text-white hover:text-gray-100"
+        className="sm:hidden p-2 text-white hover:text-gray-100"
+        aria-label="Toggle menu"
       >
         <Icon icon="material-symbols:menu" className="w-6 h-6" />
       </button>

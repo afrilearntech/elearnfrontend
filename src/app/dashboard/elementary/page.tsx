@@ -31,11 +31,11 @@ export default function ElementaryDashboard() {
           onMobileMenuClose={handleMenuClose}
         />
         
-        <main className="flex-1 lg:ml-0 bg-gradient-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE]">
+        <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
           <div className="p-4 lg:p-8">
             {/* Welcome Banner */}
-            <div className="bg-white/60 rounded-2xl shadow-lg h-[140px] mt-8 mr-8 ml-8">
-              <div className="h-full flex flex-col justify-center px-8">
+            <div className="bg-white/60 rounded-2xl shadow-lg h-[140px] mt-8 sm:mx-8 mx-4">
+              <div className="h-full flex flex-col justify-center px-6 sm:px-8">
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Welcome back, Emma! ✨
                 </h1>
@@ -46,9 +46,11 @@ export default function ElementaryDashboard() {
             </div>
 
             {/* Progress/Stats Section */}
-            <ElementaryStatsCards />
+            <div className="sm:mx-8 mx-4">
+              <ElementaryStatsCards />
+            </div>
 
-            <div className="flex flex-col lg:flex-row lg:gap-[24px] mt-8 mx-8">
+            <div className="flex flex-col lg:flex-row lg:gap-[24px] mt-8 sm:mx-8 mx-4">
               {/* Continue Learning Section */}
               <ContinueLearningSection />
 
@@ -57,10 +59,14 @@ export default function ElementaryDashboard() {
             </div>
 
             {/* Explore Magical Subjects */}
-            <ExploreSubjectsSection />
+            <div className="sm:mx-8 mx-4">
+              <ExploreSubjectsSection />
+            </div>
 
             {/* Recent Adventures */}
-            <RecentAdventuresSection />
+            <div className="sm:mx-8 mx-4">
+              <RecentAdventuresSection />
+            </div>
           </div>
         </main>
       </div>
