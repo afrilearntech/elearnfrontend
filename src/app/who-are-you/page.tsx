@@ -1,11 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { setUserRole } from '@/lib/api/auth';
+import { ApiClientError } from '@/lib/api/client';
+import Spinner from '@/components/ui/Spinner';
+import { showSuccessToast, showErrorToast, formatErrorMessage } from '@/lib/toast';
 
 export default function WhoAreYou() {
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState('student');
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const authToken = localStorage.getItem('auth_token');
+      if (!authToken) {
+        router.push('/profile-setup');
+        return;
+      }
+      setToken(authToken);
+    }
+  }, [router]);
 
   const roles = [
     {
@@ -28,10 +46,39 @@ export default function WhoAreYou() {
     }
   ];
 
+  const handleContinue = async () => {
+    if (!token) {
+      showErrorToast('Authentication required. Please complete profile setup first.');
+      router.push('/profile-setup');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await setUserRole({ role: selectedRole }, token);
+      
+      showSuccessToast('🎉 Role set successfully! Redirecting...');
+      
+      setTimeout(() => {
+        router.push('/tell-us-about-yourself');
+      }, 1500);
+    } catch (error: unknown) {
+      if (error instanceof ApiClientError) {
+        const friendlyMessage = formatErrorMessage(error.message || 'Failed to set user role');
+        showErrorToast(friendlyMessage);
+      } else {
+        showErrorToast('An unexpected error occurred. Please check your connection and try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
       <div className="w-full max-w-[742px] min-h-[811px] bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-[#1E40AF] to-[#059669] p-6 text-white">
+        <div className="bg-linear-to-r from-[#1E40AF] to-[#059669] p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 border border-[#E5E7EB] rounded-full flex items-center justify-center">
@@ -63,7 +110,7 @@ export default function WhoAreYou() {
               onClick={() => setSelectedRole(role.id)}
               className={`p-6 rounded-xl cursor-pointer transition-all duration-200 ${
                 selectedRole === role.id
-                  ? 'border-2 border-gradient-to-r from-[#1E40AF] to-[#059669] bg-gradient-to-r from-blue-50 to-green-50'
+                  ? 'border-2 bg-linear-to-r from-blue-50 to-green-50'
                   : 'border border-gray-200 bg-white hover:border-gray-300'
               }`}
               style={{
@@ -88,14 +135,21 @@ export default function WhoAreYou() {
           ))}
 
           <div className="mt-[90px]">
-            <Link href="/tell-us-about-yourself">
-              <button
-                className="w-full bg-gradient-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-              >
-                Continue
-              </button>
-            </Link>
+            <button
+              onClick={handleContinue}
+              disabled={isLoading || !token}
+              className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+            >
+              {isLoading ? (
+                <>
+                  <Spinner size="sm" className="text-white" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                'Continue'
+              )}
+            </button>
           </div>
         </div>
       </div>
