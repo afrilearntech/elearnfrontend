@@ -1,23 +1,96 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useRouter } from 'next/navigation';
+import { getDistricts, getSchools, type District, type School } from '@/lib/api/lookup';
+import { showErrorToast, formatErrorMessage } from '@/lib/toast';
+import { ApiClientError } from '@/lib/api/client';
+import Spinner from '@/components/ui/Spinner';
 
 export default function TellUsAboutYourself() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     birthday: '',
     gender: '',
+    district: '',
     institution: '',
     gradeLevel: ''
   });
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [schools, setSchools] = useState<School[]>([]);
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingSchools, setLoadingSchools] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('auth_token');
+    if (!storedToken) {
+      router.push('/profile-setup');
+      return;
+    }
+    setToken(storedToken);
+    fetchDistricts(storedToken);
+  }, [router]);
+
+  const fetchDistricts = async (authToken: string) => {
+    setLoadingDistricts(true);
+    try {
+      const response = await getDistricts(authToken);
+      setDistricts(response.results);
+    } catch (error) {
+      const errorMessage = error instanceof ApiClientError
+        ? error.message
+        : error instanceof Error
+        ? error.message
+        : 'Failed to load districts';
+      showErrorToast(formatErrorMessage(errorMessage));
+    } finally {
+      setLoadingDistricts(false);
+    }
+  };
+
+  const fetchSchools = async (districtId: number) => {
+    if (!token) return;
+    setLoadingSchools(true);
+    setSchools([]);
+    setFormData(prev => ({ ...prev, institution: '' }));
+    try {
+      const response = await getSchools(token, districtId);
+      setSchools(response.results);
+    } catch (error) {
+      const errorMessage = error instanceof ApiClientError
+        ? error.message
+        : error instanceof Error
+        ? error.message
+        : 'Failed to load schools';
+      showErrorToast(formatErrorMessage(errorMessage));
+    } finally {
+      setLoadingSchools(false);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    
+    if (name === 'district') {
+      const districtId = parseInt(value);
+      setFormData({
+        ...formData,
+        district: value,
+        institution: ''
+      });
+      if (districtId) {
+        fetchSchools(districtId);
+      } else {
+        setSchools([]);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,9 +99,9 @@ export default function TellUsAboutYourself() {
     
     const gradeNumber = parseInt(formData.gradeLevel);
     
-    if (gradeNumber >= 1 && gradeNumber <= 5) {
+    if (gradeNumber >= 1 && gradeNumber <= 4) {
       router.push('/dashboard/elementary');
-    } else if (gradeNumber >= 6 && gradeNumber <= 10) {
+    } else if (gradeNumber >= 5 && gradeNumber <= 10) {
       router.push('/dashboard');
     } else {
       router.push('/dashboard');
@@ -36,9 +109,9 @@ export default function TellUsAboutYourself() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
       <div className="w-full max-w-[742px] min-h-[811px] bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-[#1E40AF] to-[#059669] p-6 text-white">
+        <div className="bg-linear-to-r from-[#1E40AF] to-[#059669] p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-white/20 border border-[#E5E7EB] rounded-full flex items-center justify-center">
@@ -108,20 +181,83 @@ export default function TellUsAboutYourself() {
 
           <div>
             <div className="flex items-center gap-2 mb-2">
+              <Icon icon="material-symbols:location-on" className="w-4 h-4 text-gray-600" />
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                District
+              </label>
+            </div>
+            <div className="relative">
+              {loadingDistricts ? (
+                <div className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg flex items-center gap-2">
+                  <Spinner size="sm" />
+                  <span className="text-sm text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Loading districts...
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <select
+                    name="district"
+                    value={formData.district}
+                    onChange={handleInputChange}
+                    className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <option value="">Select your district</option>
+                    {districts.map((district) => (
+                      <option key={district.id} value={district.id}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Icon icon="material-symbols:keyboard-arrow-down" className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:school" className="w-4 h-4 text-gray-600" />
               <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 Name of Institution
               </label>
             </div>
-            <input
-              type="text"
-              name="institution"
-              value={formData.institution}
-              onChange={handleInputChange}
-              placeholder="Enter the name of your school"
-              className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-            />
+            <div className="relative">
+              {loadingSchools ? (
+                <div className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg flex items-center gap-2">
+                  <Spinner size="sm" />
+                  <span className="text-sm text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Loading schools...
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <select
+                    name="institution"
+                    value={formData.institution}
+                    onChange={handleInputChange}
+                    disabled={!formData.district || schools.length === 0}
+                    className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <option value="">
+                      {!formData.district 
+                        ? 'Select a district first' 
+                        : schools.length === 0 
+                        ? 'No schools available' 
+                        : 'Select your school'}
+                    </option>
+                    {schools.map((school) => (
+                      <option key={school.id} value={school.id}>
+                        {school.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Icon icon="material-symbols:keyboard-arrow-down" className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                </>
+              )}
+            </div>
           </div>
 
           <div>
@@ -144,7 +280,7 @@ export default function TellUsAboutYourself() {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg mt-[67px]"
+            className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg mt-8"
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
             Finish Setup
