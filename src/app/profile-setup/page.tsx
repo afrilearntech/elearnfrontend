@@ -242,6 +242,7 @@ export default function ProfileSetup() {
               value={formData.password}
               onChange={handleInputChange}
               placeholder="Set a password"
+              autoComplete="off"
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -267,6 +268,7 @@ export default function ProfileSetup() {
               value={formData.confirmPassword}
               onChange={handleInputChange}
               placeholder="Confirm your password"
+              autoComplete="off"
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
