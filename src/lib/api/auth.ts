@@ -51,3 +51,65 @@ export async function setUserRole(
   });
 }
 
+export interface StudentLoginRequest {
+  identifier: string;
+  password: string;
+}
+
+export interface School {
+  id: number;
+  name: string;
+  district_id: number;
+  district_name: string;
+  county_id: number;
+  county_name: string;
+}
+
+export interface Student {
+  id: number;
+  grade: string;
+  school: School;
+}
+
+export interface StudentLoginResponse {
+  token: string;
+  user: User;
+  student: Student;
+}
+
+export async function studentLogin(
+  data: StudentLoginRequest
+): Promise<StudentLoginResponse> {
+  return apiRequest<StudentLoginResponse>('/api-v1/auth/student/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export interface AboutUserRequest {
+  dob: string;
+  gender: string;
+  school_id?: number;
+  school_name?: string;
+  district_id: number;
+  grade: string; 
+}
+
+export interface AboutUserResponse {
+  message?: string;
+  [key: string]: any;
+}
+
+export async function aboutUser(
+  data: AboutUserRequest,
+  token: string
+): Promise<AboutUserResponse> {
+  return apiRequest<AboutUserResponse>('/api-v1/onboarding/aboutuser/', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+}
+

@@ -1,13 +1,15 @@
 import { Icon } from '@iconify/react';
 
 interface Course {
-  id: string;
-  title: string;
+  id: number | string;
+  name?: string;
+  title?: string;
   grade: string;
-  teacher: string;
-  progress: number;
-  color: string;
-  icon: string;
+  teachers?: number[];
+  teacher?: string;
+  progress?: number;
+  color?: string;
+  icon?: string;
 }
 
 interface MyCoursesSectionProps {
@@ -15,36 +17,18 @@ interface MyCoursesSectionProps {
 }
 
 export function MyCoursesSection({
-  courses = [
-    {
-      id: '1',
-      title: 'Advanced Mathematics',
-      grade: 'Grade 10',
-      teacher: 'Ms. Johnson',
-      progress: 75,
-      color: 'blue',
-      icon: 'M'
-    },
-    {
-      id: '2',
-      title: 'English Literature',
-      grade: 'Grade 10',
-      teacher: 'Mr. Williams',
-      progress: 92,
-      color: 'green',
-      icon: 'E'
-    },
-    {
-      id: '3',
-      title: 'Physics & Chemistry',
-      grade: 'Grade 10',
-      teacher: 'Dr. Davis',
-      progress: 58,
-      color: 'purple',
-      icon: 'S'
-    }
-  ]
+  courses = []
 }: MyCoursesSectionProps) {
+  const getColorForIndex = (index: number): string => {
+    const colors = ['blue', 'green', 'purple'];
+    return colors[index % colors.length];
+  };
+
+  const getInitials = (name: string): string => {
+    return name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const displayCourses = courses.length > 0 ? courses : [];
   const getColorClasses = (color: string) => {
     switch (color) {
       case 'blue':
@@ -86,38 +70,52 @@ export function MyCoursesSection({
       </div>
       
       <div className="space-y-4">
-        {courses.map((course) => {
-          const colors = getColorClasses(course.color);
-          return (
-            <div key={course.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-              <div className={`w-16 h-16 ${colors.bg} rounded-lg flex items-center justify-center text-white font-bold text-xl mr-4`}>
-                {course.icon}
-              </div>
-              
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {course.title}
-                </h3>
-                <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {course.grade} • {course.teacher}
-                </p>
-                <div className="flex items-center">
-                  <div className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                    <div 
-                      className={`h-2 rounded-full ${colors.progress}`}
-                      style={{ width: `${course.progress}%` }}
-                    ></div>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">{course.progress}%</span>
+        {displayCourses.length > 0 ? (
+          displayCourses.map((course, index) => {
+            const color = course.color || getColorForIndex(index);
+            const colors = getColorClasses(color);
+            const courseName = course.name || course.title || 'Untitled Course';
+            const teacherCount = course.teachers ? course.teachers.length : 0;
+            const progress = course.progress || 0;
+            const icon = course.icon || getInitials(courseName);
+            
+            return (
+              <div key={course.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                <div className={`w-16 h-16 ${colors.bg} rounded-lg flex items-center justify-center text-white font-bold text-xl mr-4`}>
+                  {icon}
                 </div>
+                
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {courseName}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {course.grade} • {teacherCount} {teacherCount === 1 ? 'Teacher' : 'Teachers'}
+                  </p>
+                  <div className="flex items-center">
+                    <div className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                      <div 
+                        className={`h-2 rounded-full ${colors.progress}`}
+                        style={{ width: `${progress}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">{progress}%</span>
+                  </div>
+                </div>
+                
+                <button className={`px-4 py-2 text-white rounded-lg font-medium ${colors.button} transition-colors`}>
+                  Continue
+                </button>
               </div>
-              
-              <button className={`px-4 py-2 text-white rounded-lg font-medium ${colors.button} transition-colors`}>
-                Continue
-              </button>
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              No courses available. Start learning to see your courses here!
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
