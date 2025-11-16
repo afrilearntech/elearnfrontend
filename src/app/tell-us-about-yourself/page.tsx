@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useRouter } from 'next/navigation';
 import { getDistricts, getSchools, type District, type School } from '@/lib/api/lookup';
-import { showErrorToast, formatErrorMessage } from '@/lib/toast';
+import { aboutUser } from '@/lib/api/auth';
+import { showSuccessToast, showErrorToast, formatErrorMessage } from '@/lib/toast';
 import { ApiClientError } from '@/lib/api/client';
 import Spinner from '@/components/ui/Spinner';
 
@@ -21,7 +22,24 @@ export default function TellUsAboutYourself() {
   const [schools, setSchools] = useState<School[]>([]);
   const [loadingDistricts, setLoadingDistricts] = useState(false);
   const [loadingSchools, setLoadingSchools] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+
+  const gradeOptions = [
+    'GRADE 1',
+    'GRADE 2',
+    'GRADE 3',
+    'GRADE 4',
+    'GRADE 5',
+    'GRADE 6',
+    'GRADE 7',
+    'GRADE 8',
+    'GRADE 9',
+    'GRADE 10',
+    'GRADE 11',
+    'GRADE 12',
+    'OTHER'
+  ];
 
   useEffect(() => {
     const storedToken = localStorage.getItem('auth_token');
@@ -93,18 +111,86 @@ export default function TellUsAboutYourself() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
     
-    const gradeNumber = parseInt(formData.gradeLevel);
-    
-    if (gradeNumber >= 1 && gradeNumber <= 4) {
-      router.push('/dashboard/elementary');
-    } else if (gradeNumber >= 5 && gradeNumber <= 10) {
-      router.push('/dashboard');
-    } else {
-      router.push('/dashboard');
+    if (!token) {
+      showErrorToast('Authentication required. Please complete profile setup first.');
+      router.push('/profile-setup');
+      return;
+    }
+
+    if (!formData.birthday || !formData.gender || !formData.district || !formData.gradeLevel) {
+      showErrorToast('Please fill in all required fields.');
+      return;
+    }
+
+    if (!formData.institution) {
+      showErrorToast('Please select your school.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const districtId = parseInt(formData.district);
+      const schoolId = parseInt(formData.institution);
+
+      const apiData = {
+        dob: formData.birthday,
+        gender: formData.gender,
+        district_id: districtId,
+        school_id: schoolId, 
+        grade: formData.gradeLevel, 
+      };
+
+      await aboutUser(apiData, token);
+
+      const gradeMatch = formData.gradeLevel.match(/\d+/);
+      const gradeNumber = gradeMatch ? parseInt(gradeMatch[0]) : null;
+
+      if (typeof window !== 'undefined' && gradeNumber) {
+        localStorage.setItem('user_grade', gradeNumber.toString());
+        
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            user.grade = gradeNumber;
+            localStorage.setItem('user', JSON.stringify(user));
+          } catch (e) {
+            console.error('Error updating user data:', e);
+          }
+        }
+      }
+
+      showSuccessToast('🎉 Profile completed successfully! Redirecting...');
+
+      setTimeout(() => {
+        if (gradeNumber && gradeNumber >= 1 && gradeNumber <= 4) {
+          router.push('/dashboard/elementary');
+        } else {
+          router.push('/dashboard');
+        }
+      }, 1500);
+    } catch (error: unknown) {
+      if (error instanceof ApiClientError) {
+        if (error.errors) {
+          const errorMessages = Object.values(error.errors).flat();
+          if (errorMessages.length > 0) {
+            showErrorToast(errorMessages[0]);
+          } else {
+            showErrorToast(formatErrorMessage(error.message || 'Failed to save profile information'));
+          }
+        } else {
+          const friendlyMessage = formatErrorMessage(error.message || 'Failed to save profile information');
+          showErrorToast(friendlyMessage);
+        }
+      } else {
+        showErrorToast('An unexpected error occurred. Please check your connection and try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -267,23 +353,39 @@ export default function TellUsAboutYourself() {
                 Grade/Level
               </label>
             </div>
-            <input
-              type="text"
-              name="gradeLevel"
-              value={formData.gradeLevel}
-              onChange={handleInputChange}
-              placeholder="Enter your grade level"
-              className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-            />
+            <div className="relative">
+              <select
+                name="gradeLevel"
+                value={formData.gradeLevel}
+                onChange={handleInputChange}
+                className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <option value="">Select your grade level</option>
+                {gradeOptions.map((grade) => (
+                  <option key={grade} value={grade}>
+                    {grade}
+                  </option>
+                ))}
+              </select>
+              <Icon icon="material-symbols:keyboard-arrow-down" className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg mt-8"
+            disabled={isSubmitting}
+            className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
-            Finish Setup
+            {isSubmitting ? (
+              <>
+                <Spinner size="sm" className="text-white" />
+                <span>Processing...</span>
+              </>
+            ) : (
+              'Finish Setup'
+            )}
           </button>
         </form>
       </div>

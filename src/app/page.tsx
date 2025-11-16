@@ -1,11 +1,10 @@
 import Image from 'next/image';
-import { BookOpen, Users, Award } from 'lucide-react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
       <div className="w-full max-w-[742px] min-h-[632px] bg-white rounded-2xl shadow-xl p-4 sm:p-8 text-center">
         <div className="mb-6">
           <Image
@@ -68,17 +67,31 @@ export default function Home() {
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 sm:mt-20">
-          <button className="w-full max-w-[305px] h-[50px] bg-gradient-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">
+          <button className="w-full max-w-[305px] h-[50px] bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">
             <Icon icon="logos:google-icon" className="w-5 h-5" />
             Continue with Google
           </button>
           
           <Link href="/profile-setup">
-            <button className="w-full max-w-[305px] h-[50px] bg-gradient-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">
+            <button className="w-full max-w-[305px] h-[50px] bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">
               <Icon icon="material-symbols:mail" className="w-5 h-5" />
               Continue with Email
             </button>
           </Link>
+        </div>
+
+        {/* Login Link */}
+        <div className="mt-6">
+          <p className="text-base text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            Already have an account?{' '}
+            <Link 
+              href="/login" 
+              className="text-lg font-semibold text-blue-600 hover:text-blue-700 underline" 
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+            >
+              Login here
+            </Link>
+          </p>
         </div>
       </div>
     </div>

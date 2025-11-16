@@ -3,15 +3,66 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getSubjects } from '@/lib/api/courses';
+import { ApiClientError } from '@/lib/api/client';
+import { showErrorToast, formatErrorMessage } from '@/lib/toast';
+import Spinner from '@/components/ui/Spinner';
 
 export default function AllCoursesPage() {
   const router = useRouter();
-  const user = { name: 'Sarah Johnson', role: 'Student' };
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<any | null>(null);
   const [selectedGrade, setSelectedGrade] = useState('Grade 8');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [ordering, setOrdering] = useState('');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+        }
+      }
+
+      setIsLoading(true);
+      try {
+        const params: { search?: string; ordering?: string } = {};
+        if (searchTerm.trim()) {
+          params.search = searchTerm.trim();
+        }
+        if (ordering) {
+          params.ordering = ordering;
+        }
+        
+        const data = await getSubjects(token, params);
+        setSubjects(data);
+      } catch (error) {
+        const errorMessage = error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+          ? error.message
+          : 'Failed to load subjects';
+        showErrorToast(formatErrorMessage(errorMessage));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSubjects();
+  }, [router, searchTerm, ordering]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -41,18 +92,41 @@ export default function AllCoursesPage() {
     }
   };
 
-  const courses = [
-    { id: '1', title: 'Mathematics – Grade 3', desc: 'Master numbers, shapes, and patterns with fun lessons and challenges.', image: '/grade1.png' },
-    { id: '2', title: 'English Language – Grade 4', desc: 'Enhance your reading, writing, and communication skills.', image: '/grade2.png' },
-    { id: '3', title: 'ICT – Grade 3', desc: 'Explore technology, coding basics, and digital skills.', image: '/grade3.png' },
-    { id: '4', title: 'General Science – Grade 4', desc: 'Discover the wonders of science through engaging experiments.', image: '/grade4.png' },
-    { id: '5', title: 'Mathematics – Grade 5', desc: 'Master numbers, shapes, and patterns with fun lessons and challenges.', image: '/grade5.png' },
-    { id: '6', title: 'English Language – Grade 4', desc: 'Enhance your reading, writing, and communication skills.', image: '/grade6.png' }
-  ];
+  const getFallbackImage = (grade: string): string => {
+    const gradeMatch = grade.match(/\d+/);
+    const gradeNumber = gradeMatch ? parseInt(gradeMatch[0]) : 1;
+    if (gradeNumber >= 1 && gradeNumber <= 6) {
+      return `/grade${gradeNumber}.png`;
+    }
+    return '/grade1.png';
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleOrderingChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setOrdering(e.target.value);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar user={user} activeLink="courses" />
+      <Navbar 
+        user={{ 
+          name: user?.name || 'Student', 
+          role: user?.role || 'Student', 
+          initials: user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || 'ST' 
+        }} 
+        activeLink="courses" 
+      />
 
       <main className="max-w-[1280px] mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
@@ -66,9 +140,28 @@ export default function AllCoursesPage() {
           <div className="flex-1 flex flex-col">
             <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Search</label>
             <div className="relative">
-              <input className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" placeholder="search courses, lessons..." />
+              <input 
+                className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" 
+                placeholder="search courses, lessons..." 
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
             </div>
+          </div>
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Order By</label>
+            <select 
+              className="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 bg-white"
+              value={ordering}
+              onChange={handleOrderingChange}
+            >
+              <option value="">Default</option>
+              <option value="name">Name</option>
+              <option value="-name">Name (Descending)</option>
+              <option value="created_at">Date Created</option>
+              <option value="-created_at">Date Created (Descending)</option>
+            </select>
           </div>
           <div className="flex flex-col">
             <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Select Grade</label>
@@ -110,29 +203,49 @@ export default function AllCoursesPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
-          {courses.map((c) => (
-            <div key={c.id} className="rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm w-full max-w-[600px] h-[235px]">
-              <div className="relative w-full h-full">
-                <Image src={c.image} alt={c.title} fill className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
-                <div className="absolute inset-0 p-6 flex flex-col">
-                  <div>
-                    <h3 className="text-white text-xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>{c.title}</h3>
-                    <p className="text-white/90 text-sm mt-2 max-w-[520px]" style={{ fontFamily: 'Poppins, sans-serif' }}>{c.desc}</p>
-                  </div>
-                  <div className="mt-4 flex gap-3">
-                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Quizes</span>
-                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Videos</span>
-                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Assignment</span>
-                  </div>
-                  <div className="mt-auto flex items-center gap-6">
-                    <button onClick={() => setSelected(c)} className="flex-1 h-12 bg-blue-600 text-white rounded-md text-sm flex items-center justify-center cursor-pointer" style={{ fontFamily: 'Poppins, sans-serif' }}>View Details</button>
-                    <Link href="#" className="flex-1 h-12 bg-emerald-600 text-white rounded-md text-sm flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>Start Course</Link>
+          {subjects.length > 0 ? (
+            subjects.map((subject) => {
+              const imageSrc = subject.thumbnail || getFallbackImage(subject.grade);
+              const courseData = {
+                id: subject.id.toString(),
+                title: `${subject.name} – ${subject.grade}`,
+                desc: subject.description || 'No description available.',
+                image: imageSrc,
+                grade: subject.grade,
+                teachers: subject.teachers.length
+              };
+              
+              return (
+                <div key={subject.id} className="rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm w-full max-w-[600px] h-[235px]">
+                  <div className="relative w-full h-full">
+                    <Image src={imageSrc} alt={courseData.title} fill className="object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
+                    <div className="absolute inset-0 p-6 flex flex-col">
+                      <div>
+                        <h3 className="text-white text-xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>{courseData.title}</h3>
+                        <p className="text-white/90 text-sm mt-2 max-w-[520px]" style={{ fontFamily: 'Poppins, sans-serif' }}>{courseData.desc}</p>
+                      </div>
+                      <div className="mt-4 flex gap-3">
+                        <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Quizes</span>
+                        <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Videos</span>
+                        <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Assignment</span>
+                      </div>
+                      <div className="mt-auto flex items-center gap-6">
+                        <button onClick={() => setSelected(courseData)} className="flex-1 h-12 bg-blue-600 text-white rounded-md text-sm flex items-center justify-center cursor-pointer" style={{ fontFamily: 'Poppins, sans-serif' }}>View Details</button>
+                        <Link href="#" className="flex-1 h-12 bg-emerald-600 text-white rounded-md text-sm flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>Start Course</Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              );
+            })
+          ) : (
+            <div className="col-span-2 text-center py-12">
+              <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                No subjects found. Try adjusting your search or filters.
+              </p>
             </div>
-          ))}
+          )}
         </div>
 
         {selected && (
