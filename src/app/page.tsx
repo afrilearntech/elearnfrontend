@@ -85,8 +85,8 @@ export default function Home() {
           <p className="text-base text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Already have an account?{' '}
             <Link 
-              href="/login" 
-              className="text-lg font-semibold text-blue-600 hover:text-blue-700 underline" 
+              href="/sign-in"
+              className="text-lg font-semibold text-blue-600 hover:text-blue-700 underline"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Login here
