@@ -21,8 +21,8 @@ const motivationalMessages = [
 
 export default function TopPerformer({ 
   show = false,
-  title,
-  subtitle,
+  title, 
+  subtitle, 
   rank,
   icon = 'material-symbols:trophy' 
 }: TopPerformerProps) {

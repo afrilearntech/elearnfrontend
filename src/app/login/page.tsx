@@ -99,7 +99,7 @@ export default function LoginPage() {
           }
         }
         
-        if (gradeNumber && gradeNumber >= 1 && gradeNumber <= 4) {
+        if (gradeNumber && gradeNumber >= 1 && gradeNumber <= 3) {
           router.push('/dashboard/elementary');
         } else {
           router.push('/dashboard');

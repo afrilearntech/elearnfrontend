@@ -85,10 +85,10 @@ export default function AllCoursesPage() {
     
     const gradeNumber = parseInt(grade.replace('Grade ', ''));
     
-    if (gradeNumber >= 1 && gradeNumber <= 5) {
+    if (gradeNumber >= 1 && gradeNumber <= 3) {
       router.push('/dashboard/elementary');
-    } else if (gradeNumber >= 6 && gradeNumber <= 10) {
-      router.push('/dashboard/secondary');
+    } else if (gradeNumber >= 4) {
+      router.push('/dashboard');
     }
   };
 
@@ -131,7 +131,7 @@ export default function AllCoursesPage() {
       <main className="max-w-[1280px] mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Explore Courses</h1>
-          <Link href="/courses" className="bg-gradient-to-r from-[#1E40AF] to-[#059669] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <Link href="/courses" className="bg-linear-to-r from-[#1E40AF] to-[#059669] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity" style={{ fontFamily: 'Poppins, sans-serif' }}>
             My Courses
           </Link>
         </div>
@@ -217,26 +217,26 @@ export default function AllCoursesPage() {
               
               return (
                 <div key={subject.id} className="rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm w-full max-w-[600px] h-[235px]">
-                  <div className="relative w-full h-full">
+              <div className="relative w-full h-full">
                     <Image src={imageSrc} alt={courseData.title} fill className="object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
-                    <div className="absolute inset-0 p-6 flex flex-col">
-                      <div>
+                    <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/60 to-black/80" />
+                <div className="absolute inset-0 p-6 flex flex-col">
+                  <div>
                         <h3 className="text-white text-xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>{courseData.title}</h3>
                         <p className="text-white/90 text-sm mt-2 max-w-[520px]" style={{ fontFamily: 'Poppins, sans-serif' }}>{courseData.desc}</p>
-                      </div>
-                      <div className="mt-4 flex gap-3">
-                        <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Quizes</span>
-                        <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Videos</span>
-                        <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Assignment</span>
-                      </div>
-                      <div className="mt-auto flex items-center gap-6">
+                  </div>
+                  <div className="mt-4 flex gap-3">
+                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Quizes</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Videos</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Assignment</span>
+                  </div>
+                  <div className="mt-auto flex items-center gap-6">
                         <button onClick={() => setSelected(courseData)} className="flex-1 h-12 bg-blue-600 text-white rounded-md text-sm flex items-center justify-center cursor-pointer" style={{ fontFamily: 'Poppins, sans-serif' }}>View Details</button>
-                        <Link href="#" className="flex-1 h-12 bg-emerald-600 text-white rounded-md text-sm flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>Start Course</Link>
-                      </div>
-                    </div>
+                    <Link href="#" className="flex-1 h-12 bg-emerald-600 text-white rounded-md text-sm flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>Start Course</Link>
                   </div>
                 </div>
+              </div>
+            </div>
               );
             })
           ) : (
@@ -254,7 +254,7 @@ export default function AllCoursesPage() {
             <div className="relative bg-white rounded-2xl shadow-xl w-[884px] h-[701px] max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
               <div className="relative h-[261px] shrink-0">
                 <Image src={selected.image} alt={selected.title} fill className="object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/60 to-black/80" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/60 to-black/80" />
                 <div className="absolute inset-0 p-6 flex items-end justify-between">
                   <div>
                     <p className="text-white/80 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>{(selected.title.match(/Grade\s+\d+/)?.[0]) || ''}</p>

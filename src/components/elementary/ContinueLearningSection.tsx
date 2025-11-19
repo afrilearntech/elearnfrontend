@@ -48,11 +48,12 @@ export default function ContinueLearningSection({
           Continue Learning
         </h2>
         <div className="space-y-4">
-          {modules.map((module, index) => {
+          {modules && modules.length > 0 ? (
+            modules.map((module, index) => {
             const cardBgClass = index === 0
-              ? 'bg-gradient-to-r from-[#FEE2E2] to-[#FECACA]'
+              ? 'bg-linear-to-r from-[#FEE2E2] to-[#FECACA]'
               : index === 1
-              ? 'bg-gradient-to-r from-[#DBEAFE] to-[#BFDBFE]'
+              ? 'bg-linear-to-r from-[#DBEAFE] to-[#BFDBFE]'
               : module.bgColor;
 
             return (
@@ -87,7 +88,13 @@ export default function ContinueLearningSection({
                 </div>
               </div>
             );
-          })}
+          })) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                No courses available. Start learning to see your progress here!
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

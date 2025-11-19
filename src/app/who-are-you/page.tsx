@@ -135,12 +135,12 @@ export default function WhoAreYou() {
           ))}
 
           <div className="mt-[90px]">
-            <button
+              <button
               onClick={handleContinue}
               disabled={isLoading || !token}
               className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-            >
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
               {isLoading ? (
                 <>
                   <Spinner size="sm" className="text-white" />
@@ -149,7 +149,7 @@ export default function WhoAreYou() {
               ) : (
                 'Continue'
               )}
-            </button>
+              </button>
           </div>
         </div>
       </div>

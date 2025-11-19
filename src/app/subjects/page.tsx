@@ -1,26 +1,110 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
+import { getElementarySubjectsAndLessons } from '@/lib/api/dashboard';
+import { ApiClientError } from '@/lib/api/client';
+import { showErrorToast, formatErrorMessage } from '@/lib/toast';
+import Spinner from '@/components/ui/Spinner';
+
+const borderColors = [
+  'border-[#60A5FA]',
+  'border-[#F472B6]',
+  'border-[#34D399]',
+  'border-[#A78BFA]',
+  'border-[#FB923C]',
+  'border-[#22D3EE]',
+];
+
+const playColors = [
+  '#3B82F6',
+  '#EC4899',
+  '#16A34A',
+  '#A855F7',
+  '#F59E0B',
+  '#10B981',
+];
+
+const gradeImages = [
+  '/grade1.png',
+  '/grade2.png',
+  '/grade3.png',
+  '/grade4.png',
+  '/grade5.png',
+  '/grade6.png',
+];
+
+function getFallbackImage(index: number): string {
+  return gradeImages[index % gradeImages.length];
+}
+
+function getBorderColor(index: number): string {
+  return borderColors[index % borderColors.length];
+}
+
+function getPlayColor(index: number): string {
+  return playColors[index % playColors.length];
+}
 
 export default function SubjectsLessonsPage() {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [selectedSubject, setSelectedSubject] = useState<string>('all');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const data = await getElementarySubjectsAndLessons(token);
+        setSubjects(data.subjects || []);
+        setLessons(data.lessons || []);
+      } catch (error) {
+        const errorMessage = error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+          ? error.message
+          : 'Failed to load subjects and lessons';
+        showErrorToast(formatErrorMessage(errorMessage));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [router]);
 
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const handleMenuClose = () => setIsMobileMenuOpen(false);
 
-  const cards = [
-    { id: 1, title: 'Fun with Numbers!', subtitle: 'Learn counting and basic math with colorful animations', tag: 'Math', time: '15 min', img: '/grade1.png', border: 'border-[#60A5FA]', playColor: '#3B82F6' },
-    { id: 2, title: 'Story Time Adventures', subtitle: 'Join magical stories with talking animals and heroes', tag: 'Reading', time: '20 min', img: '/grade2.png', border: 'border-[#F472B6]', playColor: '#EC4899' },
-    { id: 3, title: 'Amazing Experiments', subtitle: 'Discover cool science with fun experiments', tag: 'Science', time: '20 min', img: '/grade3.png', border: 'border-[#34D399]', playColor: '#16A34A' },
-    { id: 4, title: 'ABC Song Party', subtitle: 'Sing and dance with the alphabet letters', tag: 'Reading', time: '20 min', img: '/grade4.png', border: 'border-[#A78BFA]', playColor: '#A855F7' },
-    { id: 5, title: 'Shapes & Colors', subtitle: 'Learn about different shapes and bright colors', tag: 'Math', time: '20 min', img: '/grade5.png', border: 'border-[#FB923C]', playColor: '#F59E0B' },
-    { id: 6, title: 'Animal Friends', subtitle: 'Meet cute animals and learn about nature', tag: 'Science', time: '20 min', img: '/grade6.png', border: 'border-[#22D3EE]', playColor: '#10B981' },
-  ];
+  const filteredLessons = selectedSubject === 'all'
+    ? lessons
+    : lessons.filter((lesson) => lesson.subject_id === parseInt(selectedSubject));
+
+  const uniqueSubjects = Array.from(
+    new Map(subjects.map((s) => [s.name, s])).values()
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -31,39 +115,104 @@ export default function SubjectsLessonsPage() {
 
         <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
           <div className="p-4 lg:p-8">
-            {/* Filters */}
-            <div className="flex flex-wrap items-center gap-3 bg-white/60 rounded-xl px-4 py-3 w-full sm:max-w-[980px] sm:ml-8">
-              <button className="px-3 py-1.5 rounded-lg bg-[#E5E7EB] text-gray-700 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>All Subjects</button>
-              <button className="px-3 py-1.5 rounded-lg bg-[#D1FAE5] text-[#065F46] text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Math</button>
-              <button className="px-3 py-1.5 rounded-lg bg-[#DBEAFE] text-[#1E40AF] text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Reading</button>
+            {/* Title Section */}
+            <div className="sm:ml-8 sm:mr-8 mb-6">
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Fun Video Lessons
+              </h1>
+              <p className="text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Watch, Learn, and Have Fun with Our Amazing Videos!
+              </p>
+            </div>
+
+            {/* Subject Filters */}
+            <div className="flex flex-wrap items-center gap-3 sm:ml-8 sm:mr-8 mb-6">
+              <button
+                onClick={() => setSelectedSubject('all')}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                  selectedSubject === 'all'
+                    ? 'bg-[#60A5FA] text-white shadow-sm'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Icon icon="mdi:file-document-outline" width={18} height={18} />
+                All Subjects
+              </button>
+              {uniqueSubjects.map((subject) => {
+                const subjectName = subject.name.toLowerCase();
+                let icon = 'mdi:book-open-outline';
+                
+                if (subjectName.includes('math') || subjectName.includes('numeracy')) {
+                  icon = 'mdi:calculator';
+                } else if (subjectName.includes('science')) {
+                  icon = 'mdi:flask-outline';
+                } else if (subjectName.includes('reading') || subjectName.includes('literacy')) {
+                  icon = 'mdi:book-open-outline';
+                } else if (subjectName.includes('art')) {
+                  icon = 'mdi:palette-outline';
+                }
+
+                const isSelected = selectedSubject === subject.id.toString();
+
+                return (
+                  <button
+                    key={subject.id}
+                    onClick={() => setSelectedSubject(subject.id.toString())}
+                    className={`px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                      isSelected
+                        ? 'bg-[#60A5FA] text-white shadow-sm'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <Icon icon={icon} width={18} height={18} />
+                    {subject.name}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Grid of lesson cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6 sm:ml-8 sm:mr-8">
-              {cards.map(card => (
-                <Link href={`/subjects/${card.id}`} key={card.id} className={`bg-white rounded-xl shadow-md overflow-hidden border ${card.border}`}>
+              {filteredLessons.length > 0 ? (
+                filteredLessons.map((lesson, index) => {
+                  const borderColor = getBorderColor(index);
+                  const playColor = getPlayColor(index);
+                  const imageSrc = getFallbackImage(index);
+
+                  return (
+                    <Link href={`/subjects/${lesson.id}`} key={lesson.id} className={`bg-white rounded-xl shadow-md overflow-hidden border ${borderColor}`}>
                   {/* Thumbnail */}
                   <div className="relative h-[160px] w-full">
-                    <Image src={card.img} alt={card.title} fill className="object-cover" />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
+                        <Image src={imageSrc} alt={lesson.title} fill className="object-cover" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow">
-                        <Icon icon="mdi:play" width={22} height={22} style={{ color: card.playColor }} />
+                            <Icon icon="mdi:play" width={22} height={22} style={{ color: playColor }} />
                       </div>
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-4">
-                    <h3 className="text-[16px] font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>{card.title}</h3>
-                    <p className="text-[12px] text-gray-600 mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>{card.subtitle}</p>
+                        <h3 className="text-[16px] font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>{lesson.title}</h3>
+                        <p className="text-[12px] text-gray-600 mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Learn and explore with fun activities</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] px-2 py-0.5 rounded-lg bg-gray-100 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>{card.tag}</span>
-                      <span className="text-[10px] text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>{card.time}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-lg bg-gray-100 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>{lesson.subject_name}</span>
+                          <span className="text-[10px] text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>Lesson</span>
                     </div>
                   </div>
                 </Link>
-              ))}
+                  );
+                })
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    No lessons available. {selectedSubject !== 'all' ? 'Try selecting a different subject.' : 'Check back later for new lessons!'}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </main>

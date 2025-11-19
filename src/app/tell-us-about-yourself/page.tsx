@@ -104,10 +104,10 @@ export default function TellUsAboutYourself() {
         setSchools([]);
       }
     } else {
-      setFormData({
-        ...formData,
+    setFormData({
+      ...formData,
         [name]: value
-      });
+    });
     }
   };
 
@@ -167,10 +167,10 @@ export default function TellUsAboutYourself() {
       showSuccessToast('🎉 Profile completed successfully! Redirecting...');
 
       setTimeout(() => {
-        if (gradeNumber && gradeNumber >= 1 && gradeNumber <= 4) {
-          router.push('/dashboard/elementary');
-        } else {
-          router.push('/dashboard');
+        if (gradeNumber && gradeNumber >= 1 && gradeNumber <= 3) {
+      router.push('/dashboard/elementary');
+    } else {
+      router.push('/dashboard');
         }
       }, 1500);
     } catch (error: unknown) {
@@ -320,12 +320,12 @@ export default function TellUsAboutYourself() {
               ) : (
                 <>
                   <select
-                    name="institution"
-                    value={formData.institution}
-                    onChange={handleInputChange}
+              name="institution"
+              value={formData.institution}
+              onChange={handleInputChange}
                     disabled={!formData.district || schools.length === 0}
                     className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-50 disabled:cursor-not-allowed"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Poppins, sans-serif' }}
                   >
                     <option value="">
                       {!formData.district 
@@ -355,11 +355,11 @@ export default function TellUsAboutYourself() {
             </div>
             <div className="relative">
               <select
-                name="gradeLevel"
-                value={formData.gradeLevel}
-                onChange={handleInputChange}
+              name="gradeLevel"
+              value={formData.gradeLevel}
+              onChange={handleInputChange}
                 className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <option value="">Select your grade level</option>
                 {gradeOptions.map((grade) => (

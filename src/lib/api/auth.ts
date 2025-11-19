@@ -24,7 +24,7 @@ export interface ProfileSetupResponse {
 export async function profileSetup(
   data: ProfileSetupRequest
 ): Promise<ProfileSetupResponse> {
-  return apiRequest<ProfileSetupResponse>('/api-v1/onboarding/profilesetup/', {
+  return apiRequest<ProfileSetupResponse>('/onboarding/profilesetup/', {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -42,7 +42,7 @@ export async function setUserRole(
   data: UserRoleRequest,
   token: string
 ): Promise<UserRoleResponse> {
-  return apiRequest<UserRoleResponse>('/api-v1/onboarding/userrole/', {
+  return apiRequest<UserRoleResponse>('/onboarding/userrole/', {
     method: 'POST',
     headers: {
       'Authorization': `Token ${token}`,
@@ -80,7 +80,7 @@ export interface StudentLoginResponse {
 export async function studentLogin(
   data: StudentLoginRequest
 ): Promise<StudentLoginResponse> {
-  return apiRequest<StudentLoginResponse>('/api-v1/auth/student/', {
+  return apiRequest<StudentLoginResponse>('/auth/student/', {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -104,7 +104,7 @@ export async function aboutUser(
   data: AboutUserRequest,
   token: string
 ): Promise<AboutUserResponse> {
-  return apiRequest<AboutUserResponse>('/api-v1/onboarding/aboutuser/', {
+  return apiRequest<AboutUserResponse>('/onboarding/aboutuser/', {
     method: 'POST',
     headers: {
       'Authorization': `Token ${token}`,

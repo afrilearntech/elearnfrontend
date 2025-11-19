@@ -106,28 +106,28 @@ export function AssignmentsDueSection({
             const dueDateText = assignment.dueDate || formatDueDate(assignment.due_in_days, assignment.due_at);
             const icon = assignment.icon || getIconForType((assignment as any).type);
             
-            return (
-              <div key={assignment.id} className={`flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow ${statusClasses.cardBg}`}>
-                <div className={`w-12 h-12 ${statusClasses.iconBg} rounded-lg flex items-center justify-center mr-4`}>
+          return (
+            <div key={assignment.id} className={`flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow ${statusClasses.cardBg}`}>
+              <div className={`w-12 h-12 ${statusClasses.iconBg} rounded-lg flex items-center justify-center mr-4`}>
                   <Icon icon={icon} className={`w-6 h-6 ${statusClasses.iconColor}`} />
-                </div>
-                
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {assignment.title}
-                  </h3>
-                  <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {dueDateText} • {assignment.course}
-                  </p>
-                </div>
-                
-                {statusClasses.buttonText && (
-                  <button className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusClasses.button}`}>
-                    {statusClasses.buttonText}
-                  </button>
-                )}
               </div>
-            );
+              
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  {assignment.title}
+                </h3>
+                <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {dueDateText} • {assignment.course}
+                </p>
+              </div>
+              
+              {statusClasses.buttonText && (
+                <button className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusClasses.button}`}>
+                  {statusClasses.buttonText}
+                </button>
+              )}
+            </div>
+          );
           })
         ) : (
           <div className="text-center py-8">

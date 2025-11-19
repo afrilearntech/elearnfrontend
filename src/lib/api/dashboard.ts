@@ -59,7 +59,75 @@ export interface DashboardResponse {
 }
 
 export async function getDashboard(token: string): Promise<DashboardResponse> {
-  return apiRequest<DashboardResponse>('/api-v1/dashboard/', {
+  return apiRequest<DashboardResponse>('/dashboard/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  });
+}
+
+export interface ElementaryTodayChallenge {
+  name: string;
+  icon: string;
+}
+
+export interface ElementaryRecentActivity {
+  type: string;
+  description: string;
+  created_at: string;
+  metadata: {
+    role?: string;
+    [key: string]: any;
+  };
+}
+
+export interface ElementaryContinueLearningItem {
+  id?: number;
+  name?: string;
+  subject?: string;
+  [key: string]: any;
+}
+
+export interface ElementaryDashboardResponse {
+  lessons_completed: number;
+  streaks_this_week: number;
+  current_level: string;
+  points_earned: number;
+  todays_challenges: ElementaryTodayChallenge[];
+  continue_learning: ElementaryContinueLearningItem[];
+  recent_activities: ElementaryRecentActivity[];
+}
+
+export async function getElementaryDashboard(token: string): Promise<ElementaryDashboardResponse> {
+  return apiRequest<ElementaryDashboardResponse>('/kids/dashboard/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  });
+}
+
+export interface ElementarySubject {
+  id: number;
+  name: string;
+  grade: string;
+}
+
+export interface ElementaryLesson {
+  id: number;
+  title: string;
+  subject_id: number;
+  subject_name: string;
+}
+
+export interface ElementarySubjectsAndLessonsResponse {
+  subjects: ElementarySubject[];
+  lessons: ElementaryLesson[];
+}
+
+export async function getElementarySubjectsAndLessons(token: string): Promise<ElementarySubjectsAndLessonsResponse> {
+  return apiRequest<ElementarySubjectsAndLessonsResponse>('/kids/subjectsandlessons/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,
