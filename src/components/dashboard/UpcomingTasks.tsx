@@ -33,17 +33,17 @@ export default function UpcomingTasks({ title, tasks }: UpcomingTasksProps) {
       <div className="space-y-3">
         {tasks.length > 0 ? (
           tasks.map((task) => (
-            <div key={task.id} className="flex items-center space-x-3">
-              <div className={`w-3 h-3 rounded-full ${getPriorityColor(task.priority)}`}></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {task.title}
-                </p>
-                <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {task.dueDate}
-                </p>
-              </div>
+          <div key={task.id} className="flex items-center space-x-3">
+            <div className={`w-3 h-3 rounded-full ${getPriorityColor(task.priority)}`}></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {task.title}
+              </p>
+              <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {task.dueDate}
+              </p>
             </div>
+          </div>
           ))
         ) : (
           <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
