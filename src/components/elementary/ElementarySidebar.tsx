@@ -30,10 +30,10 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
       hoverColor: 'hover:opacity-90'
     },
     {
-      id: 'quizzes',
+      id: 'games',
       title: 'Fun & Games',
       icon: '⭐',
-      href: '/quizzes',
+      href: '/games',
       bgColor: 'bg-[#FEF9C3]',
       hoverColor: 'hover:opacity-90'
     },
@@ -123,7 +123,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
                     </div>
                     <span className="text-[18px] font-semibold text-[#B91C1C]">{item.title}</span>
                   </div>
-                ) : item.id === 'quizzes' ? (
+                ) : item.id === 'games' ? (
                   <div className="flex items-center">
                     <div className="w-10 h-10 bg-[#FACC15] rounded-full flex items-center justify-center mr-4">
                       <Image
@@ -133,7 +133,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
                         height={16}
                       />
                     </div>
-                    <span className="text-[18px] font-semibold text-[#A16207]">{item.title}</span>
+                    <span className="text-[18px] font-semibold text-[#78350F]">{item.title}</span>
                   </div>
                 ) : item.id === 'progress' ? (
                   <div className="flex items-center">

@@ -96,7 +96,7 @@ const mapGameToCard = (game: Game): GameCard => {
   };
 };
 
-export default function QuizzesPage() {
+export default function GamesPage() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -422,7 +422,7 @@ export default function QuizzesPage() {
     <div className="min-h-screen">
       <ElementaryNavbar onMenuToggle={handleMenuToggle} />
       <div className="flex">
-        <ElementarySidebar activeItem="quizzes" isMobileMenuOpen={isMobileMenuOpen} onMobileMenuClose={handleMenuClose} />
+        <ElementarySidebar activeItem="games" isMobileMenuOpen={isMobileMenuOpen} onMobileMenuClose={handleMenuClose} />
 
         <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
           <div className="p-4 lg:p-8">
@@ -446,6 +446,21 @@ export default function QuizzesPage() {
                         onClick={() => handleGameClick(game)}
                       >
                         <div className="relative h-32 sm:h-36 lg:h-40 bg-linear-to-br from-gray-50 via-gray-100 to-gray-200 overflow-hidden">
+                          {game.image ? (
+                            <Image
+                              src={game.image}
+                              alt={game.title}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <div className={`w-16 h-16 rounded-full ${game.iconBgColor} flex items-center justify-center`}>
+                                <Icon icon={game.icon} className="text-gray-700" width={32} height={32} />
+                              </div>
+                            </div>
+                          )}
                         </div>
                         <div className="p-4 sm:p-5">
                           <div className="flex items-start gap-3 mb-4">
@@ -563,7 +578,7 @@ export default function QuizzesPage() {
                             <Spinner size="lg" />
                           </div>
                         ) : (
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center w-full">
                           <div className="mb-4">
                             {currentGameDetails?.image ? (
                             <div className="w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] rounded-xl overflow-hidden shadow">
@@ -586,7 +601,7 @@ export default function QuizzesPage() {
                           </div>
 
                           {/* Drop slots */}
-                          <div className="flex items-center gap-2 sm:gap-3 mb-6 flex-wrap justify-center">
+                          <div className="w-full flex items-center justify-center gap-2 sm:gap-3 mb-6 flex-wrap">
                             {slots.map((s, idx) => (
                               <div
                                 key={idx}
@@ -614,7 +629,7 @@ export default function QuizzesPage() {
 
                           {/* Pool */}
                           <div
-                            className="flex flex-wrap items-center gap-2 sm:gap-4 mb-6 min-h-[72px] w-full border-2 border-dashed border-transparent hover:border-[#C7D2FE] rounded-2xl bg-white/60 transition"
+                            className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 min-h-[72px] w-full border-2 border-dashed border-transparent hover:border-[#C7D2FE] rounded-2xl bg-white/60 transition px-4 py-2"
                             onDrop={handleDropBackToPool}
                             onDragOver={handleAllowDrop}
                           >
@@ -759,6 +774,4 @@ export default function QuizzesPage() {
     </div>
   );
 }
-
-
 
