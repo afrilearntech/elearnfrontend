@@ -31,7 +31,7 @@ export interface SchoolsResponse {
 }
 
 export async function getDistricts(token: string): Promise<DistrictsResponse> {
-  return apiRequest<DistrictsResponse>('/api-v1/lookup/districts/', {
+  return apiRequest<DistrictsResponse>('/lookup/districts/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,
@@ -40,7 +40,7 @@ export async function getDistricts(token: string): Promise<DistrictsResponse> {
 }
 
 export async function getSchools(token: string, districtId?: number): Promise<SchoolsResponse> {
-  const response = await apiRequest<SchoolsResponse>('/api-v1/lookup/schools/', {
+  const response = await apiRequest<SchoolsResponse>('/lookup/schools/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,

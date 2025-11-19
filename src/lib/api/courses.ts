@@ -8,7 +8,7 @@ export interface StudyStatsResponse {
 }
 
 export async function getStudyStats(token: string): Promise<StudyStatsResponse> {
-  return apiRequest<StudyStatsResponse>('/api-v1/dashboard/studystats/', {
+  return apiRequest<StudyStatsResponse>('/dashboard/studystats/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,
@@ -29,7 +29,7 @@ export interface MySubject {
 }
 
 export async function getMySubjects(token: string): Promise<MySubject[]> {
-  return apiRequest<MySubject[]>('/api-v1/subjects/mysubjects/', {
+  return apiRequest<MySubject[]>('/subjects/mysubjects/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,
@@ -47,7 +47,7 @@ export interface AssignmentDue {
 }
 
 export async function getAssignmentsDue(token: string): Promise<AssignmentDue[]> {
-  return apiRequest<AssignmentDue[]>('/api-v1/dashboard/assignmentsdue/', {
+  return apiRequest<AssignmentDue[]>('/dashboard/assignmentsdue/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,
@@ -80,7 +80,7 @@ export async function getSubjects(
   }
   
   const queryString = queryParams.toString();
-  const endpoint = `/api-v1/subjects/${queryString ? `?${queryString}` : ''}`;
+  const endpoint = `/subjects/${queryString ? `?${queryString}` : ''}`;
   
   return apiRequest<Subject[]>(endpoint, {
     method: 'GET',

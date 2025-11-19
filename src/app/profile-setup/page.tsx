@@ -95,7 +95,7 @@ export default function ProfileSetup() {
       showSuccessToast('🎉 Profile setup successful! Redirecting to next step...');
       
       setTimeout(() => {
-        router.push('/who-are-you');
+    router.push('/who-are-you');
       }, 1500);
     } catch (error: unknown) {
       if (error instanceof ApiClientError) {

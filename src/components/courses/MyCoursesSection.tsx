@@ -79,35 +79,35 @@ export function MyCoursesSection({
             const progress = course.progress || 0;
             const icon = course.icon || getInitials(courseName);
             
-            return (
-              <div key={course.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                <div className={`w-16 h-16 ${colors.bg} rounded-lg flex items-center justify-center text-white font-bold text-xl mr-4`}>
+          return (
+            <div key={course.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+              <div className={`w-16 h-16 ${colors.bg} rounded-lg flex items-center justify-center text-white font-bold text-xl mr-4`}>
                   {icon}
-                </div>
-                
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {courseName}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {course.grade} • {teacherCount} {teacherCount === 1 ? 'Teacher' : 'Teachers'}
-                  </p>
-                  <div className="flex items-center">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
-                      <div 
-                        className={`h-2 rounded-full ${colors.progress}`}
-                        style={{ width: `${progress}%` }}
-                      ></div>
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">{progress}%</span>
-                  </div>
-                </div>
-                
-                <button className={`px-4 py-2 text-white rounded-lg font-medium ${colors.button} transition-colors`}>
-                  Continue
-                </button>
               </div>
-            );
+              
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {courseName}
+                </h3>
+                <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    {course.grade} • {teacherCount} {teacherCount === 1 ? 'Teacher' : 'Teachers'}
+                </p>
+                <div className="flex items-center">
+                  <div className="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                    <div 
+                      className={`h-2 rounded-full ${colors.progress}`}
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                    <span className="text-sm font-medium text-gray-700">{progress}%</span>
+                </div>
+              </div>
+              
+              <button className={`px-4 py-2 text-white rounded-lg font-medium ${colors.button} transition-colors`}>
+                Continue
+              </button>
+            </div>
+          );
           })
         ) : (
           <div className="text-center py-8">

@@ -31,7 +31,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
     },
     {
       id: 'quizzes',
-      title: 'Quizzes & Games',
+      title: 'Fun & Games',
       icon: '⭐',
       href: '/quizzes',
       bgColor: 'bg-[#FEF9C3]',

@@ -26,13 +26,13 @@ export default function SubjectLessonDetail() {
       <div className="flex">
         <ElementarySidebar activeItem="subjects" isMobileMenuOpen={isMobileMenuOpen} onMobileMenuClose={handleMenuClose} />
 
-        <main className="flex-1 bg-gradient-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE]">
+        <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
           <div className="p-4 lg:p-8">
             {/* Header progress card */}
-            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 ml-4 lg:ml-8 mr-4 lg:mr-8 h-auto lg:h-[187px] flex flex-col justify-between border" style={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}>
+            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:mx-8 mx-4 h-auto lg:h-[187px] flex flex-col justify-between border" style={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center space-x-3">
-                  <div className="w-[55px] h-[60px] rounded-lg bg-gradient-to-r from-[#3B82F6] to-[#10B981] flex items-center justify-center">
+                  <div className="w-[55px] h-[60px] rounded-lg bg-linear-to-r from-[#3B82F6] to-[#10B981] flex items-center justify-center">
                     <Image src="/settings.png" alt="settings" width={27} height={32} />
                   </div>
                   <div>
@@ -50,17 +50,17 @@ export default function SubjectLessonDetail() {
               </div>
               <div className="mt-3">
                 <div className="h-[13px] w-full bg-gray-200 rounded-full">
-                  <div className="h-[13px] rounded-full bg-gradient-to-r from-[#10B981] to-[#3B82F6]" style={{ width: '40%' }}></div>
+                  <div className="h-[13px] rounded-full bg-linear-to-r from-[#10B981] to-[#3B82F6]" style={{ width: '40%' }}></div>
                 </div>
                 <div className="text-[12px] text-[#4B5563] mt-1 text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>3 of 8 lessons completed</div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-6 ml-4 lg:ml-8 mr-4 lg:mr-8">
+            <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-6 sm:mx-8 mx-4">
               {/* Main video/content */}
               <div>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                  <div className="px-6 py-3 bg-gradient-to-r from-[#EC4899] to-[#6366F1] text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <div className="px-6 py-3 bg-linear-to-r from-[#EC4899] to-[#6366F1] text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     <div className="text-[16px] font-semibold">Watch & Learn!</div>
                     <div className="text-[12px] opacity-90">Get ready for an exciting science experiment!</div>
                   </div>
@@ -94,10 +94,10 @@ export default function SubjectLessonDetail() {
                       This video takes us inside a science lab. We will see tools like test tubes, beakers, and microscopes. We learn what scientists do in the lab, how they mix liquids, and how to stay safe by wearing gloves and coats. It’s a fun way to see how science helps us learn new things!
                     </p>
                     <div className="flex items-center gap-4 mt-4">
-                      <button className="flex-1 h-10 rounded-lg bg-gradient-to-r from-[#10B981] to-[#3B82F6] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <button className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#10B981] to-[#3B82F6] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                         <Icon icon="mdi:chevron-right-circle" /> Next Lesson
                       </button>
-                      <button className="flex-1 h-10 rounded-lg bg-gradient-to-r from-[#FB923C] to-[#EF4444] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <button className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#FB923C] to-[#EF4444] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                         <Icon icon="mdi:clipboard-text" /> Try Quiz
                       </button>
                     </div>

@@ -27,34 +27,34 @@ export default function ActivityFeed({ title, activities }: ActivityFeedProps) {
       <div className="space-y-4">
         {activities.length > 0 ? (
           activities.map((activity) => (
-            <div key={activity.id} className="flex items-start space-x-3">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                activity.iconColor || 'bg-green-100'
-              }`}>
-                <Icon 
-                  icon={activity.icon} 
-                  className={`w-4 h-4 ${
-                    activity.iconColor === 'bg-blue-100' ? 'text-blue-600' :
-                    activity.iconColor === 'bg-yellow-100' ? 'text-yellow-600' :
-                    activity.iconColor === 'bg-purple-100' ? 'text-purple-600' :
-                    'text-green-600'
-                  }`} 
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {activity.title}
-                </p>
-                <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {activity.subtitle ? `${activity.subtitle} • ${activity.timestamp}` : activity.timestamp}
-                </p>
-              </div>
-              {activity.points && (
-                <span className="text-xs font-semibold text-green-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  +{activity.points} points
-                </span>
-              )}
+          <div key={activity.id} className="flex items-start space-x-3">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+              activity.iconColor || 'bg-green-100'
+            }`}>
+              <Icon 
+                icon={activity.icon} 
+                className={`w-4 h-4 ${
+                  activity.iconColor === 'bg-blue-100' ? 'text-blue-600' :
+                  activity.iconColor === 'bg-yellow-100' ? 'text-yellow-600' :
+                  activity.iconColor === 'bg-purple-100' ? 'text-purple-600' :
+                  'text-green-600'
+                }`} 
+              />
             </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {activity.title}
+              </p>
+              <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  {activity.subtitle ? `${activity.subtitle} • ${activity.timestamp}` : activity.timestamp}
+              </p>
+            </div>
+            {activity.points && (
+              <span className="text-xs font-semibold text-green-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                +{activity.points} points
+              </span>
+            )}
+          </div>
           ))
         ) : (
           <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
