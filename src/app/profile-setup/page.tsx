@@ -134,18 +134,32 @@ export default function ProfileSetup() {
     <div className="min-h-screen bg-linear-to-r from-[#EFF6FF] to-[#F0FDF4] flex items-center justify-center p-4">
       <div className="w-full max-w-[742px] h-[811px] sm:h-[811px] bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col">
         <div className="bg-linear-to-r from-[#1E40AF] to-[#059669] p-6 text-white">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white/20 border border-[#E5E7EB] rounded-full flex items-center justify-center">
-              <Icon icon="material-symbols:person" className="w-8 h-8 text-white" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-12 h-12 bg-white/20 border border-[#E5E7EB] rounded-full flex items-center justify-center">
+                <Icon icon="material-symbols:person" className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Profile Setup
+                </h1>
+                <p className="text-sm opacity-90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Step 1 of 3 - Secure your account
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Profile Setup
-              </h1>
-              <p className="text-sm opacity-90" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Step 1 of 3 - Secure your account
-              </p>
-            </div>
+            
+            {/* Back Button */}
+            <button
+              type="button"
+              onClick={() => router.push('/sign-in')}
+              className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+              aria-label="Go back to sign in"
+            >
+              <Icon icon="mdi:arrow-left" className="w-5 h-5 text-white" />
+              <span className="text-sm font-medium text-white hidden sm:inline">Back</span>
+            </button>
           </div>
           
           <div className="w-full bg-white/20 rounded-full h-2">

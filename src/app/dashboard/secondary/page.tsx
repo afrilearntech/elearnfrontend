@@ -1,12 +1,13 @@
 'use client';
 
+import ComingSoon from '@/components/ui/ComingSoon';
+
 export default function SecondaryDashboard() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Secondary Dashboard</h1>
-        <p className="text-gray-600">Coming soon...</p>
-      </div>
-    </div>
+    <ComingSoon 
+      title="Secondary Dashboard 🎓"
+      description="Your secondary school dashboard is being prepared. Check back soon!"
+      illustration="rocket"
+    />
   );
 }
