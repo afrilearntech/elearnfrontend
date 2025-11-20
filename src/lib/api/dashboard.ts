@@ -135,3 +135,23 @@ export async function getElementarySubjectsAndLessons(token: string): Promise<El
   });
 }
 
+export interface KidsAssignment {
+  id: number;
+  title: string;
+  type: string;
+  due_at: string;
+}
+
+export interface KidsAssignmentsResponse {
+  assignments: KidsAssignment[];
+}
+
+export async function getKidsAssignments(token: string): Promise<KidsAssignmentsResponse> {
+  return apiRequest<KidsAssignmentsResponse>('/kids/assignments/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  });
+}
+
