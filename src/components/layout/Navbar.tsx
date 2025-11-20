@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
@@ -23,7 +24,19 @@ export default function Navbar({
   messages = 0,
   activeLink = 'dashboard'
 }: NavbarProps) {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+    // Clear all authentication data
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('user_grade');
+    }
+    // Redirect to login
+    router.push('/login');
+  };
 
   const navigationLinks = [
     { href: '/dashboard', label: 'Dashboard', key: 'dashboard' },
@@ -118,6 +131,17 @@ export default function Navbar({
               </div>
               <Icon icon="material-symbols:keyboard-arrow-down" className="w-4 h-4 text-gray-600" />
             </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-200 font-medium text-sm"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+              aria-label="Logout"
+            >
+              <Icon icon="mdi:logout" className="w-5 h-5" />
+              <span>Logout</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -172,6 +196,18 @@ export default function Navbar({
                   {link.label}
                 </Link>
               ))}
+              {/* Mobile Logout Button */}
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-2 py-3 px-3 text-base font-medium rounded-lg transition-colors bg-red-500 hover:bg-red-600 text-white mt-2"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Icon icon="mdi:logout" className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
             </div>
           </div>
         </div>
