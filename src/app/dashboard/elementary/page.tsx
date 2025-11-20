@@ -84,15 +84,15 @@ export default function ElementaryDashboard() {
           onMobileMenuClose={handleMenuClose}
         />
         
-        <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
-          <div className="p-4 lg:p-8">
+        <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px] overflow-x-hidden">
+          <div className="p-4 lg:p-8 max-w-full">
             {/* Welcome Banner */}
-            <div className="bg-white/60 rounded-2xl shadow-lg h-[140px] mt-8 sm:mx-8 mx-4">
+            <div className="bg-white/60 rounded-2xl shadow-lg h-[140px] mt-8 sm:mx-8 mx-4 w-full max-w-full overflow-hidden">
               <div className="h-full flex flex-col justify-center px-6 sm:px-8">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Welcome back, {user?.name || 'Student'}! ✨
                 </h1>
-                <p className="text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Ready for another magical learning adventure?
                 </p>
               </div>
@@ -142,7 +142,7 @@ export default function ElementaryDashboard() {
               />
             </div>
 
-            <div className="flex flex-col lg:flex-row lg:gap-[24px] mt-8 sm:mx-8 mx-4">
+            <div className="flex flex-col lg:flex-row lg:gap-[24px] mt-8 sm:mx-8 mx-4 w-full max-w-full">
               {/* Continue Learning Section */}
               <ContinueLearningSection 
                 modules={dashboardData?.continue_learning && dashboardData.continue_learning.length > 0

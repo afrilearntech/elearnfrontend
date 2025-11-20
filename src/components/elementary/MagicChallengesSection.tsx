@@ -80,7 +80,7 @@ export default function MagicChallengesSection({
                   : index === 2
                   ? 'bg-gradient-to-r from-[#FFEDD5] to-[#FEF9C3]'
                   : challenge.iconBgColor
-              } rounded-lg ${index === 0 ? 'px-4 py-2 flex items-center' : 'p-4'} w-full lg:w-[498px] h-auto lg:h-[60px]`}
+              } rounded-lg ${index === 0 ? 'px-4 py-2 flex items-center' : 'p-4'} w-full max-w-full h-auto lg:h-[60px]`}
             >
               <div className="flex items-center justify-between w-full h-full">
                 <div className="flex items-center space-x-4">
