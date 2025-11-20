@@ -57,7 +57,7 @@ export default function ContinueLearningSection({
               : module.bgColor;
 
             return (
-              <div key={index} className={`${cardBgClass} rounded-lg p-4 w-full lg:w-[500px] h-auto lg:h-[80px]`}>
+              <div key={index} className={`${cardBgClass} rounded-lg p-4 w-full max-w-full h-auto lg:h-[80px]`}>
                 <div className="flex items-center justify-between h-full">
                   <div className="flex items-center space-x-4">
                     <div className={`${index === 0 ? 'w-12 h-12 rounded-full bg-[#F87171]' : index === 1 ? 'w-12 h-12 rounded-full bg-[#60A5FA]' : 'w-14 h-14 lg:w-16 lg:h-16 rounded-lg ' + module.iconBgColor} flex items-center justify-center shrink-0`}>

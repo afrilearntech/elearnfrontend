@@ -58,31 +58,31 @@ export default function ElementaryStatsCards({
   ]
 }: ElementaryStatsCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-[24px] mt-8 mx-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-[24px] mt-8 w-full">
       {stats.map((stat, index) => (
-        <Card key={index} className={`${stat.bgClass || stat.bgColor} border-0 shadow-md w-full lg:min-w-0 h-auto lg:h-[108px] rounded-4xl`} padding="md">
-          <div className="flex items-start justify-between h-full">
-            <div className="flex-1">
+        <Card key={index} className={`${stat.bgClass || stat.bgColor} border-0 shadow-md w-full min-w-0 h-auto lg:h-[108px] rounded-4xl overflow-hidden`} padding="md">
+          <div className="flex items-start justify-between h-full gap-2">
+            <div className="flex-1 min-w-0">
               <h3 
-                className={index <= 3 ? 'mb-2' : 'text-sm lg:text-base text-gray-600 mb-2'}
+                className={index <= 3 ? 'mb-2 truncate' : 'text-sm lg:text-base text-gray-600 mb-2 truncate'}
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
-                  ...(index === 0 && { fontSize: '16px', color: '#DBEAFE' }),
-                  ...(index === 1 && { fontSize: '16px', color: '#FEF9C3' }),
-                  ...(index === 2 && { fontSize: '16px', color: '#DCFCE7' }),
-                  ...(index === 3 && { fontSize: '16px', color: '#F3E8FF' })
+                  ...(index === 0 && { fontSize: '14px', color: '#DBEAFE' }),
+                  ...(index === 1 && { fontSize: '14px', color: '#FEF9C3' }),
+                  ...(index === 2 && { fontSize: '14px', color: '#DCFCE7' }),
+                  ...(index === 3 && { fontSize: '14px', color: '#F3E8FF' })
                 }}
               >
                 {stat.title}
               </h3>
               <p 
-                className={index <= 3 ? '' : 'text-2xl lg:text-3xl font-bold text-gray-900'}
+                className={index <= 3 ? 'truncate' : 'text-2xl lg:text-3xl font-bold text-gray-900 truncate'}
                 style={{ 
                   fontFamily: 'Poppins, sans-serif',
-                  ...(index === 0 && { fontSize: '30px', fontWeight: 'bold', color: '#FFFFFF' }),
-                  ...(index === 1 && { fontSize: '30px', fontWeight: 'bold', color: '#FFFFFF' }),
-                  ...(index === 2 && { fontSize: '30px', fontWeight: 'bold', color: '#FFFFFF' }),
-                  ...(index === 3 && { fontSize: '30px', fontWeight: 'bold', color: '#FFFFFF' })
+                  ...(index === 0 && { fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 'bold', color: '#FFFFFF' }),
+                  ...(index === 1 && { fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 'bold', color: '#FFFFFF' }),
+                  ...(index === 2 && { fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 'bold', color: '#FFFFFF' }),
+                  ...(index === 3 && { fontSize: 'clamp(18px, 3.5vw, 24px)', fontWeight: 'bold', color: '#FFFFFF' })
                 }}
               >
                 {stat.value}
@@ -94,7 +94,7 @@ export default function ElementaryStatsCards({
                 alt={stat.title}
                 width={36}
                 height={40}
-                className="object-contain shrink-0"
+                className="object-contain shrink-0 w-9 h-10"
               />
             ) : index === 1 ? (
               <Image
@@ -102,7 +102,7 @@ export default function ElementaryStatsCards({
                 alt={stat.title}
                 width={40}
                 height={40}
-                className="object-contain shrink-0"
+                className="object-contain shrink-0 w-10 h-10"
               />
             ) : index === 2 ? (
               <Image
@@ -110,7 +110,7 @@ export default function ElementaryStatsCards({
                 alt={stat.title}
                 width={31}
                 height={40}
-                className="object-contain shrink-0"
+                className="object-contain shrink-0 w-8 h-10"
               />
             ) : index === 3 ? (
               <Image
@@ -118,7 +118,7 @@ export default function ElementaryStatsCards({
                 alt={stat.title}
                 width={40}
                 height={40}
-                className="object-contain shrink-0"
+                className="object-contain shrink-0 w-10 h-10"
               />
             ) : (
               <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-lg ${stat.iconBgColor} flex items-center justify-center shrink-0`}>

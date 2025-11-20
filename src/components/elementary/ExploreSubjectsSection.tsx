@@ -45,11 +45,11 @@ export default function ExploreSubjectsSection({
   ]
 }: ExploreSubjectsSectionProps) {
   return (
-    <div className="mt-8 mx-8">
+    <div className="mt-8 w-full">
       <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
         Explore Magical Subjects
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 w-full">
         {subjects.map((subject, index) => (
           <Card
             key={index}

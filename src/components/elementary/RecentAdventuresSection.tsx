@@ -53,8 +53,8 @@ export default function RecentAdventuresSection({
   activities = []
 }: RecentAdventuresSectionProps) {
   return (
-    <div className="mt-8 mx-8 mb-8">
-      <div className="bg-white/60 rounded-lg shadow-md py-6 px-8">
+    <div className="mt-8 w-full mb-8">
+      <div className="bg-white/60 rounded-lg shadow-md py-6 px-4 sm:px-8 w-full max-w-full overflow-hidden">
         <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Recent Activities
         </h2>
@@ -90,9 +90,9 @@ export default function RecentAdventuresSection({
                         />
                       </div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h3
-                        className={`${isFirst ? 'text-[16px] font-semibold text-[#A16207]' : isSecond ? 'text-[16px] font-semibold text-[#15803D]' : 'text-base lg:text-lg font-medium text-gray-900'} mb-1`}
+                        className={`${isFirst ? 'text-[16px] font-semibold text-[#A16207]' : isSecond ? 'text-[16px] font-semibold text-[#15803D]' : 'text-base lg:text-lg font-medium text-gray-900'} mb-1 truncate`}
                         style={{ fontFamily: 'Poppins, sans-serif' }}
                       >
                         {activity.description}
