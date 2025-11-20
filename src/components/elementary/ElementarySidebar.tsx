@@ -47,7 +47,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
     },
     {
       id: 'funzone',
-      title: 'Fun Zone',
+      title: 'Grades',
       icon: '✏️',
       href: '/funzone',
       bgColor: 'bg-[#FCE7F3]',
@@ -55,9 +55,9 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
     },
     {
       id: 'resources',
-      title: 'Resources',
+      title: 'My Assignments',
       icon: '📄',
-      href: '/resources',
+      href: '/assignments',
       bgColor: 'bg-[#E0E7FF]',
       hoverColor: 'hover:opacity-90'
     },
