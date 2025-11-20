@@ -10,6 +10,7 @@ export interface LessonDetail {
   type: string;
   status: string;
   resource: string | null;
+  thumbnail: string | null;
   created_by: number;
   duration_minutes: number;
   created_at: string;
