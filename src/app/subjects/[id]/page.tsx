@@ -12,6 +12,36 @@ import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
 
+function VideoThumbnail({ 
+  thumbnail, 
+  fallbackSrc, 
+  alt 
+}: { 
+  thumbnail: string | null | undefined; 
+  fallbackSrc: string; 
+  alt: string;
+}) {
+  const [useFallback, setUseFallback] = useState(!thumbnail);
+
+  if (!thumbnail) {
+    return <Image src={fallbackSrc} alt={alt} fill className="object-cover" />;
+  }
+
+  if (useFallback) {
+    return <Image src={fallbackSrc} alt={alt} fill className="object-cover" />;
+  }
+
+  return (
+    <Image 
+      src={thumbnail} 
+      alt={alt} 
+      fill 
+      className="object-cover"
+      onError={() => setUseFallback(true)}
+    />
+  );
+}
+
 export default function SubjectLessonDetail() {
   const router = useRouter();
   const params = useParams();
@@ -24,7 +54,6 @@ export default function SubjectLessonDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [lesson, setLesson] = useState<LessonDetail | null>(null);
   
-  // Fallback video sources
   const fallbackVideoSources = [
     '/__mocks__/Addition using sets.mp4',
     '/__mocks__/Addition using sets 2.mp4',
@@ -32,8 +61,11 @@ export default function SubjectLessonDetail() {
     '/__mocks__/Dis Joint Sets 2.mp4',
   ];
   
-  // Determine video source: API resource first, then fallback
+  const fallbackThumbnail = '/grade3.png';
+  
   const videoSrc = lesson?.resource || fallbackVideoSources[0];
+  
+  const thumbnailSrc = lesson?.thumbnail || fallbackThumbnail;
 
   useEffect(() => {
     const fetchLessonData = async () => {
@@ -59,7 +91,6 @@ export default function SubjectLessonDetail() {
           ? error.message
           : 'Failed to load lesson';
         showErrorToast(formatErrorMessage(errorMessage));
-        // Still show the page with fallback data
       } finally {
         setIsLoading(false);
       }
@@ -155,7 +186,11 @@ export default function SubjectLessonDetail() {
                       />
                     ) : (
                       <>
-                        <Image src="/grade3.png" alt="lesson" fill className="object-cover" />
+                        <VideoThumbnail 
+                          thumbnail={lesson?.thumbnail} 
+                          fallbackSrc={fallbackThumbnail}
+                          alt={lesson?.title || 'Lesson thumbnail'}
+                        />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <button
                             type="button"

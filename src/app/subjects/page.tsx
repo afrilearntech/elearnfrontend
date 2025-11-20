@@ -12,6 +12,46 @@ import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
 
+function LessonThumbnail({ 
+  thumbnail, 
+  fallbackSrc, 
+  alt 
+}: { 
+  thumbnail: string | null; 
+  fallbackSrc: string; 
+  alt: string;
+}) {
+  const [imgSrc, setImgSrc] = useState(thumbnail || fallbackSrc);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    if (thumbnail) {
+      setImgSrc(thumbnail);
+      setHasError(false);
+    } else {
+      setImgSrc(fallbackSrc);
+    }
+  }, [thumbnail, fallbackSrc]);
+
+  const handleError = () => {
+    if (!hasError && thumbnail) {
+      setHasError(true);
+      setImgSrc(fallbackSrc);
+    }
+  };
+
+  return (
+    <Image 
+      src={imgSrc} 
+      alt={alt} 
+      fill 
+      className="object-cover"
+      unoptimized={hasError || !thumbnail}
+      onError={handleError}
+    />
+  );
+}
+
 const borderColors = [
   'border-[#60A5FA]',
   'border-[#F472B6]',
@@ -179,13 +219,17 @@ export default function SubjectsLessonsPage() {
                 filteredLessons.map((lesson, index) => {
                   const borderColor = getBorderColor(index);
                   const playColor = getPlayColor(index);
-                  const imageSrc = getFallbackImage(index);
+                  const fallbackImage = getFallbackImage(index);
 
                   return (
                     <Link href={`/subjects/${lesson.id}`} key={lesson.id} className={`bg-white rounded-xl shadow-md overflow-hidden border ${borderColor}`}>
                   {/* Thumbnail */}
                   <div className="relative h-[160px] w-full">
-                        <Image src={imageSrc} alt={lesson.title} fill className="object-cover" />
+                        <LessonThumbnail 
+                          thumbnail={lesson.thumbnail} 
+                          fallbackSrc={fallbackImage}
+                          alt={lesson.title}
+                        />
                         <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow">

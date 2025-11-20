@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
@@ -12,7 +13,7 @@ import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
 
 interface AssignmentCard extends KidsAssignment {
-  status: 'pending' | 'due_soon' | 'overdue' | 'completed';
+  displayStatus: 'pending' | 'due_soon' | 'overdue' | 'submitted';
   daysUntilDue: number;
   bgColor: string;
   borderColor: string;
@@ -22,6 +23,7 @@ interface AssignmentCard extends KidsAssignment {
   badgeColor: string;
   badgeText: string;
   titleColor: string;
+  isSubmitted: boolean;
 }
 
 const calculateDaysUntilDue = (dueDateString: string): number => {
@@ -35,15 +37,33 @@ const calculateDaysUntilDue = (dueDateString: string): number => {
 };
 
 const getStatusConfig = (assignment: KidsAssignment) => {
+  const isSubmitted = assignment.status?.toLowerCase() === 'submitted';
+  
+  if (isSubmitted) {
+    return {
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+      iconBg: 'bg-green-100',
+      icon: 'mdi:check-circle-outline',
+      iconColor: '#22C55E',
+      badgeColor: 'bg-green-100 text-green-700',
+      badgeText: 'Submitted',
+      titleColor: 'text-green-900',
+      displayStatus: 'submitted' as const,
+      daysUntilDue: calculateDaysUntilDue(assignment.due_at),
+      isSubmitted: true,
+    };
+  }
+
   const daysUntilDue = calculateDaysUntilDue(assignment.due_at);
-  let status: 'pending' | 'due_soon' | 'overdue' | 'completed' = 'pending';
+  let displayStatus: 'pending' | 'due_soon' | 'overdue' = 'pending';
   
   if (daysUntilDue < 0) {
-    status = 'overdue';
+    displayStatus = 'overdue';
   } else if (daysUntilDue === 0) {
-    status = 'due_soon';
+    displayStatus = 'due_soon';
   } else if (daysUntilDue <= 3) {
-    status = 'due_soon';
+    displayStatus = 'due_soon';
   }
 
   const configs = {
@@ -54,7 +74,7 @@ const getStatusConfig = (assignment: KidsAssignment) => {
       icon: 'mdi:clipboard-text-outline',
       iconColor: '#3B82F6',
       badgeColor: 'bg-blue-100 text-blue-700',
-      badgeText: 'Coming Soon',
+      badgeText: 'Not Submitted',
       titleColor: 'text-blue-900',
     },
     due_soon: {
@@ -77,19 +97,9 @@ const getStatusConfig = (assignment: KidsAssignment) => {
       badgeText: 'Overdue',
       titleColor: 'text-red-900',
     },
-    completed: {
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      iconBg: 'bg-green-100',
-      icon: 'mdi:check-circle-outline',
-      iconColor: '#22C55E',
-      badgeColor: 'bg-green-100 text-green-700',
-      badgeText: 'Completed! 🎉',
-      titleColor: 'text-green-900',
-    },
   };
 
-  return { ...configs[status], status, daysUntilDue };
+  return { ...configs[displayStatus], displayStatus, daysUntilDue, isSubmitted: false };
 };
 
 const getSubjectIcon = (assignmentType: string, title: string): string => {
@@ -138,7 +148,14 @@ export default function MyAssignmentsPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [assignments, setAssignments] = useState<AssignmentCard[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'due_soon' | 'overdue' | 'completed'>('all');
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    due_soon: 0,
+    overdue: 0,
+    submitted: 0,
+  });
+  const [filter, setFilter] = useState<'all' | 'pending' | 'due_soon' | 'overdue' | 'submitted'>('all');
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -159,6 +176,16 @@ export default function MyAssignmentsPage() {
           };
         });
         setAssignments(assignmentsWithStatus);
+        // Use stats from API response
+        if (data.stats) {
+          setStats({
+            total: data.stats.total || 0,
+            pending: data.stats.pending || 0,
+            due_soon: data.stats.due_soon || 0,
+            overdue: data.stats.overdue || 0,
+            submitted: data.stats.submitted || 0,
+          });
+        }
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message
@@ -172,6 +199,19 @@ export default function MyAssignmentsPage() {
     };
 
     fetchAssignments();
+    
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchAssignments();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [router]);
 
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -179,15 +219,9 @@ export default function MyAssignmentsPage() {
 
   const filteredAssignments = filter === 'all'
     ? assignments
-    : assignments.filter((assignment) => assignment.status === filter);
-
-  const stats = {
-    total: assignments.length,
-    pending: assignments.filter((a) => a.status === 'pending').length,
-    dueSoon: assignments.filter((a) => a.status === 'due_soon').length,
-    overdue: assignments.filter((a) => a.status === 'overdue').length,
-    completed: assignments.filter((a) => a.status === 'completed').length,
-  };
+    : filter === 'submitted'
+    ? assignments.filter((assignment) => assignment.isSubmitted)
+    : assignments.filter((assignment) => !assignment.isSubmitted && assignment.displayStatus === filter);
 
   if (isLoading) {
     return (
@@ -241,7 +275,7 @@ export default function MyAssignmentsPage() {
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-orange-200 min-w-0">
                 <div className="text-center">
                   <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {stats.dueSoon}
+                    {stats.due_soon}
                   </p>
                   <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Due Soon</p>
                 </div>
@@ -257,9 +291,9 @@ export default function MyAssignmentsPage() {
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-green-200 col-span-2 sm:col-span-1 min-w-0">
                 <div className="text-center">
                   <p className="text-xl sm:text-2xl font-bold text-green-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {stats.completed}
+                    {stats.submitted}
                   </p>
-                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Completed</p>
+                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Submitted</p>
                 </div>
               </div>
             </div>
@@ -317,16 +351,16 @@ export default function MyAssignmentsPage() {
                 Overdue
               </button>
               <button
-                onClick={() => setFilter('completed')}
+                onClick={() => setFilter('submitted')}
                 className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap ${
-                  filter === 'completed'
+                  filter === 'submitted'
                     ? 'bg-green-500 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <Icon icon="mdi:check-circle-outline" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
-                Completed
+                Submitted
               </button>
             </div>
 
@@ -337,9 +371,10 @@ export default function MyAssignmentsPage() {
                   const subjectIcon = getSubjectIcon(assignment.type, assignment.title);
                   
                   return (
-                    <div
+                    <Link
+                      href={`/assignments/${assignment.id}`}
                       key={assignment.id}
-                      className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assignment.borderColor} transition-transform hover:scale-105 hover:shadow-xl w-full max-w-full`}
+                      className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assignment.borderColor} transition-transform hover:scale-105 hover:shadow-xl w-full max-w-full block cursor-pointer`}
                     >
                       {/* Card Header with Gradient */}
                       <div className={`${assignment.bgColor} p-4 sm:p-5 border-b-2 ${assignment.borderColor}`}>
@@ -383,23 +418,33 @@ export default function MyAssignmentsPage() {
                               {assignment.type}
                             </span>
                           </div>
-                          <button
-                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
-                              assignment.status === 'completed'
-                                ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          <div
+                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 ${
+                              assignment.isSubmitted
+                                ? 'bg-green-100 text-green-700'
                                 : assignment.status === 'overdue'
-                                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                                ? 'bg-red-100 text-red-700'
                                 : assignment.status === 'due_soon'
-                                ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-blue-100 text-blue-700'
                             }`}
                             style={{ fontFamily: 'Poppins, sans-serif' }}
                           >
-                            {assignment.status === 'completed' ? 'View' : 'Start'}
-                          </button>
+                            {assignment.isSubmitted ? (
+                              <>
+                                <Icon icon="mdi:check-circle" width={16} height={16} />
+                                <span>View</span>
+                              </>
+                            ) : (
+                              <>
+                                <Icon icon="mdi:play-circle" width={16} height={16} />
+                                <span>Start</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   );
                 })
               ) : (
@@ -407,11 +452,13 @@ export default function MyAssignmentsPage() {
                   <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-md mx-auto">
                     <Icon icon="mdi:clipboard-check-outline" width={48} height={48} className="sm:w-16 sm:h-16 mx-auto text-gray-300 mb-4" />
                     <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 px-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {filter === 'all' ? 'No Assignments Yet! 🎉' : `No ${filter.replace('_', ' ')} assignments`}
+                      {filter === 'all' ? 'No Assignments Yet! 🎉' : `No ${filter === 'due_soon' ? 'due soon' : filter === 'submitted' ? 'submitted' : filter.replace('_', ' ')} assignments`}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 px-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       {filter === 'all' 
                         ? "Great job! You're all caught up. Check back later for new assignments!" 
+                        : filter === 'submitted'
+                        ? "You haven't submitted any assignments yet. Start working on them!"
                         : 'Try selecting a different filter to see more assignments.'}
                     </p>
                   </div>

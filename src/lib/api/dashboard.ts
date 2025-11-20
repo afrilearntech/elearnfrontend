@@ -112,6 +112,7 @@ export interface ElementarySubject {
   id: number;
   name: string;
   grade: string;
+  thumbnail: string | null;
 }
 
 export interface ElementaryLesson {
@@ -119,6 +120,9 @@ export interface ElementaryLesson {
   title: string;
   subject_id: number;
   subject_name: string;
+  resource_type?: string;
+  thumbnail: string | null;
+  resource?: string | null;
 }
 
 export interface ElementarySubjectsAndLessonsResponse {
@@ -140,10 +144,20 @@ export interface KidsAssignment {
   title: string;
   type: string;
   due_at: string;
+  status: string;
+}
+
+export interface KidsAssignmentsStats {
+  total: number;
+  pending: number;
+  due_soon: number;
+  overdue: number;
+  submitted: number;
 }
 
 export interface KidsAssignmentsResponse {
   assignments: KidsAssignment[];
+  stats: KidsAssignmentsStats;
 }
 
 export async function getKidsAssignments(token: string): Promise<KidsAssignmentsResponse> {
