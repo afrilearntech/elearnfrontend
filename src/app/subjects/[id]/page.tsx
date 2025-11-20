@@ -1,24 +1,80 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
+import { getLessonById, LessonDetail } from '@/lib/api/lessons';
+import { ApiClientError } from '@/lib/api/client';
+import { showErrorToast, formatErrorMessage } from '@/lib/toast';
+import Spinner from '@/components/ui/Spinner';
 
 export default function SubjectLessonDetail() {
+  const router = useRouter();
+  const params = useParams();
+  const lessonId = params?.id as string;
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const handleMenuClose = () => setIsMobileMenuOpen(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const videoSources = [
+  const [isLoading, setIsLoading] = useState(true);
+  const [lesson, setLesson] = useState<LessonDetail | null>(null);
+  
+  // Fallback video sources
+  const fallbackVideoSources = [
     '/__mocks__/Addition using sets.mp4',
     '/__mocks__/Addition using sets 2.mp4',
     '/__mocks__/Adjectives 2.mp4',
     '/__mocks__/Dis Joint Sets 2.mp4',
   ];
-  const [videoSrc, setVideoSrc] = useState<string>(videoSources[0]);
+  
+  // Determine video source: API resource first, then fallback
+  const videoSrc = lesson?.resource || fallbackVideoSources[0];
+
+  useEffect(() => {
+    const fetchLessonData = async () => {
+      if (!lessonId) {
+        router.push('/subjects');
+        return;
+      }
+
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const lessonData = await getLessonById(lessonId, token);
+        setLesson(lessonData);
+      } catch (error) {
+        const errorMessage = error instanceof ApiClientError
+          ? error.message
+          : error instanceof Error
+          ? error.message
+          : 'Failed to load lesson';
+        showErrorToast(formatErrorMessage(errorMessage));
+        // Still show the page with fallback data
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLessonData();
+  }, [lessonId, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -36,24 +92,40 @@ export default function SubjectLessonDetail() {
                     <Image src="/settings.png" alt="settings" width={27} height={32} />
                   </div>
                   <div>
-                    <h2 className="text-[25px] font-normal text-[#9333EA]" style={{ fontFamily: 'Poppins, sans-serif' }}>Fun with Science!</h2>
-                    <p className="text-[15px] font-normal text-[#4B5563]" style={{ fontFamily: 'Poppins, sans-serif' }}>Lesson 3: Amazing Chemical Reactions</p>
+                    <h2 className="text-[25px] font-normal text-[#9333EA]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {lesson?.title || 'Loading Lesson...'}
+                    </h2>
+                    <p className="text-[15px] font-normal text-[#4B5563]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {lesson?.duration_minutes ? `Duration: ${lesson.duration_minutes} minutes` : 'Lesson Details'}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <span className="inline-flex items-center justify-center w-[108px] h-[34px] rounded-full bg-[#10B981]/20 text-[#10B981] text-[14px]" style={{ fontFamily: 'Poppins, sans-serif' }}>Lesson 3 of 8</span>
+                  {lesson?.status && (
+                    <span className={`inline-flex items-center justify-center px-3 h-[34px] rounded-full text-[14px] ${
+                      lesson.status === 'APPROVED' 
+                        ? 'bg-[#10B981]/20 text-[#10B981]' 
+                        : 'bg-yellow-500/20 text-yellow-600'
+                    }`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {lesson.status}
+                    </span>
+                  )}
                   <Link href="/subjects" className="w-[164px] h-[40px] rounded-full bg-[#F97316] text-white text-[14px] flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     <Icon icon="mdi:arrow-left" width={18} height={18} />
                     Back to Subjects
                   </Link>
                 </div>
               </div>
-              <div className="mt-3">
-                <div className="h-[13px] w-full bg-gray-200 rounded-full">
-                  <div className="h-[13px] rounded-full bg-linear-to-r from-[#10B981] to-[#3B82F6]" style={{ width: '40%' }}></div>
+              {lesson?.duration_minutes && (
+                <div className="mt-3">
+                  <div className="h-[13px] w-full bg-gray-200 rounded-full">
+                    <div className="h-[13px] rounded-full bg-linear-to-r from-[#10B981] to-[#3B82F6]" style={{ width: '100%' }}></div>
+                  </div>
+                  <div className="text-[12px] text-[#4B5563] mt-1 text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Lesson Duration: {lesson.duration_minutes} minutes
+                  </div>
                 </div>
-                <div className="text-[12px] text-[#4B5563] mt-1 text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>3 of 8 lessons completed</div>
-              </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-6 sm:mx-8 mx-4">
@@ -68,9 +140,18 @@ export default function SubjectLessonDetail() {
                     {isVideoOpen ? (
                       <video
                         className="w-full h-full object-cover"
-                        src={encodeURI(videoSrc)}
+                        src={videoSrc}
                         controls
                         autoPlay
+                        onError={(e) => {
+                          // If API video fails, try fallback
+                          const currentSrc = (e.target as HTMLVideoElement).src;
+                          if (lesson?.resource && currentSrc === lesson.resource) {
+                            // API video failed, switch to fallback
+                            const fallbackVideo = fallbackVideoSources[0];
+                            (e.target as HTMLVideoElement).src = fallbackVideo;
+                          }
+                        }}
                       />
                     ) : (
                       <>
@@ -89,9 +170,11 @@ export default function SubjectLessonDetail() {
                     )}
                   </div>
                   <div className="p-6">
-                    <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Inside the Science Laboratory 🧪</h3>
+                    <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {lesson?.title || 'Lesson Content'}
+                    </h3>
                     <p className="text-[12px] sm:text-[13px] text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      This video takes us inside a science lab. We will see tools like test tubes, beakers, and microscopes. We learn what scientists do in the lab, how they mix liquids, and how to stay safe by wearing gloves and coats. It’s a fun way to see how science helps us learn new things!
+                      {lesson?.description || 'No description available for this lesson.'}
                     </p>
                     <div className="flex items-center gap-4 mt-4">
                       <button className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#10B981] to-[#3B82F6] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>

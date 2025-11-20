@@ -744,19 +744,76 @@ export default function GamesPage() {
       {showDescriptionModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-[#111827]">About this game</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-[#111827] flex items-center gap-2">
+                <Icon icon="mdi:help-circle" className="text-[#3B82F6]" width={24} height={24} />
+                How to Play
+              </h3>
               <button
                 type="button"
-                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"
+                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors"
                 onClick={() => setShowDescriptionModal(false)}
               >
                 <Icon icon="mdi:close" />
               </button>
             </div>
-            <p className="text-sm text-[#4B5563]">
-              {currentGameDetails?.description || selectedGame?.description || 'Have fun learning with interactive games!'}
-            </p>
+            <div className="space-y-4">
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <p className="text-sm font-medium text-[#1E40AF] mb-2">📝 Instructions:</p>
+                <p className="text-sm text-[#4B5563] leading-relaxed">
+                  Drag and drop the letters that form the correct answer to the boxes in the right order.
+                </p>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#10B981] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    1
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#111827]">Look at the image or question</p>
+                    <p className="text-xs text-[#6B7280] mt-1">Read the question carefully to understand what word you need to spell.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#3B82F6] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    2
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#111827]">Drag letters from the pool</p>
+                    <p className="text-xs text-[#6B7280] mt-1">Click and drag letters from the letter pool at the bottom to the empty boxes above.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#8B5CF6] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    3
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#111827]">Place them in the correct order</p>
+                    <p className="text-xs text-[#6B7280] mt-1">Drop each letter into the boxes in the right order to spell the word correctly.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#F59E0B] text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                    4
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#111827]">Get instant feedback</p>
+                    <p className="text-xs text-[#6B7280] mt-1">When all boxes are filled correctly, you'll see a celebration! 🎉</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                <p className="text-xs text-[#92400E] flex items-center gap-2">
+                  <Icon icon="mdi:lightbulb-on" width={16} height={16} />
+                  <span><strong>Tip:</strong> You can click on a letter in a box to send it back to the pool if you make a mistake!</span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}

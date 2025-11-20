@@ -6,12 +6,12 @@ import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
-import { getAssignmentsDue, AssignmentDue } from '@/lib/api/courses';
+import { getKidsAssignments, KidsAssignment } from '@/lib/api/dashboard';
 import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
 
-interface AssignmentCard extends AssignmentDue {
+interface AssignmentCard extends KidsAssignment {
   status: 'pending' | 'due_soon' | 'overdue' | 'completed';
   daysUntilDue: number;
   bgColor: string;
@@ -24,8 +24,18 @@ interface AssignmentCard extends AssignmentDue {
   titleColor: string;
 }
 
-const getStatusConfig = (assignment: AssignmentDue) => {
-  const daysUntilDue = assignment.due_in_days;
+const calculateDaysUntilDue = (dueDateString: string): number => {
+  const dueDate = new Date(dueDateString);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  dueDate.setHours(0, 0, 0, 0);
+  const diffTime = dueDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+};
+
+const getStatusConfig = (assignment: KidsAssignment) => {
+  const daysUntilDue = calculateDaysUntilDue(assignment.due_at);
   let status: 'pending' | 'due_soon' | 'overdue' | 'completed' = 'pending';
   
   if (daysUntilDue < 0) {
@@ -82,19 +92,23 @@ const getStatusConfig = (assignment: AssignmentDue) => {
   return { ...configs[status], status, daysUntilDue };
 };
 
-const getSubjectIcon = (courseName: string): string => {
-  const name = courseName.toLowerCase();
-  if (name.includes('math') || name.includes('numeracy')) {
+const getSubjectIcon = (assignmentType: string, title: string): string => {
+  const type = assignmentType.toLowerCase();
+  const name = title.toLowerCase();
+  
+  if (type.includes('essay') || name.includes('essay') || name.includes('writing')) {
+    return 'mdi:pen';
+  } else if (type.includes('math') || name.includes('math') || name.includes('numeracy')) {
     return 'mdi:calculator';
-  } else if (name.includes('reading') || name.includes('literacy') || name.includes('english')) {
+  } else if (type.includes('reading') || name.includes('reading') || name.includes('literacy') || name.includes('english')) {
     return 'mdi:book-open-variant';
-  } else if (name.includes('science')) {
+  } else if (type.includes('science') || name.includes('science')) {
     return 'mdi:flask-outline';
-  } else if (name.includes('art') || name.includes('creative')) {
+  } else if (type.includes('art') || name.includes('art') || name.includes('creative')) {
     return 'mdi:palette-outline';
-  } else if (name.includes('music')) {
+  } else if (type.includes('music') || name.includes('music')) {
     return 'mdi:music-note';
-  } else if (name.includes('sport') || name.includes('pe')) {
+  } else if (type.includes('sport') || name.includes('sport') || name.includes('pe')) {
     return 'mdi:run';
   }
   return 'mdi:book-open-page-variant';
@@ -136,8 +150,8 @@ export default function MyAssignmentsPage() {
 
       setIsLoading(true);
       try {
-        const data = await getAssignmentsDue(token);
-        const assignmentsWithStatus = data.map((assignment) => {
+        const data = await getKidsAssignments(token);
+        const assignmentsWithStatus = (data.assignments || []).map((assignment) => {
           const config = getStatusConfig(assignment);
           return {
             ...assignment,
@@ -320,7 +334,7 @@ export default function MyAssignmentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 sm:mx-8 mx-4">
               {filteredAssignments.length > 0 ? (
                 filteredAssignments.map((assignment, index) => {
-                  const subjectIcon = getSubjectIcon(assignment.course);
+                  const subjectIcon = getSubjectIcon(assignment.type, assignment.title);
                   
                   return (
                     <div
@@ -346,8 +360,8 @@ export default function MyAssignmentsPage() {
                         <h3 className={`text-base sm:text-lg font-bold ${assignment.titleColor} mb-2 truncate`} style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {assignment.title}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {assignment.course}
+                        <p className="text-xs sm:text-sm text-gray-600 truncate capitalize" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {assignment.type}
                         </p>
                       </div>
 
@@ -365,7 +379,7 @@ export default function MyAssignmentsPage() {
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
                             <Icon icon="mdi:book-open-page-variant" width={14} height={14} className="sm:w-4 sm:h-4 text-gray-400 shrink-0" />
-                            <span className="text-[10px] sm:text-xs text-gray-500 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <span className="text-[10px] sm:text-xs text-gray-500 truncate capitalize" style={{ fontFamily: 'Poppins, sans-serif' }}>
                               {assignment.type}
                             </span>
                           </div>
