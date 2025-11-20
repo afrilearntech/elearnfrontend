@@ -61,9 +61,17 @@ export default function ExploreSubjectsSection({
                 : index === 2
                 ? 'bg-gradient-to-r from-[#86EFAC] to-[#22C55E]'
                 : subject.bgColor
-            } border-0 shadow-lg`}
+            } border-0 shadow-lg relative`}
             padding="lg"
           >
+            {/* Coming Soon Badge for Science Lab */}
+            {index === 2 && (
+              <div className="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg z-10 flex items-center gap-1.5 whitespace-nowrap" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <span>🚀</span>
+                <span>Coming Soon</span>
+              </div>
+            )}
+            
             <div className="flex flex-col items-center text-center">
               <div className={`${index === 0 || index === 1 || index === 2 ? 'w-16 h-16 rounded-full bg-white/20' : 'w-16 h-16 lg:w-20 lg:h-20 rounded-lg ' + subject.iconBgColor} flex items-center justify-center mb-4`}>
                 <Image
