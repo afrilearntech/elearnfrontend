@@ -145,6 +145,7 @@ export interface KidsAssignment {
   type: string;
   due_at: string;
   status: string;
+  instructions: string;
 }
 
 export interface KidsAssignmentsStats {
@@ -162,6 +163,33 @@ export interface KidsAssignmentsResponse {
 
 export async function getKidsAssignments(token: string): Promise<KidsAssignmentsResponse> {
   return apiRequest<KidsAssignmentsResponse>('/kids/assignments/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  });
+}
+
+export interface ProgressGardenSubject {
+  id: number;
+  name: string;
+  thumbnail: string;
+  percent_complete: number;
+}
+
+export interface ProgressGardenResponse {
+  lessons_completed: number;
+  longest_streak: number;
+  level: string;
+  points: number;
+  subjects: ProgressGardenSubject[];
+  rank_in_school: number | null;
+  rank_in_district: number | null;
+  rank_in_county: number | null;
+}
+
+export async function getProgressGarden(token: string): Promise<ProgressGardenResponse> {
+  return apiRequest<ProgressGardenResponse>('/kids/progressgarden/', {
     method: 'GET',
     headers: {
       'Authorization': `Token ${token}`,

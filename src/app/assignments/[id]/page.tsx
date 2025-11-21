@@ -283,11 +283,30 @@ export default function AssignmentDetailPage() {
               <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-[#E5E7EB]">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-[#9333EA] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#9333EA] mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       {assignment.title}
                     </h1>
+                    
+                    {assignment.instructions && assignment.instructions.trim() && (
+                      <div className="mb-4 p-4 bg-linear-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200">
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
+                            <Icon icon="mdi:information" className="text-white" width={20} height={20} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              <span>📋</span>
+                              <span>Instructions</span>
+                            </h3>
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              {assignment.instructions}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="flex flex-wrap items-center gap-3">
-                      {/* Status Badge */}
                       <span className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${statusConfig.borderColor} ${statusConfig.bgColor} ${statusConfig.textColor} flex items-center gap-2`} style={{ fontFamily: 'Poppins, sans-serif' }}>
                         <span className="text-base">{statusConfig.emoji}</span>
                         <Icon icon={statusConfig.icon} width={18} height={18} />
@@ -466,11 +485,11 @@ export default function AssignmentDetailPage() {
                   
                   <Link
                     href="/assignments"
-                    className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-base sm:text-lg flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+                    className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6 min-w-0 overflow-hidden"
                     style={{ fontFamily: 'Poppins, sans-serif' }}
                   >
-                    <Icon icon="mdi:cancel" width={20} height={20} />
-                    <span className="hidden sm:inline">Cancel</span>
+                    <Icon icon="mdi:cancel" width={18} height={18} className="shrink-0" />
+                    <span className="hidden sm:inline whitespace-nowrap">Cancel</span>
                   </Link>
                 </div>
               </div>
