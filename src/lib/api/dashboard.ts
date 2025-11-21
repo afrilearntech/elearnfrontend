@@ -197,3 +197,35 @@ export async function getProgressGarden(token: string): Promise<ProgressGardenRe
   });
 }
 
+export interface LessonGrade {
+  id: number;
+  lesson_assessment_id: number;
+  lesson_title: string;
+  score: number;
+  marks: number;
+  created_at: string;
+}
+
+export interface GeneralGrade {
+  id: number;
+  assessment_id: number;
+  assessment_title: string;
+  score: number;
+  marks: number;
+  created_at: string;
+}
+
+export interface KidsGradesResponse {
+  lesson_grades: LessonGrade[];
+  general_grades: GeneralGrade[];
+}
+
+export async function getKidsGrades(token: string): Promise<KidsGradesResponse> {
+  return apiRequest<KidsGradesResponse>('/kids/grades/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  });
+}
+
