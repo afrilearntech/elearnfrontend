@@ -115,7 +115,6 @@ export default function ProgressPage() {
 
   const realPlants: Plant[] = (progressData?.subjects || []).map((subject: any) => {
     const level = calculateLevel(subject.percent_complete);
-    const progress = subject.percent_complete % 20;
     const colors = getSubjectColors(subject.name);
     
     return {
@@ -123,7 +122,7 @@ export default function ProgressPage() {
       name: subject.name,
       emoji: getSubjectEmoji(subject.name),
       level,
-      progress,
+      progress: subject.percent_complete,
       color: colors.color,
       bgColor: colors.bgColor,
       thumbnail: subject.thumbnail,
@@ -191,9 +190,14 @@ export default function ProgressPage() {
     }
 
     const rankValue = typeof rankData === 'number' ? rankData : rankData?.rank;
+    const outOf = typeof rankData === 'number' ? null : rankData?.out_of;
 
     if (rankValue === null || rankValue === undefined) {
       return 'Not ranked yet';
+    }
+
+    if (outOf !== null && outOf !== undefined) {
+      return `${rankValue}/${outOf}`;
     }
 
     return String(rankValue);
@@ -272,7 +276,7 @@ export default function ProgressPage() {
               />
             </div>
             <div className="text-xs text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
-              {Math.round(plant.progress)}% to next level
+              {Math.round(plant.progress)}% complete
             </div>
           </div>
         </div>
@@ -484,7 +488,7 @@ export default function ProgressPage() {
                           Level {selectedPlant.level}
                         </span>
                         <span className="text-xs text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
-                          {Math.round(selectedPlant.progress)}% to next level
+                          {Math.round(selectedPlant.progress)}% complete
                         </span>
                       </div>
                       <div className="bg-white rounded-full h-3 overflow-hidden">
