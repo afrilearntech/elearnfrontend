@@ -165,7 +165,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[286px_24px_286px_24px_286px] gap-4 lg:gap-0">
             <div className="bg-white rounded-lg shadow-md p-6 h-auto lg:h-[186px]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Overall Progress
                 </h3>
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -180,10 +180,10 @@ export default function Dashboard() {
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Completed
                   </span>
-                  <span className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {dashboardData.overall_progress_percent || 0}%
                   </span>
                 </div>
@@ -195,7 +195,7 @@ export default function Dashboard() {
             <div></div>
             <div className="bg-white rounded-lg shadow-md p-6 h-auto lg:h-[186px]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Study Streak
                 </h3>
                 <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -209,10 +209,10 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif', color: '#F97316' }}>
+                <div className="text-3xl font-bold mb-1" style={{ fontFamily: 'Andika, sans-serif', color: '#F97316' }}>
                   {dashboardData.streaks?.current_study_streak_days || 0}
                 </div>
-                <div className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <div className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Days in a row
                 </div>
               </div>
@@ -220,7 +220,7 @@ export default function Dashboard() {
             <div></div>
             <div className="bg-white rounded-lg shadow-md p-6 h-auto lg:h-[186px]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Points Earned
                 </h3>
                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -234,10 +234,10 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif', color: '#059669' }}>
+                <div className="text-3xl font-bold mb-1" style={{ fontFamily: 'Andika, sans-serif', color: '#059669' }}>
                   {(dashboardData.streaks?.points_this_month || 0).toLocaleString()}
                 </div>
-                <div className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <div className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   This month
                 </div>
               </div>
@@ -248,10 +248,10 @@ export default function Dashboard() {
               <div className="bg-white rounded-lg shadow-md p-6 w-full lg:w-[904px] h-auto lg:h-[378px] mt-[32px]">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Continue Learning
                   </h3>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <button className="text-blue-600 hover:text-blue-700 text-sm font-medium" style={{ fontFamily: 'Andika, sans-serif' }}>
                     View All
                   </button>
                 </div>
@@ -272,11 +272,11 @@ export default function Dashboard() {
                         />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-base font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <h4 className="text-base font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                               {course.title}
                         </h4>
                             {course.subtitle && (
-                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                                 {course.subtitle}
                         </p>
                             )}
@@ -285,14 +285,14 @@ export default function Dashboard() {
                         {course.timeLeft && (
                     <div className="flex items-center space-x-1 mt-2">
                       <Icon icon="material-symbols:schedule" className="w-3 h-3 text-gray-500" />
-                      <span className="text-xs text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <span className="text-xs text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                               {course.timeLeft}
                       </span>
                     </div>
                         )}
                     <div className="absolute bottom-3 right-4 left-4">
                       <div className="flex justify-end mb-0.5">
-                            <span className={`text-xs font-medium ${getProgressTextColor(index)}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <span className={`text-xs font-medium ${getProgressTextColor(index)}`} style={{ fontFamily: 'Andika, sans-serif' }}>
                               {course.progress}% complete
                         </span>
                       </div>
@@ -305,7 +305,7 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <p className="text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                       No courses available. Start learning to see your progress here!
                     </p>
                   </div>

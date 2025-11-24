@@ -142,7 +142,7 @@ export default function LoginPage() {
       <div className="w-full max-w-[500px] bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header with gradient */}
         <div className="bg-linear-to-r from-[#1E40AF] to-[#059669] p-6 text-white text-center">
-          <h1 className="text-2xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <h1 className="text-2xl font-bold" style={{ fontFamily: 'Andika, sans-serif' }}>
             Student
           </h1>
         </div>
@@ -151,7 +151,7 @@ export default function LoginPage() {
         <div className="p-6 sm:p-8">
           {/* Welcome message and logo */}
           <div className="text-center mb-6">
-            <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
               Welcome back! Please enter your details
             </p>
             <div className="flex justify-center mb-6">
@@ -164,7 +164,7 @@ export default function LoginPage() {
                 priority
               />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
               Account Login
             </h2>
           </div>
@@ -173,7 +173,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email/Username Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Email Address or Username
               </label>
               <input
@@ -185,10 +185,10 @@ export default function LoginPage() {
                 className={`w-full h-[50px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                   errors.identifier ? 'border-red-500' : 'border-gray-300'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               />
               {errors.identifier && (
-                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {errors.identifier}
                 </p>
               )}
@@ -196,7 +196,7 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="block text-sm font-medium text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Password
               </label>
               <div className="relative">
@@ -210,7 +210,7 @@ export default function LoginPage() {
                   className={`w-full h-[50px] px-4 py-3 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     errors.password ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  style={{ fontFamily: 'Andika, sans-serif' }}
                 />
                 <button
                   type="button"
@@ -224,7 +224,7 @@ export default function LoginPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {errors.password}
                 </p>
               )}
@@ -235,7 +235,7 @@ export default function LoginPage() {
               <Link 
                 href="/forgot-password" 
                 className="text-sm text-gray-600 hover:text-blue-600" 
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 Forgot Password?
               </Link>
@@ -246,7 +246,7 @@ export default function LoginPage() {
               type="submit"
               disabled={isLoading}
               className="w-full h-[50px] bg-linear-to-r from-[#059669] to-[#059669] text-white font-semibold rounded-lg flex items-center justify-center gap-3 hover:from-[#047857] hover:to-[#047857] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             >
               {isLoading ? (
                 <>
@@ -261,12 +261,12 @@ export default function LoginPage() {
 
           {/* Signup Link */}
           <div className="mt-6 text-center">
-            <p className="text-base text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <p className="text-base text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
               No account?{' '}
               <Link 
                 href="/profile-setup" 
                 className="text-lg font-semibold text-blue-600 hover:text-blue-700 underline"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 Signup
               </Link>

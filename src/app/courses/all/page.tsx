@@ -130,15 +130,15 @@ export default function AllCoursesPage() {
 
       <main className="max-w-[1280px] mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Explore Courses</h1>
-          <Link href="/courses" className="bg-linear-to-r from-[#1E40AF] to-[#059669] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>Explore Courses</h1>
+          <Link href="/courses" className="bg-linear-to-r from-[#1E40AF] to-[#059669] text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity" style={{ fontFamily: 'Andika, sans-serif' }}>
             My Courses
           </Link>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1 flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Search</label>
+            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Search</label>
             <div className="relative">
               <input 
                 className="w-full h-11 pl-10 pr-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500" 
@@ -150,7 +150,7 @@ export default function AllCoursesPage() {
             </div>
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Order By</label>
+            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Order By</label>
             <select 
               className="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 bg-white"
               value={ordering}
@@ -164,7 +164,7 @@ export default function AllCoursesPage() {
             </select>
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Select Grade</label>
+            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Select Grade</label>
             <select 
               className="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 bg-white"
               value={selectedGrade}
@@ -185,7 +185,7 @@ export default function AllCoursesPage() {
             </select>
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Semester</label>
+            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Semester</label>
             <select className="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 bg-white">
               <option>choose semester</option>
               <option>Semester 1</option>
@@ -193,7 +193,7 @@ export default function AllCoursesPage() {
             </select>
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Period</label>
+            <label className="text-sm font-semibold text-gray-700 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Period</label>
             <select className="h-11 rounded-lg border border-gray-300 px-3 text-gray-700 bg-white">
               <option>choose period</option>
               <option>Morning</option>
@@ -222,17 +222,17 @@ export default function AllCoursesPage() {
                     <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/60 to-black/80" />
                 <div className="absolute inset-0 p-6 flex flex-col">
                   <div>
-                        <h3 className="text-white text-xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>{courseData.title}</h3>
-                        <p className="text-white/90 text-sm mt-2 max-w-[520px]" style={{ fontFamily: 'Poppins, sans-serif' }}>{courseData.desc}</p>
+                        <h3 className="text-white text-xl font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>{courseData.title}</h3>
+                        <p className="text-white/90 text-sm mt-2 max-w-[520px]" style={{ fontFamily: 'Andika, sans-serif' }}>{courseData.desc}</p>
                   </div>
                   <div className="mt-4 flex gap-3">
-                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Quizes</span>
-                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Videos</span>
-                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Assignment</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>Quizes</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>Videos</span>
+                    <span className="px-4 py-2 rounded-full bg-white/80 text-gray-800 text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>Assignment</span>
                   </div>
                   <div className="mt-auto flex items-center gap-6">
-                        <button onClick={() => setSelected(courseData)} className="flex-1 h-12 bg-blue-600 text-white rounded-md text-sm flex items-center justify-center cursor-pointer" style={{ fontFamily: 'Poppins, sans-serif' }}>View Details</button>
-                    <Link href="#" className="flex-1 h-12 bg-emerald-600 text-white rounded-md text-sm flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>Start Course</Link>
+                        <button onClick={() => setSelected(courseData)} className="flex-1 h-12 bg-blue-600 text-white rounded-md text-sm flex items-center justify-center cursor-pointer" style={{ fontFamily: 'Andika, sans-serif' }}>View Details</button>
+                    <Link href="#" className="flex-1 h-12 bg-emerald-600 text-white rounded-md text-sm flex items-center justify-center" style={{ fontFamily: 'Andika, sans-serif' }}>Start Course</Link>
                   </div>
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function AllCoursesPage() {
             })
           ) : (
             <div className="col-span-2 text-center py-12">
-              <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 No subjects found. Try adjusting your search or filters.
               </p>
             </div>
@@ -257,19 +257,19 @@ export default function AllCoursesPage() {
                 <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/60 to-black/80" />
                 <div className="absolute inset-0 p-6 flex items-end justify-between">
                   <div>
-                    <p className="text-white/80 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>{(selected.title.match(/Grade\s+\d+/)?.[0]) || ''}</p>
-                    <h3 className="text-white text-2xl font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>{selected.title.split('–')[0].trim()}</h3>
+                    <p className="text-white/80 text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>{(selected.title.match(/Grade\s+\d+/)?.[0]) || ''}</p>
+                    <h3 className="text-white text-2xl font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>{selected.title.split('–')[0].trim()}</h3>
                   </div>
-                  <button className="bg-emerald-600 text-white h-10 px-4 rounded-md text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Start Course</button>
+                  <button className="bg-emerald-600 text-white h-10 px-4 rounded-md text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>Start Course</button>
                 </div>
                 <button onClick={() => setSelected(null)} className="absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full w-8 h-8 text-gray-700">✕</button>
               </div>
               <div className="p-4 sm:p-6 flex-1 overflow-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
-                    <p className="text-sm text-gray-700 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>{selected.desc}</p>
-                    <h4 className="font-semibold mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>What you will learn:</h4>
-                    <ul className="space-y-2 text-sm text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <p className="text-sm text-gray-700 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>{selected.desc}</p>
+                    <h4 className="font-semibold mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>What you will learn:</h4>
+                    <ul className="space-y-2 text-sm text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                       <li>✔ Multiplication tables (up to 12×12)</li>
                       <li>✔ Division with remainders</li>
                       <li>✔ Understanding fractions</li>

@@ -89,10 +89,10 @@ export default function ElementaryDashboard() {
             {/* Welcome Banner */}
             <div className="bg-white/60 rounded-2xl shadow-lg h-[140px] mt-8 sm:mx-8 mx-4 w-full max-w-full overflow-hidden">
               <div className="h-full flex flex-col justify-center px-6 sm:px-8">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-2 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Welcome back, {user?.name || 'Student'}! ✨
                 </h1>
-                <p className="text-sm sm:text-base lg:text-lg text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Ready for another magical learning adventure?
                 </p>
               </div>

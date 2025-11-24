@@ -46,7 +46,7 @@ export default function ExploreSubjectsSection({
 }: ExploreSubjectsSectionProps) {
   return (
     <div className="mt-8 w-full">
-      <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
         Explore Magical Subjects
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 w-full">
@@ -66,7 +66,7 @@ export default function ExploreSubjectsSection({
           >
             {/* Coming Soon Badge for Science Lab */}
             {index === 2 && (
-              <div className="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg z-10 flex items-center gap-1.5 whitespace-nowrap" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <div className="absolute top-3 right-3 bg-orange-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg z-10 flex items-center gap-1.5 whitespace-nowrap" style={{ fontFamily: 'Andika, sans-serif' }}>
                 <span>🚀</span>
                 <span>Coming Soon</span>
               </div>
@@ -82,10 +82,10 @@ export default function ExploreSubjectsSection({
                   className="object-contain"
                 />
               </div>
-              <h3 className={`${index === 0 || index === 1 || index === 2 ? 'text-[20px]' : 'text-lg lg:text-xl'} font-bold text-white mb-2`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h3 className={`${index === 0 || index === 1 || index === 2 ? 'text-[20px]' : 'text-lg lg:text-xl'} font-bold text-white mb-2`} style={{ fontFamily: 'Andika, sans-serif' }}>
                 {subject.title}
               </h3>
-              <p className={`${index === 0 ? 'text-[16px] text-[#FEE2E2]' : index === 1 ? 'text-[16px] text-[#DBEAFE]' : index === 2 ? 'text-[16px] text-[#DCFCE7]' : 'text-sm lg:text-base text-white/90'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className={`${index === 0 ? 'text-[16px] text-[#FEE2E2]' : index === 1 ? 'text-[16px] text-[#DBEAFE]' : index === 2 ? 'text-[16px] text-[#DCFCE7]' : 'text-sm lg:text-base text-white/90'}`} style={{ fontFamily: 'Andika, sans-serif' }}>
                 {subject.subtitle}
               </p>
             </div>

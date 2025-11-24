@@ -66,7 +66,7 @@ export default function ElementaryStatsCards({
               <h3 
                 className={index <= 3 ? 'mb-2 truncate' : 'text-sm lg:text-base text-gray-600 mb-2 truncate'}
                 style={{ 
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Andika, sans-serif',
                   ...(index === 0 && { fontSize: '14px', color: '#DBEAFE' }),
                   ...(index === 1 && { fontSize: '14px', color: '#FEF9C3' }),
                   ...(index === 2 && { fontSize: '14px', color: '#DCFCE7' }),
@@ -78,7 +78,7 @@ export default function ElementaryStatsCards({
               <p 
                 className={index <= 3 ? 'truncate' : 'text-2xl lg:text-3xl font-bold text-gray-900 truncate'}
                 style={{ 
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Andika, sans-serif',
                   ...(index === 0 && { fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 'bold', color: '#FFFFFF' }),
                   ...(index === 1 && { fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 'bold', color: '#FFFFFF' }),
                   ...(index === 2 && { fontSize: 'clamp(20px, 4vw, 28px)', fontWeight: 'bold', color: '#FFFFFF' }),

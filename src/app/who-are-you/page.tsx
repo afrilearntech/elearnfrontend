@@ -85,15 +85,15 @@ export default function WhoAreYou() {
                 <Icon icon="material-symbols:person" className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Who are you?
                 </h1>
-                <p className="text-sm opacity-90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm opacity-90" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Step 2 of 3 - Help us personalize your experience
                 </p>
               </div>
             </div>
-            <div className="text-sm font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-sm font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>
               67%
             </div>
           </div>
@@ -123,10 +123,10 @@ export default function WhoAreYou() {
                   className={`w-12 h-12 flex-shrink-0 ${selectedRole === role.id ? 'text-blue-600' : 'text-gray-600'}`} 
                 />
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {role.title}
                   </h3>
-                  <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {role.description}
                   </p>
                 </div>
@@ -139,7 +139,7 @@ export default function WhoAreYou() {
               onClick={handleContinue}
               disabled={isLoading || !token}
               className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
               {isLoading ? (
                 <>

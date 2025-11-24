@@ -17,11 +17,11 @@ export default function Home() {
           />
         </div>
         
-        <h1 className="text-xl sm:text-[30px] font-bold text-[#1F2937] mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h1 className="text-xl sm:text-[30px] font-bold text-[#1F2937] mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
           Welcome to Liberia eLearn!
         </h1>
         
-        <p className="text-sm sm:text-[15px] text-[#4B5563] mb-8 leading-relaxed px-4 sm:pl-[95px] sm:pr-[100px] mt-[21px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <p className="text-sm sm:text-[15px] text-[#4B5563] mb-8 leading-relaxed px-4 sm:pl-[95px] sm:pr-[100px] mt-[21px]" style={{ fontFamily: 'Andika, sans-serif' }}>
           Your gateway to quality education. Access courses, connect with teachers, and unlock your potential with our comprehensive learning platform.
         </p>
         
@@ -35,7 +35,7 @@ export default function Home() {
               className="w-[19px] h-6"
             />
             <div className="text-center">
-              <div className="text-[13px] text-[#374151]" style={{ fontFamily: 'Poppins, sans-serif' }}>Interactive Courses</div>
+              <div className="text-[13px] text-[#374151]" style={{ fontFamily: 'Andika, sans-serif' }}>Interactive Courses</div>
             </div>
           </div>
           
@@ -48,7 +48,7 @@ export default function Home() {
               className="w-[19px] h-6"
             />
             <div className="text-center">
-              <div className="text-[13px] text-[#374151]" style={{ fontFamily: 'Poppins, sans-serif' }}>Expert Teachers</div>
+              <div className="text-[13px] text-[#374151]" style={{ fontFamily: 'Andika, sans-serif' }}>Expert Teachers</div>
             </div>
           </div>
           
@@ -61,7 +61,7 @@ export default function Home() {
               className="w-[19px] h-6"
             />
             <div className="text-center">
-              <div className="text-[13px] text-[#374151]" style={{ fontFamily: 'Poppins, sans-serif' }}>Certified Learning</div>
+              <div className="text-[13px] text-[#374151]" style={{ fontFamily: 'Andika, sans-serif' }}>Certified Learning</div>
             </div>
           </div>
         </div>
@@ -82,12 +82,12 @@ export default function Home() {
 
         {/* Login Link */}
         <div className="mt-6">
-          <p className="text-base text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <p className="text-base text-gray-600 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
             Already have an account?{' '}
             <Link 
               href="/sign-in"
               className="text-lg font-semibold text-blue-600 hover:text-blue-700 underline"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             >
               Login here
             </Link>

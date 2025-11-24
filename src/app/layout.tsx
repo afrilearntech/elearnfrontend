@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Andika } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const andika = Andika({
+  weight: ["400", "700"],
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-andika",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${andika.variable} antialiased`}
+        style={{ fontFamily: 'Andika, sans-serif' }}
       >
         {children}
         <Toaster
@@ -45,7 +42,7 @@ export default function RootLayout({
             className: '',
             duration: 4000,
             style: {
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: 'Andika, sans-serif',
               padding: '16px 20px',
               borderRadius: '12px',
               fontSize: '14px',

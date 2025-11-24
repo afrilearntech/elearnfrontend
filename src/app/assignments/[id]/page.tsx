@@ -274,7 +274,7 @@ export default function AssignmentDetailPage() {
               <Link 
                 href="/assignments"
                 className="inline-flex items-center gap-2 text-[#3B82F6] hover:text-[#2563EB] mb-4 transition-colors"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:arrow-left" width={20} height={20} />
                 <span className="text-sm font-medium">Back to Assignments</span>
@@ -283,7 +283,7 @@ export default function AssignmentDetailPage() {
               <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-[#E5E7EB]">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-[#9333EA] mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#9333EA] mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {assignment.title}
                     </h1>
                     
@@ -294,11 +294,11 @@ export default function AssignmentDetailPage() {
                             <Icon icon="mdi:information" className="text-white" width={20} height={20} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                               <span>📋</span>
                               <span>Instructions</span>
                             </h3>
-                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Andika, sans-serif' }}>
                               {assignment.instructions}
                             </p>
                           </div>
@@ -307,15 +307,15 @@ export default function AssignmentDetailPage() {
                     )}
                     
                     <div className="flex flex-wrap items-center gap-3">
-                      <span className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${statusConfig.borderColor} ${statusConfig.bgColor} ${statusConfig.textColor} flex items-center gap-2`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <span className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${statusConfig.borderColor} ${statusConfig.bgColor} ${statusConfig.textColor} flex items-center gap-2`} style={{ fontFamily: 'Andika, sans-serif' }}>
                         <span className="text-base">{statusConfig.emoji}</span>
                         <Icon icon={statusConfig.icon} width={18} height={18} />
                         <span>{statusConfig.label}</span>
                       </span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.borderColor}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.borderColor}`} style={{ fontFamily: 'Andika, sans-serif' }}>
                         {formatDueDate(assignment.due_at)}
                       </span>
-                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 capitalize" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
                         {assignment.type}
                       </span>
                     </div>
@@ -328,7 +328,7 @@ export default function AssignmentDetailPage() {
             <form onSubmit={handleSubmit} className="sm:mx-8 mx-4">
               <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-[#E5E7EB]">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     <Icon icon="mdi:file-document-edit" width={28} height={28} />
                     Your Solution
                   </h2>
@@ -337,7 +337,7 @@ export default function AssignmentDetailPage() {
                   <div className={`px-4 py-2 rounded-xl ${statusConfig.bgColor} ${statusConfig.textColor} border-2 ${statusConfig.borderColor} flex items-center gap-2`}>
                     <span className="text-lg">{statusConfig.emoji}</span>
                     <Icon icon={statusConfig.icon} width={20} height={20} />
-                    <span className="font-semibold text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="font-semibold text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {statusConfig.label}
                     </span>
                   </div>
@@ -345,7 +345,7 @@ export default function AssignmentDetailPage() {
 
                 {/* Text Solution */}
                 <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Write your answer here ✍️
                   </label>
                   <textarea
@@ -358,16 +358,16 @@ export default function AssignmentDetailPage() {
                         ? 'bg-gray-100 border-gray-200 cursor-not-allowed' 
                         : 'border-gray-300'
                     }`}
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   />
-                  <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     You can write your answer or attach a file, or both!
                   </p>
                 </div>
 
                 {/* File Upload */}
                 <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Or attach a file 📎
                   </label>
                   
@@ -379,7 +379,7 @@ export default function AssignmentDetailPage() {
                         width={48} 
                         height={48} 
                       />
-                      <p className="text-sm text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <p className="text-sm text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                         File upload is disabled. This assignment has already been submitted.
                       </p>
                     </div>
@@ -401,7 +401,7 @@ export default function AssignmentDetailPage() {
                         width={48} 
                         height={48} 
                       />
-                      <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                         Drag and drop your file here, or
                       </p>
                       <label className="inline-block">
@@ -416,12 +416,12 @@ export default function AssignmentDetailPage() {
                           assignment.status?.toLowerCase() === 'submitted'
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                             : 'bg-[#9333EA] text-white cursor-pointer hover:bg-[#7C3AED]'
-                        }`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        }`} style={{ fontFamily: 'Andika, sans-serif' }}>
                           <Icon icon="mdi:file-upload" width={18} height={18} />
                           Choose File
                         </span>
                       </label>
-                      <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                         PDF, Word, Images, or Text files
                       </p>
                     </div>
@@ -432,10 +432,10 @@ export default function AssignmentDetailPage() {
                           <Icon icon="mdi:file-check" className="text-green-700" width={24} height={24} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                             {fileName}
                           </p>
-                          <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                             {(selectedFile.size / 1024).toFixed(1)} KB
                           </p>
                         </div>
@@ -457,7 +457,7 @@ export default function AssignmentDetailPage() {
                   {assignment.status?.toLowerCase() === 'submitted' ? (
                     <div className="flex-1 h-12 sm:h-14 rounded-xl bg-green-100 text-green-700 font-bold text-base sm:text-lg flex items-center justify-center gap-2 border-2 border-green-300">
                       <Icon icon="mdi:check-circle" width={24} height={24} />
-                      <span style={{ fontFamily: 'Poppins, sans-serif' }}>Already Submitted ✅</span>
+                      <span style={{ fontFamily: 'Andika, sans-serif' }}>Already Submitted ✅</span>
                     </div>
                   ) : (
                     <button
@@ -466,7 +466,7 @@ export default function AssignmentDetailPage() {
                       className="flex-1 h-12 sm:h-14 rounded-xl text-white font-bold text-base sm:text-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ 
                         background: 'linear-gradient(135deg, #10B981 0%, #3B82F6 100%)',
-                        fontFamily: 'Poppins, sans-serif'
+                        fontFamily: 'Andika, sans-serif'
                       }}
                     >
                       {isSubmitting ? (
@@ -486,7 +486,7 @@ export default function AssignmentDetailPage() {
                   <Link
                     href="/assignments"
                     className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6 min-w-0 overflow-hidden"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     <Icon icon="mdi:cancel" width={18} height={18} className="shrink-0" />
                     <span className="hidden sm:inline whitespace-nowrap">Cancel</span>

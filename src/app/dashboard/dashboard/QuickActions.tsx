@@ -19,7 +19,7 @@ interface QuickActionsProps {
 export default function QuickActions({ title, actions }: QuickActionsProps) {
   return (
     <Card className="w-full lg:w-[280px] h-auto lg:h-[322px] lg:ml-[112px]">
-      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
         {title}
       </h3>
       <div className="space-y-3 pb-4">
@@ -66,7 +66,7 @@ export default function QuickActions({ title, actions }: QuickActionsProps) {
                 <Icon icon={action.icon} className="w-4 h-4 text-blue-600" />
               </div>
             )}
-            <span className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <span className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
               {action.label}
             </span>
           </button>

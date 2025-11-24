@@ -85,7 +85,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
                     ? `${item.bgColor} shadow-lg` 
                     : `${item.bgColor} ${item.hoverColor}`
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 {item.id === 'home' ? (
                   <div className="flex items-center">
@@ -200,7 +200,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
           <div className="bg-white h-full w-80 shadow-lg">
             <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h2 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Navigation
                 </h2>
                 <button 
@@ -225,7 +225,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
                     ? `${item.bgColor} shadow-lg` 
                     : `${item.bgColor} ${item.hoverColor}`
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
                 onClick={onMobileMenuClose}
               >
                 {item.id === 'home' ? (

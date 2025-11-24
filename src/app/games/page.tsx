@@ -120,6 +120,8 @@ export default function GamesPage() {
   const [showHintModal, setShowHintModal] = useState(false);
   const [showCheckModal, setShowCheckModal] = useState(false);
   const [checkModalMessage, setCheckModalMessage] = useState('');
+  const [showCongratulationsModal, setShowCongratulationsModal] = useState(false);
+  const [currentGameIndex, setCurrentGameIndex] = useState<number>(-1);
   const hintButtonRef = useRef<HTMLButtonElement | null>(null);
   const checkButtonRef = useRef<HTMLButtonElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -217,12 +219,17 @@ export default function GamesPage() {
           origin: { x: 1 },
           colors: ['#F472B6', '#FBBF24', '#60A5FA', '#34D399', '#A78BFA'],
         });
-        window.setTimeout(() => setShowCelebration(false), 3000);
+        window.setTimeout(() => {
+          setShowCelebration(false);
+          setShowCongratulationsModal(true);
+        }, 2000);
       }
     }
   }, [slots, answerKey, showGamePlay, hasChecked]);
 
   const handleGameClick = (game: GameCard) => {
+    const gameIndex = games.findIndex((g) => g.id === game.id);
+    setCurrentGameIndex(gameIndex);
     setSelectedGame(game);
     setShowGame(true);
     setShowGamePlay(false);
@@ -238,6 +245,7 @@ export default function GamesPage() {
     setHasChecked(false);
     setShowHintModal(false);
     setShowCheckModal(false);
+    setShowCongratulationsModal(false);
   };
 
   const normalizeAnswer = (answer: string) => answer.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -313,6 +321,61 @@ export default function GamesPage() {
     setHasChecked(false);
     setShowHintModal(false);
     setShowCheckModal(false);
+    setShowCongratulationsModal(false);
+    setCurrentGameIndex(-1);
+  };
+
+  const handleNextGame = async () => {
+    if (currentGameIndex < 0 || currentGameIndex >= games.length - 1) {
+      handleBackToList();
+      return;
+    }
+
+    const nextGame = games[currentGameIndex + 1];
+    if (!nextGame) {
+      handleBackToList();
+      return;
+    }
+
+    setShowCongratulationsModal(false);
+    setShowCelebration(false);
+    setCurrentGameIndex(currentGameIndex + 1);
+    setSelectedGame(nextGame);
+    setShowGamePlay(false);
+    setCurrentGameDetails(null);
+    setAnswerKey('');
+    setSlots([]);
+    setPool([]);
+    setBasePool([]);
+    setShowDescriptionModal(false);
+    setShowHintPrompt(false);
+    setHasUsedHint(false);
+    setHasChecked(false);
+    setShowHintModal(false);
+    setShowCheckModal(false);
+
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    setIsGameDataLoading(true);
+    try {
+      const details = await getGameById(nextGame.id, token);
+      setCurrentGameDetails(details);
+      initializeGameBoard(details.correct_answer || details.name);
+      setShowGamePlay(true);
+    } catch (error) {
+      const errorMessage = error instanceof ApiClientError
+        ? error.message
+        : error instanceof Error
+        ? error.message
+        : 'Failed to load game details';
+      showErrorToast(formatErrorMessage(errorMessage));
+    } finally {
+      setIsGameDataLoading(false);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, letter: string, from: 'pool' | number) => {
@@ -427,7 +490,7 @@ export default function GamesPage() {
         <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px]">
           <div className="p-4 lg:p-8">
             {/* Heading */}
-            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:py-5 sm:ml-8 sm:mr-8" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:py-5 sm:ml-8 sm:mr-8" style={{ fontFamily: 'Andika, sans-serif' }}>
               <div>
                 <div className="text-[20px] sm:text-[22px] lg:text-[24px] font-semibold text-[#7C3AED]">Fun & Games!</div>
                 <div className="text-[14px] sm:text-[15px] text-[#4B5563] mt-1">Test what you learned with fun games and quizzes!</div>
@@ -468,10 +531,10 @@ export default function GamesPage() {
                               <Icon icon={game.icon} className="text-gray-700" width={20} height={20} />
                             </div>
                             <div className="flex-1">
-                              <h3 className="text-[16px] sm:text-[18px] font-semibold text-[#111827] mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              <h3 className="text-[16px] sm:text-[18px] font-semibold text-[#111827] mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
                                 {game.title}
                               </h3>
-                              <p className="text-[12px] sm:text-[13px] text-[#6B7280]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              <p className="text-[12px] sm:text-[13px] text-[#6B7280]" style={{ fontFamily: 'Andika, sans-serif' }}>
                                 {game.description}
                               </p>
                             </div>
@@ -479,7 +542,7 @@ export default function GamesPage() {
                         <button
                           type="button"
                             className={`w-full ${game.buttonColor} text-white text-[13px] sm:text-[14px] font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm`}
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
                             onClick={(e) => {
                               e.stopPropagation();
                               handleGameClick(game);
@@ -494,14 +557,14 @@ export default function GamesPage() {
                     </div>
                   ) : (
                     <div className="bg-white/70 rounded-2xl shadow-md px-6 py-12 text-center">
-                      <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <p className="text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                         No games available at the moment.
                       </p>
                   </div>
                   )
                 ) : !showGamePlay ? (
                   <div className="bg-white/70 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.08)] px-4 sm:px-6 py-6 sm:py-10 border-2" style={{ borderColor: '#FACC15' }}>
-                    <div className="text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
                       <div className="text-[24px] sm:text-[28px] lg:text-[34px] font-extrabold text-[#7C3AED]">
                         Let's Play {selectedGame?.title || 'Game'}!
                       </div>
@@ -543,8 +606,8 @@ export default function GamesPage() {
                 ) : (
                   <>
                   <div className="bg-white rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.08)] p-4 sm:p-6 border" style={{ borderColor: '#E5E7EB' }}>
-                    <div className="flex flex-col items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      <div className="w-full flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between mb-4">
+                    <div className="flex flex-col items-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      <div className="w-full flex flex-col sm:flex-row gap-3 sm:gap-0 sm:justify-between items-center mb-4">
                         <button 
                           className="h-10 px-4 rounded-full text-white text-sm flex items-center gap-2 cursor-pointer" 
                           style={{ background: 'linear-gradient(90deg, #FB923C, #F97316)' }} 
@@ -552,8 +615,8 @@ export default function GamesPage() {
                         >
                           <Icon icon="mdi:arrow-left" /> Back to List
                         </button>
-                        <div className="text-center sm:text-left flex items-center gap-2 justify-center">
-                          <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#7C3AED]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <div className="text-center flex items-center gap-2">
+                          <h2 className="text-[18px] sm:text-[20px] font-semibold text-[#7C3AED]" style={{ fontFamily: 'Andika, sans-serif' }}>
                             {selectedGame?.title || 'Let\'s Play!'}
                           </h2>
                           {(currentGameDetails?.description || selectedGame?.description) && (
@@ -567,9 +630,7 @@ export default function GamesPage() {
                             </button>
                           )}
                         </div>
-                        <button className="h-10 px-4 rounded-full text-white text-sm flex items-center gap-2 cursor-pointer" style={{ background: 'linear-gradient(90deg, #22C55E, #3B82F6)' }}>
-                          Next <Icon icon="mdi:arrow-right" />
-                        </button>
+                        <div className="w-24"></div>
                       </div>
 
                       <div className="bg-gray-50 rounded-2xl w-full max-w-3xl p-4 sm:p-6 shadow-inner">
@@ -657,7 +718,7 @@ export default function GamesPage() {
                               {showCheckModal && (
                                 <div
                                   className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-lg p-4 max-w-xs w-64 z-50 border border-gray-200"
-                                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                                  style={{ fontFamily: 'Andika, sans-serif' }}
                                 >
                                   <div className="flex items-start justify-between mb-2">
                                     <h4 className="text-sm font-semibold text-[#16A34A]">Great Job!</h4>
@@ -691,7 +752,7 @@ export default function GamesPage() {
                               {showHintModal && (
                                 <div
                                   className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white rounded-xl shadow-lg p-4 max-w-xs w-64 z-50 border border-gray-200"
-                                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                                  style={{ fontFamily: 'Andika, sans-serif' }}
                                 >
                                   <div className="flex items-start justify-between mb-2">
                                     <h4 className="text-sm font-semibold text-[#7C3AED]">Hint</h4>
@@ -727,7 +788,7 @@ export default function GamesPage() {
                   </div>
                   {/* Progress section */}
                   <div className="mt-6 bg-white/70 rounded-2xl shadow p-4">
-                    <div className="text-[14px] text-[#111827] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Progress</div>
+                    <div className="text-[14px] text-[#111827] mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>Progress</div>
                     <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
                       <div
                         className="h-3 rounded-full"
@@ -743,7 +804,7 @@ export default function GamesPage() {
       </div>
       {showDescriptionModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-lg" style={{ fontFamily: 'Andika, sans-serif' }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-[#111827] flex items-center gap-2">
                 <Icon icon="mdi:help-circle" className="text-[#3B82F6]" width={24} height={24} />
@@ -820,10 +881,53 @@ export default function GamesPage() {
       {showCelebration && (
         <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
           <div className="relative">
-            <div className="bg-white/95 rounded-3xl px-10 py-8 text-center shadow-2xl animate-pulse" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="bg-white/95 rounded-3xl px-10 py-8 text-center shadow-2xl animate-pulse" style={{ fontFamily: 'Andika, sans-serif' }}>
               <div className="text-4xl mb-2">🎉</div>
               <p className="text-xl font-bold text-[#7C3AED]">Fantastic!</p>
               <p className="text-sm text-[#4B5563] mt-1">You spelled it perfectly! 🌟</p>
+            </div>
+          </div>
+        </div>
+      )}
+      {showCongratulationsModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl transform transition-all">
+            <div className="text-center">
+              <div className="text-6xl mb-4 animate-bounce">🎉</div>
+              <h2 className="text-3xl font-bold bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2">
+                Amazing Job!
+              </h2>
+              <p className="text-lg text-gray-700 mb-1">You completed the game!</p>
+              <p className="text-sm text-gray-500 mb-8">You're doing great! Keep it up! ⭐</p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                {currentGameIndex >= 0 && currentGameIndex < games.length - 1 ? (
+                  <button
+                    onClick={handleNextGame}
+                    className="flex-1 h-12 px-6 rounded-full text-white font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                    style={{ background: 'linear-gradient(90deg, #10B981, #3B82F6)' }}
+                  >
+                    <Icon icon="mdi:arrow-right" width={20} height={20} />
+                    Next Game
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleBackToList}
+                    className="flex-1 h-12 px-6 rounded-full text-white font-semibold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                    style={{ background: 'linear-gradient(90deg, #10B981, #3B82F6)' }}
+                  >
+                    <Icon icon="mdi:trophy" width={20} height={20} />
+                    All Games Done!
+                  </button>
+                )}
+                <button
+                  onClick={handleBackToList}
+                  className="flex-1 h-12 px-6 rounded-full text-gray-700 font-semibold bg-gray-100 hover:bg-gray-200 flex items-center justify-center gap-2 shadow-md transition-all transform hover:scale-105"
+                >
+                  <Icon icon="mdi:home" width={20} height={20} />
+                  Back to Games
+                </button>
+              </div>
             </div>
           </div>
         </div>

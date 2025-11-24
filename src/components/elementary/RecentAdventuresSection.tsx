@@ -55,7 +55,7 @@ export default function RecentAdventuresSection({
   return (
     <div className="mt-8 w-full mb-8">
       <div className="bg-white/60 rounded-lg shadow-md py-6 px-4 sm:px-8 w-full max-w-full overflow-hidden">
-        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
           Recent Activities
         </h2>
         <div className="space-y-3">
@@ -93,13 +93,13 @@ export default function RecentAdventuresSection({
                     <div className="flex-1 min-w-0">
                       <h3
                         className={`${isFirst ? 'text-[16px] font-semibold text-[#A16207]' : isSecond ? 'text-[16px] font-semibold text-[#15803D]' : 'text-base lg:text-lg font-medium text-gray-900'} mb-1 truncate`}
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                        style={{ fontFamily: 'Andika, sans-serif' }}
                       >
                         {activity.description}
                       </h3>
                       <p
                         className={`${isFirst ? 'text-[16px] text-[#CA8A04]' : isSecond ? 'text-[16px] text-[#16A34A]' : 'text-sm lg:text-base text-gray-600'}`}
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                        style={{ fontFamily: 'Andika, sans-serif' }}
                       >
                         {timestamp}
                       </p>
@@ -110,7 +110,7 @@ export default function RecentAdventuresSection({
             })
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                 No recent activities. Start learning to see your progress here!
               </p>
             </div>

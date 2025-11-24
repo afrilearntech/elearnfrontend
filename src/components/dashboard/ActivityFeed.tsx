@@ -21,7 +21,7 @@ interface ActivityFeedProps {
 export default function ActivityFeed({ title, activities }: ActivityFeedProps) {
   return (
     <Card className="w-full lg:w-[904px] h-auto lg:h-[294px]">
-      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
         {title}
       </h3>
       <div className="space-y-4">
@@ -42,22 +42,22 @@ export default function ActivityFeed({ title, activities }: ActivityFeedProps) {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {activity.title}
               </p>
-              <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {activity.subtitle ? `${activity.subtitle} • ${activity.timestamp}` : activity.timestamp}
               </p>
             </div>
             {activity.points && (
-              <span className="text-xs font-semibold text-green-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <span className="text-xs font-semibold text-green-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 +{activity.points} points
               </span>
             )}
           </div>
           ))
         ) : (
-          <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
             No recent activities
           </p>
         )}

@@ -62,10 +62,10 @@ export default function Navbar({
               className="rounded-full"
             />
             <div className="hidden sm:block">
-              <h1 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Ministry of Education
               </h1>
-              <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Liberia eLearning
               </p>
             </div>
@@ -79,7 +79,7 @@ export default function Navbar({
                 type="text"
                 placeholder="Search courses, lessons, teachers..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               />
             </div>
           </div>
@@ -122,10 +122,10 @@ export default function Navbar({
                 )}
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {user.name}
                 </p>
-                <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {user.role}
                 </p>
               </div>
@@ -136,7 +136,7 @@ export default function Navbar({
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-200 font-medium text-sm"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
               aria-label="Logout"
             >
               <Icon icon="mdi:logout" className="w-5 h-5" />
@@ -167,7 +167,7 @@ export default function Navbar({
                     ? 'text-blue-600 border-b-2 border-blue-600'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 {link.label}
               </Link>
@@ -190,7 +190,7 @@ export default function Navbar({
                       ? 'text-blue-600 bg-blue-50'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  style={{ fontFamily: 'Andika, sans-serif' }}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
@@ -203,7 +203,7 @@ export default function Navbar({
                   setIsMenuOpen(false);
                 }}
                 className="w-full flex items-center gap-2 py-3 px-3 text-base font-medium rounded-lg transition-colors bg-red-500 hover:bg-red-600 text-white mt-2"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:logout" className="w-5 h-5" />
                 <span>Logout</span>

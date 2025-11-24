@@ -36,10 +36,10 @@ export default function ElementaryNavbar({ onMenuToggle }: ElementaryNavbarProps
           />
         </div>
         <div>
-          <h1 className="text-[18px] font-semibold text-[#111827]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <h1 className="text-[18px] font-semibold text-[#111827]" style={{ fontFamily: 'Andika, sans-serif' }}>
             Ministry of Education
           </h1>
-          <p className="text-[14px] font-normal text-[#6B7280]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <p className="text-[14px] font-normal text-[#6B7280]" style={{ fontFamily: 'Andika, sans-serif' }}>
             Liberia eLearning
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function ElementaryNavbar({ onMenuToggle }: ElementaryNavbarProps
         <button
           onClick={handleLogout}
           className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
+          style={{ fontFamily: 'Andika, sans-serif' }}
           aria-label="Logout"
         >
           <Icon icon="mdi:logout" className="w-4 h-4 sm:w-5 sm:h-5" />

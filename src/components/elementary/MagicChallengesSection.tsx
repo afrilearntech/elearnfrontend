@@ -62,10 +62,10 @@ export default function MagicChallengesSection({
         className="bg-white rounded-lg shadow-md w-full h-auto lg:h-[322px] p-6"
         style={{ 
           border: '0.5px solid #E5E7EB',
-          fontFamily: 'Poppins, sans-serif'
+          fontFamily: 'Andika, sans-serif'
         }}
       >
-        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
           Today&apos;s Magic Challenges
         </h2>
         <div className="space-y-3">
@@ -95,7 +95,7 @@ export default function MagicChallengesSection({
                   </div>
                   <h3
                     className={`${index === 0 ? 'text-[16px] font-semibold text-[#7E22CE]' : index === 1 ? 'text-[16px] font-semibold text-[#15803D]' : index === 2 ? 'text-[16px] font-semibold text-[#C2410C]' : 'text-base lg:text-lg font-medium text-gray-900'}`}
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     {challenge.title}
                   </h3>

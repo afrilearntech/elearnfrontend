@@ -31,16 +31,16 @@ export default function WelcomeBanner({
     </div>
     
     <div className="relative z-10 lg:pr-[180px]">
-        <h1 className="text-xl sm:text-2xl font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h1 className="text-xl sm:text-2xl font-bold mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
           Welcome back, {userName}!
         </h1>
-        <p className="text-sm opacity-90 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <p className="text-sm opacity-90 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
           {message}
         </p>
         <button
           onClick={onButtonClick}
           className="bg-white text-[#1E40AF] font-semibold px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
+          style={{ fontFamily: 'Andika, sans-serif' }}
         >
           {buttonText}
         </button>

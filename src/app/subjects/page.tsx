@@ -157,10 +157,10 @@ export default function SubjectsLessonsPage() {
           <div className="p-4 lg:p-8">
             {/* Title Section */}
             <div className="sm:ml-8 sm:mr-8 mb-6">
-              <h1 className="text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Fun Video Lessons
               </h1>
-              <p className="text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Watch, Learn, and Have Fun with Our Amazing Videos!
               </p>
             </div>
@@ -174,7 +174,7 @@ export default function SubjectsLessonsPage() {
                     ? 'bg-[#60A5FA] text-white shadow-sm'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:file-document-outline" width={18} height={18} />
                 All Subjects
@@ -204,7 +204,7 @@ export default function SubjectsLessonsPage() {
                         ? 'bg-[#60A5FA] text-white shadow-sm'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     <Icon icon={icon} width={18} height={18} />
                     {subject.name}
@@ -240,11 +240,11 @@ export default function SubjectsLessonsPage() {
 
                   {/* Content */}
                   <div className="p-4">
-                        <h3 className="text-[16px] font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>{lesson.title}</h3>
-                        <p className="text-[12px] text-gray-600 mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Learn and explore with fun activities</p>
+                        <h3 className="text-[16px] font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>{lesson.title}</h3>
+                        <p className="text-[12px] text-gray-600 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>Learn and explore with fun activities</p>
                     <div className="flex items-center justify-between">
-                          <span className="text-[10px] px-2 py-0.5 rounded-lg bg-gray-100 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>{lesson.subject_name}</span>
-                          <span className="text-[10px] text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>Lesson</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-lg bg-gray-100 text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>{lesson.subject_name}</span>
+                          <span className="text-[10px] text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>Lesson</span>
                     </div>
                   </div>
                 </Link>
@@ -252,7 +252,7 @@ export default function SubjectsLessonsPage() {
                 })
               ) : (
                 <div className="col-span-full text-center py-12">
-                  <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                     No lessons available. {selectedSubject !== 'all' ? 'Try selecting a different subject.' : 'Check back later for new lessons!'}
                   </p>
                 </div>
