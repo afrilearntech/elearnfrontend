@@ -227,7 +227,7 @@ export default function SubjectLessonDetail() {
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                   <div className="px-6 py-3 bg-linear-to-r from-[#EC4899] to-[#6366F1] text-white" style={{ fontFamily: 'Andika, sans-serif' }}>
                     <div className="text-[16px] font-semibold">Watch & Learn!</div>
-                    <div className="text-[12px] opacity-90">Get ready for an exciting science experiment!</div>
+                    <div className="text-[12px] opacity-90">Get ready for an exciting lesson!</div>
                   </div>
                   <div className="relative h-[220px] sm:h-[320px] lg:h-[460px] w-full bg-gray-100">
                     {isVideoOpen ? (
