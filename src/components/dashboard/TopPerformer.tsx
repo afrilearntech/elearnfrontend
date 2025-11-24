@@ -50,10 +50,10 @@ export default function TopPerformer({
         <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
           <Icon icon={icon} className="w-6 h-6 text-white" />
         </div>
-        <h3 className="text-base font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h3 className="text-base font-bold mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
           {displayTitle}
         </h3>
-        <p className="text-xs opacity-90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <p className="text-xs opacity-90" style={{ fontFamily: 'Andika, sans-serif' }}>
           {displaySubtitle}
         </p>
       </div>

@@ -90,7 +90,7 @@ export function AssignmentsDueSection({
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
           Assignments Due
         </h2>
         <a href="#" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
@@ -113,10 +113,10 @@ export function AssignmentsDueSection({
               </div>
               
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h3 className="font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {assignment.title}
                 </h3>
-                <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {dueDateText} • {assignment.course}
                 </p>
               </div>
@@ -131,7 +131,7 @@ export function AssignmentsDueSection({
           })
         ) : (
           <div className="text-center py-8">
-            <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <p className="text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
               No assignments due. Great job staying on top of your work!
             </p>
           </div>

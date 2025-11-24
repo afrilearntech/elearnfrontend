@@ -92,7 +92,7 @@ export default function SignInPage() {
                 type="button"
                 onClick={handleBack}
                 className="text-sm text-[#059669] font-semibold hover:text-[#047857]"
-                style={{ fontFamily: "Poppins, sans-serif" }}
+                style={{ fontFamily: "Andika, sans-serif" }}
               >
                 ← Back
               </button>
@@ -100,7 +100,7 @@ export default function SignInPage() {
           </div>
           <h1
             className="text-3xl font-semibold text-[#0F172A] text-center flex-1"
-            style={{ fontFamily: "Poppins, sans-serif" }}
+            style={{ fontFamily: "Andika, sans-serif" }}
           >
             {title}
           </h1>
@@ -146,13 +146,13 @@ export default function SignInPage() {
                   <div>
                     <h2
                       className="text-[22px] font-semibold text-[#111827]"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      style={{ fontFamily: "Andika, sans-serif" }}
                     >
                       {role.title}
                     </h2>
                     <p
                       className="text-base text-[#6B7280] mt-3"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      style={{ fontFamily: "Andika, sans-serif" }}
                     >
                       {role.description}
                     </p>
@@ -168,7 +168,7 @@ export default function SignInPage() {
             type="button"
             onClick={handleContinue}
             className="px-12 h-12 rounded-full bg-[#059669] text-white font-semibold shadow-lg hover:bg-[#047857] transition-all duration-200 flex items-center justify-center"
-            style={{ fontFamily: "Poppins, sans-serif" }}
+            style={{ fontFamily: "Andika, sans-serif" }}
           >
             Continue
           </button>

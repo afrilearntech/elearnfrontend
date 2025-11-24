@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+* {
+  font-family: 'Andika', sans-serif;
+}
+
 @media (max-width: 640px) {
   [class*="react-hot-toast"] {
     max-width: calc(100vw - 32px) !important;

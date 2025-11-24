@@ -128,7 +128,7 @@ export default function AvatarPage() {
           </div>
           <div className="mt-4 text-center">
             <div className="text-4xl mb-2">{clothes?.emoji || '👕'}</div>
-            <div className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
               Your Avatar
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function AvatarPage() {
             }`}
           >
             <div className="text-3xl mb-2">{option.emoji}</div>
-            <div className="text-xs font-medium text-gray-700 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-xs font-medium text-gray-700 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
               {option.name}
             </div>
           </button>
@@ -189,17 +189,17 @@ export default function AvatarPage() {
         <main className="flex-1 sm:pl-[280px] lg:pl-[320px] overflow-x-hidden">
           <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
             <div className="mb-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent" style={{ fontFamily: 'Andika, sans-serif' }}>
                 🎨 Avatar Room
               </h1>
-              <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Create your unique character! Mix and match to make it special!
               </p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6 mb-6">
               <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                   <Icon icon="mdi:account-circle" className="text-purple-500" width={24} height={24} />
                   Your Avatar
                 </h2>
@@ -208,7 +208,7 @@ export default function AvatarPage() {
                   onClick={handleSave}
                   disabled={isSaving}
                   className="w-full mt-6 bg-linear-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  style={{ fontFamily: 'Andika, sans-serif' }}
                 >
                   {isSaving ? (
                     <>
@@ -225,7 +225,7 @@ export default function AvatarPage() {
               </div>
 
               <div className="bg-white rounded-3xl p-6 shadow-xl border-2 border-purple-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                   <Icon icon="mdi:palette-outline" className="text-pink-500" width={24} height={24} />
                   Customize
                 </h2>
@@ -240,7 +240,7 @@ export default function AvatarPage() {
                           ? `${cat.color} ${cat.textColor} shadow-md scale-105`
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
-                      style={{ fontFamily: 'Poppins, sans-serif' }}
+                      style={{ fontFamily: 'Andika, sans-serif' }}
                     >
                       <Icon icon={cat.icon} width={18} height={18} />
                       <span>{cat.name}</span>
@@ -249,10 +249,10 @@ export default function AvatarPage() {
                 </div>
 
                 <div className="bg-gray-50 rounded-2xl p-4 mb-4">
-                  <div className="text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <div className="text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {categories.find(c => c.id === activeCategory)?.name}
                   </div>
-                  <div className="text-xs text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <div className="text-xs text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Choose your favorite style!
                   </div>
                 </div>
@@ -265,10 +265,10 @@ export default function AvatarPage() {
               <div className="flex items-start gap-4">
                 <div className="text-4xl">🌟</div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Unlock More Items!
                   </h3>
-                  <p className="text-sm text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-sm text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Complete lessons and earn points to unlock special accessories, cool hairstyles, and awesome outfits! Keep learning to make your avatar even more amazing!
                   </p>
                 </div>

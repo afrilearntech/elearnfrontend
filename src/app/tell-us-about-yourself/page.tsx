@@ -204,15 +204,15 @@ export default function TellUsAboutYourself() {
                 <Icon icon="material-symbols:person" className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Tell us about yourself!
                 </h1>
-                <p className="text-sm opacity-90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm opacity-90" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Step 3 of 3 - This helps us personalize your learning
                 </p>
               </div>
             </div>
-            <div className="text-sm font-semibold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-sm font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>
               100%
             </div>
           </div>
@@ -226,7 +226,7 @@ export default function TellUsAboutYourself() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:calendar-month" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 When's your Birthday?
               </label>
             </div>
@@ -237,7 +237,7 @@ export default function TellUsAboutYourself() {
                 value={formData.birthday}
                 onChange={handleInputChange}
                 className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               />
             </div>
           </div>
@@ -245,7 +245,7 @@ export default function TellUsAboutYourself() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:person" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Gender
               </label>
             </div>
@@ -255,7 +255,7 @@ export default function TellUsAboutYourself() {
                 value={formData.gender}
                 onChange={handleInputChange}
                 className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <option value="">Select your gender</option>
                 <option value="male">Male</option>
@@ -268,7 +268,7 @@ export default function TellUsAboutYourself() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:location-on" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 District
               </label>
             </div>
@@ -276,7 +276,7 @@ export default function TellUsAboutYourself() {
               {loadingDistricts ? (
                 <div className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg flex items-center gap-2">
                   <Spinner size="sm" />
-                  <span className="text-sm text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="text-sm text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Loading districts...
                   </span>
                 </div>
@@ -287,7 +287,7 @@ export default function TellUsAboutYourself() {
                     value={formData.district}
                     onChange={handleInputChange}
                     className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     <option value="">Select your district</option>
                     {districts.map((district) => (
@@ -305,7 +305,7 @@ export default function TellUsAboutYourself() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:school" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Name of Institution
               </label>
             </div>
@@ -313,7 +313,7 @@ export default function TellUsAboutYourself() {
               {loadingSchools ? (
                 <div className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg flex items-center gap-2">
                   <Spinner size="sm" />
-                  <span className="text-sm text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="text-sm text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Loading schools...
                   </span>
                 </div>
@@ -325,7 +325,7 @@ export default function TellUsAboutYourself() {
               onChange={handleInputChange}
                     disabled={!formData.district || schools.length === 0}
                     className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-50 disabled:cursor-not-allowed"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     <option value="">
                       {!formData.district 
@@ -349,7 +349,7 @@ export default function TellUsAboutYourself() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:school" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Grade/Level
               </label>
             </div>
@@ -359,7 +359,7 @@ export default function TellUsAboutYourself() {
               value={formData.gradeLevel}
               onChange={handleInputChange}
                 className="w-full sm:w-[601px] h-[57px] px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <option value="">Select your grade level</option>
                 {gradeOptions.map((grade) => (
@@ -376,7 +376,7 @@ export default function TellUsAboutYourself() {
             type="submit"
             disabled={isSubmitting}
             className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg mt-8 disabled:opacity-70 disabled:cursor-not-allowed"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
+            style={{ fontFamily: 'Andika, sans-serif' }}
           >
             {isSubmitting ? (
               <>

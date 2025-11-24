@@ -140,10 +140,10 @@ export default function ProfileSetup() {
                 <Icon icon="material-symbols:person" className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h1 className="text-xl font-bold" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Profile Setup
                 </h1>
-                <p className="text-sm opacity-90" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm opacity-90" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Step 1 of 3 - Secure your account
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default function ProfileSetup() {
               type="button"
               onClick={() => router.push('/sign-in')}
               className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 border border-white/30 hover:border-white/50"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
               aria-label="Go back to sign in"
             >
               <Icon icon="mdi:arrow-left" className="w-5 h-5 text-white" />
@@ -171,7 +171,7 @@ export default function ProfileSetup() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:person" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Full Name
               </label>
             </div>
@@ -184,10 +184,10 @@ export default function ProfileSetup() {
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 errors.fullName ? 'border-red-500' : 'border-gray-300'
               }`}
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             />
             {errors.fullName && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {errors.fullName}
               </p>
             )}
@@ -196,7 +196,7 @@ export default function ProfileSetup() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:mail" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Email address
               </label>
             </div>
@@ -209,10 +209,10 @@ export default function ProfileSetup() {
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {errors.email}
               </p>
             )}
@@ -221,7 +221,7 @@ export default function ProfileSetup() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:phone" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Phone Number
               </label>
             </div>
@@ -234,10 +234,10 @@ export default function ProfileSetup() {
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 errors.phone ? 'border-red-500' : 'border-gray-300'
               }`}
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             />
             {errors.phone && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {errors.phone}
               </p>
             )}
@@ -246,7 +246,7 @@ export default function ProfileSetup() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:lock" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Password
               </label>
             </div>
@@ -260,10 +260,10 @@ export default function ProfileSetup() {
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {errors.password}
               </p>
             )}
@@ -272,7 +272,7 @@ export default function ProfileSetup() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Icon icon="material-symbols:lock" className="w-4 h-4 text-gray-600" />
-              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <label className="text-sm font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Confirm Password
               </label>
             </div>
@@ -286,10 +286,10 @@ export default function ProfileSetup() {
               className={`w-full sm:w-[601px] h-[57px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                 errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
               }`}
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Andika, sans-serif' }}
             />
             {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="mt-1 text-sm text-red-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {errors.confirmPassword}
               </p>
             )}
@@ -299,7 +299,7 @@ export default function ProfileSetup() {
             type="submit"
             disabled={isLoading}
             className="w-full bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200 shadow-lg mt-8 mb-4 disabled:opacity-70 disabled:cursor-not-allowed"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
+            style={{ fontFamily: 'Andika, sans-serif' }}
           >
             {isLoading ? (
               <>

@@ -51,7 +51,7 @@ export default function ComingSoon({
         {/* Title */}
         <h1 
           className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
+          style={{ fontFamily: 'Andika, sans-serif' }}
         >
           {title}
         </h1>
@@ -59,7 +59,7 @@ export default function ComingSoon({
         {/* Description */}
         <p 
           className="text-lg sm:text-xl text-gray-600 mb-8 max-w-md mx-auto"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
+          style={{ fontFamily: 'Andika, sans-serif' }}
         >
           {description}
         </p>

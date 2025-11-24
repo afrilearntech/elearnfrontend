@@ -27,7 +27,7 @@ export default function UpcomingTasks({ title, tasks }: UpcomingTasksProps) {
 
   return (
     <Card className="w-full lg:w-[280px] h-auto lg:h-[226px] lg:ml-[112px]">
-      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
         {title}
       </h3>
       <div className="space-y-3">
@@ -36,17 +36,17 @@ export default function UpcomingTasks({ title, tasks }: UpcomingTasksProps) {
             <div key={task.id} className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${getPriorityColor(task.priority)}`}></div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm font-medium text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {task.title}
                 </p>
-                <p className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   {task.dueDate}
                 </p>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
             No upcoming tasks
           </p>
         )}

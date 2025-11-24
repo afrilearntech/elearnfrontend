@@ -63,10 +63,10 @@ export function QuickStatsCards({
             </div>
           )}
           <div className="flex-1">
-            <div className={`text-xl font-bold ${stat.color} leading-6`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className={`text-xl font-bold ${stat.color} leading-6`} style={{ fontFamily: 'Andika, sans-serif' }}>
               {stat.value}
             </div>
-            <div className="text-xs text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
               {stat.label}
             </div>
           </div>

@@ -246,10 +246,10 @@ export default function MyAssignmentsPage() {
           <div className="p-4 lg:p-8 max-w-full">
             {/* Title Section */}
             <div className="sm:mx-8 mx-4 mb-6">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                 My Assignments 📚
               </h1>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Complete your homework and earn stars! ⭐
               </p>
             </div>
@@ -258,42 +258,42 @@ export default function MyAssignmentsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 sm:mx-8 mx-4 mb-6">
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-blue-200 min-w-0">
                 <div className="text-center">
-                  <p className="text-xl sm:text-2xl font-bold text-blue-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-xl sm:text-2xl font-bold text-blue-600 mb-1 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {stats.total}
                   </p>
-                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Total</p>
+                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>Total</p>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-blue-200 min-w-0">
                 <div className="text-center">
-                  <p className="text-xl sm:text-2xl font-bold text-blue-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-xl sm:text-2xl font-bold text-blue-600 mb-1 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {stats.pending}
                   </p>
-                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Pending</p>
+                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>Pending</p>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-orange-200 min-w-0">
                 <div className="text-center">
-                  <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-1 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {stats.due_soon}
                   </p>
-                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Due Soon</p>
+                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>Due Soon</p>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-red-200 min-w-0">
                 <div className="text-center">
-                  <p className="text-xl sm:text-2xl font-bold text-red-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-xl sm:text-2xl font-bold text-red-600 mb-1 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {stats.overdue}
                   </p>
-                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Overdue</p>
+                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>Overdue</p>
                 </div>
               </div>
               <div className="bg-white rounded-xl shadow-md p-3 sm:p-4 border-2 border-green-200 col-span-2 sm:col-span-1 min-w-0">
                 <div className="text-center">
-                  <p className="text-xl sm:text-2xl font-bold text-green-600 mb-1 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-xl sm:text-2xl font-bold text-green-600 mb-1 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                     {stats.submitted}
                   </p>
-                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>Submitted</p>
+                  <p className="text-xs text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>Submitted</p>
                 </div>
               </div>
             </div>
@@ -307,7 +307,7 @@ export default function MyAssignmentsPage() {
                     ? 'bg-[#60A5FA] text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:view-list" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="hidden sm:inline">All Assignments</span>
@@ -320,7 +320,7 @@ export default function MyAssignmentsPage() {
                     ? 'bg-blue-500 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:clipboard-text-outline" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
                 Pending
@@ -332,7 +332,7 @@ export default function MyAssignmentsPage() {
                     ? 'bg-orange-500 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:clock-alert-outline" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="hidden sm:inline">Due Soon</span>
@@ -345,7 +345,7 @@ export default function MyAssignmentsPage() {
                     ? 'bg-red-500 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:alert-circle-outline" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
                 Overdue
@@ -357,7 +357,7 @@ export default function MyAssignmentsPage() {
                     ? 'bg-green-500 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:check-circle-outline" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
                 Submitted
@@ -388,14 +388,14 @@ export default function MyAssignmentsPage() {
                               style={{ color: assignment.iconColor }} 
                             />
                           </div>
-                          <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${assignment.badgeColor} truncate max-w-[60%] sm:max-w-none`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${assignment.badgeColor} truncate max-w-[60%] sm:max-w-none`} style={{ fontFamily: 'Andika, sans-serif' }}>
                             {assignment.badgeText}
                           </span>
                         </div>
-                        <h3 className={`text-base sm:text-lg font-bold ${assignment.titleColor} mb-2 truncate`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <h3 className={`text-base sm:text-lg font-bold ${assignment.titleColor} mb-2 truncate`} style={{ fontFamily: 'Andika, sans-serif' }}>
                           {assignment.title}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 truncate capitalize" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <p className="text-xs sm:text-sm text-gray-600 truncate capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
                           {assignment.type}
                         </p>
                       </div>
@@ -405,7 +405,7 @@ export default function MyAssignmentsPage() {
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
                           <div className="flex items-center gap-2 min-w-0">
                             <Icon icon="mdi:calendar-clock" width={16} height={16} className="sm:w-[18px] sm:h-[18px] text-gray-500 shrink-0" />
-                            <span className="text-xs sm:text-sm text-gray-600 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <span className="text-xs sm:text-sm text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                               {formatDueDate(assignment.due_at)}
                             </span>
                           </div>
@@ -414,7 +414,7 @@ export default function MyAssignmentsPage() {
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0">
                             <Icon icon="mdi:book-open-page-variant" width={14} height={14} className="sm:w-4 sm:h-4 text-gray-400 shrink-0" />
-                            <span className="text-[10px] sm:text-xs text-gray-500 truncate capitalize" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <span className="text-[10px] sm:text-xs text-gray-500 truncate capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
                               {assignment.type}
                             </span>
                           </div>
@@ -428,7 +428,7 @@ export default function MyAssignmentsPage() {
                                 ? 'bg-orange-100 text-orange-700'
                                 : 'bg-blue-100 text-blue-700'
                             }`}
-                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
                           >
                             {assignment.isSubmitted ? (
                               <>
@@ -451,10 +451,10 @@ export default function MyAssignmentsPage() {
                 <div className="col-span-full text-center py-8 sm:py-12">
                   <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-md mx-auto">
                     <Icon icon="mdi:clipboard-check-outline" width={48} height={48} className="sm:w-16 sm:h-16 mx-auto text-gray-300 mb-4" />
-                    <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 px-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 px-4" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {filter === 'all' ? 'No Assignments Yet! 🎉' : `No ${filter === 'due_soon' ? 'due soon' : filter === 'submitted' ? 'submitted' : filter.replace('_', ' ')} assignments`}
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-500 px-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <p className="text-xs sm:text-sm text-gray-500 px-4" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {filter === 'all' 
                         ? "Great job! You're all caught up. Check back later for new assignments!" 
                         : filter === 'submitted'

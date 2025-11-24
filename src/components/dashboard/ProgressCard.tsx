@@ -38,12 +38,12 @@ export default function ProgressCard({
         </div>
       </div>
       
-      <h4 className="text-lg font-bold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <h4 className="text-lg font-bold text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
         {title}
       </h4>
       
       {subtitle && (
-        <p className="text-sm text-gray-600 mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <p className="text-sm text-gray-600 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>
           {subtitle}
         </p>
       )}
@@ -51,7 +51,7 @@ export default function ProgressCard({
       {timeLeft && (
         <div className="flex items-center space-x-2 mb-3">
           <Icon icon="material-symbols:schedule" className="w-4 h-4 text-gray-500" />
-          <span className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <span className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
             {timeLeft}
           </span>
         </div>
@@ -59,10 +59,10 @@ export default function ProgressCard({
       
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <span className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
             Progress
           </span>
-          <span className="text-sm font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <span className="text-sm font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
             {progress}%
           </span>
         </div>

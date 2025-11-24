@@ -26,16 +26,16 @@ export function LearningJourneyBanner({
       </div>
       
       <div className="relative z-10 lg:pr-[180px]">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
           {title}
         </h1>
-        <p className="text-sm sm:text-base opacity-90 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <p className="text-sm sm:text-base opacity-90 mb-6" style={{ fontFamily: 'Andika, sans-serif' }}>
           {description}
         </p>
         <button
           onClick={onButtonClick}
           className="bg-white text-[#1E40AF] px-6 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
+          style={{ fontFamily: 'Andika, sans-serif' }}
         >
           {buttonText}
         </button>

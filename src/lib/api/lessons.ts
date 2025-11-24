@@ -26,3 +26,30 @@ export async function getLessonById(id: number | string, token: string): Promise
   });
 }
 
+export interface TakenLessonRequest {
+  student: number;
+  lesson: number;
+}
+
+export interface TakenLessonResponse {
+  id: number;
+  student: number;
+  lesson: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function markLessonTaken(
+  payload: TakenLessonRequest,
+  token: string,
+): Promise<TakenLessonResponse> {
+  return apiRequest<TakenLessonResponse>('/taken-lessons/', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+

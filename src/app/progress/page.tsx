@@ -185,12 +185,18 @@ export default function ProgressPage() {
     return sizes[Math.min(level - 1, 4)] || sizes[0];
   };
 
-  const formatRank = (rank: number | null): string => {
-    if (rank === null) return 'Not ranked';
-    if (rank === 1) return `#${rank} 🥇`;
-    if (rank === 2) return `#${rank} 🥈`;
-    if (rank === 3) return `#${rank} 🥉`;
-    return `#${rank}`;
+  const formatRank = (rankData: any): string => {
+    if (rankData === null || rankData === undefined) {
+      return 'Not ranked yet';
+    }
+
+    const rankValue = typeof rankData === 'number' ? rankData : rankData?.rank;
+
+    if (rankValue === null || rankValue === undefined) {
+      return 'Not ranked yet';
+    }
+
+    return String(rankValue);
   };
 
   const renderPlant = (plant: Plant) => {
@@ -211,10 +217,10 @@ export default function ProgressPage() {
                 </div>
               </div>
             </div>
-            <div className="text-sm font-semibold text-gray-500 text-center mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-sm font-semibold text-gray-500 text-center mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
               {plant.name}
             </div>
-            <div className="text-xs text-gray-400 text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-xs text-gray-400 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
               Coming Soon! 🔒
             </div>
           </div>
@@ -230,7 +236,7 @@ export default function ProgressPage() {
       >
         <div className="absolute top-2 right-2 bg-white/80 rounded-full px-3 py-1 flex items-center gap-1 z-10">
           <Icon icon="mdi:star" className="text-yellow-500" width={16} height={16} />
-          <span className="text-xs font-bold text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <span className="text-xs font-bold text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
             Lv.{plant.level}
           </span>
         </div>
@@ -254,7 +260,7 @@ export default function ProgressPage() {
             )}
           </div>
           
-          <div className="text-lg font-bold text-gray-800 mb-2 text-center min-w-0 w-full" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="text-lg font-bold text-gray-800 mb-2 text-center min-w-0 w-full" style={{ fontFamily: 'Andika, sans-serif' }}>
             <div className="truncate px-2">{plant.name}</div>
           </div>
           
@@ -265,7 +271,7 @@ export default function ProgressPage() {
                 style={{ width: `${plant.progress}%` }}
               />
             </div>
-            <div className="text-xs text-gray-600 text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className="text-xs text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
               {Math.round(plant.progress)}% to next level
             </div>
           </div>
@@ -306,10 +312,10 @@ export default function ProgressPage() {
         <main className="flex-1 sm:pl-[280px] lg:pl-[320px] overflow-x-hidden">
           <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
             <div className="mb-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 bg-linear-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-2 bg-linear-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: 'Andika, sans-serif' }}>
                 🌱 Progress Garden
               </h1>
-              <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-gray-600 text-sm sm:text-base" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Watch your learning garden grow as you complete lessons!
               </p>
             </div>
@@ -321,8 +327,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:book-open-variant" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Lessons</div>
-                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Lessons</div>
+                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {totalLessons}
                     </div>
                   </div>
@@ -335,8 +341,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:fire" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Longest Streak</div>
-                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Longest Streak</div>
+                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {longestStreak} days 🔥
                     </div>
                   </div>
@@ -349,8 +355,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:star" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Level</div>
-                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Level</div>
+                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {currentLevel}
                     </div>
                   </div>
@@ -363,8 +369,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:gift" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Points</div>
-                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>Points</div>
+                    <div className="text-xl font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {pointsEarned} ⭐
                     </div>
                   </div>
@@ -379,8 +385,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:school" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>School Rank</div>
-                    <div className="text-lg font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>School Rank</div>
+                    <div className="text-lg font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {formatRank(rankInSchool)}
                     </div>
                   </div>
@@ -393,8 +399,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:map-marker" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>District Rank</div>
-                    <div className="text-lg font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>District Rank</div>
+                    <div className="text-lg font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {formatRank(rankInDistrict)}
                     </div>
                   </div>
@@ -407,8 +413,8 @@ export default function ProgressPage() {
                     <Icon icon="mdi:earth" className="text-white" width={24} height={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>County Rank</div>
-                    <div className="text-lg font-bold text-gray-800 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="text-xs text-gray-500 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>County Rank</div>
+                    <div className="text-lg font-bold text-gray-800 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {formatRank(rankInCounty)}
                     </div>
                   </div>
@@ -417,7 +423,7 @@ export default function ProgressPage() {
             </div>
 
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                 <Icon icon="mdi:flower" className="text-green-500" width={28} height={28} />
                 Your Garden
               </h2>
@@ -428,10 +434,10 @@ export default function ProgressPage() {
               ) : (
                 <div className="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-gray-300">
                   <div className="text-6xl mb-4">🌱</div>
-                  <h3 className="text-xl font-bold text-gray-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h3 className="text-xl font-bold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     No plants yet!
                   </h3>
-                  <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Start learning to grow your first plant!
                   </p>
                 </div>
@@ -459,7 +465,7 @@ export default function ProgressPage() {
                       ) : (
                         <span className="text-4xl">{selectedPlant.emoji}</span>
                       )}
-                      <h3 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <h3 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Andika, sans-serif' }}>
                         {selectedPlant.name}
                       </h3>
                     </div>
@@ -474,10 +480,10 @@ export default function ProgressPage() {
                   <div className="space-y-4">
                     <div className="bg-gray-50 rounded-2xl p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                           Level {selectedPlant.level}
                         </span>
-                        <span className="text-xs text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="text-xs text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                           {Math.round(selectedPlant.progress)}% to next level
                         </span>
                       </div>
@@ -490,7 +496,7 @@ export default function ProgressPage() {
                     </div>
 
                     <div className="bg-linear-to-r from-green-100 to-blue-100 rounded-2xl p-4 border-2 border-green-200">
-                      <p className="text-sm text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <p className="text-sm text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
                         Keep learning to help your {selectedPlant.name.toLowerCase()} grow bigger and stronger! 🌟
                       </p>
                     </div>
@@ -503,13 +509,13 @@ export default function ProgressPage() {
               <div className="flex items-start gap-4">
                 <div className="text-4xl">💡</div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
                     How Your Garden Grows
                   </h3>
-                  <p className="text-sm text-gray-700 mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <p className="text-sm text-gray-700 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>
                     Every lesson you complete helps your plants grow! Complete more lessons to unlock new plants and watch them reach level 5!
                   </p>
-                  <ul className="text-sm text-gray-700 space-y-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <ul className="text-sm text-gray-700 space-y-1" style={{ fontFamily: 'Andika, sans-serif' }}>
                     <li>🌱 Complete lessons to water your plants</li>
                     <li>⭐ Earn points and level up your plants</li>
                     <li>🏆 Climb the rankings in your school, district, and county</li>

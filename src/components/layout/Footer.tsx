@@ -48,22 +48,22 @@ export default function Footer({
                 className="rounded-full"
               />
               <div>
-                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <h3 className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                   Ministry of Education
                 </h3>
-                <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                   eLearning Platform
                 </p>
               </div>
             </div>
-            <p className="text-sm text-gray-600 leading-relaxed" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <p className="text-sm text-gray-600 leading-relaxed" style={{ fontFamily: 'Andika, sans-serif' }}>
               Empowering education across Liberia through innovative digital learning solutions.
             </p>
           </div>
 
           {/* Middle-Left Section - Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h4 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
               Quick Links
             </h4>
             <ul className="space-y-2">
@@ -72,7 +72,7 @@ export default function Footer({
                   <Link 
                     href={link.href} 
                     className="text-sm text-gray-600 hover:text-gray-900 transition-colors" 
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     {link.label}
                   </Link>
@@ -83,7 +83,7 @@ export default function Footer({
 
           {/* Middle-Right Section - Resources */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h4 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
               Resources
             </h4>
             <ul className="space-y-2">
@@ -92,7 +92,7 @@ export default function Footer({
                   <Link 
                     href={link.href} 
                     className="text-sm text-gray-600 hover:text-gray-900 transition-colors" 
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    style={{ fontFamily: 'Andika, sans-serif' }}
                   >
                     {link.label}
                   </Link>
@@ -104,7 +104,7 @@ export default function Footer({
           {/* Right Section - Connect */}
           {showSocialMedia && (
             <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h4 className="text-lg font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                 Connect
               </h4>
               <div className="flex space-x-4">
@@ -136,7 +136,7 @@ export default function Footer({
 
         {/* Bottom Section - Copyright */}
         <div className="border-t border-gray-200 mt-8 pt-8 text-center">
-          <p className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
             © 2025 Ministry of Education, Liberia. All rights reserved.
           </p>
         </div>

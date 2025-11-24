@@ -18,7 +18,7 @@ interface StatsCardProps {
 export default function StatsCard({ title, stats }: StatsCardProps) {
   return (
     <Card className="w-full lg:w-[280px] h-auto lg:h-[222px] lg:ml-[112px]">
-      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
         {title}
       </h3>
       <div className="space-y-3">
@@ -37,11 +37,11 @@ export default function StatsCard({ title, stats }: StatsCardProps) {
                   }`} 
                 />
               </div>
-              <span className="text-sm text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <span className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                 {stat.label}
               </span>
             </div>
-            <span className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <span className="text-lg font-bold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
               {stat.value}
             </span>
           </div>

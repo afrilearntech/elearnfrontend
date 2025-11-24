@@ -41,10 +41,10 @@ export default function ContinueLearningSection({
         className="bg-white rounded-lg shadow-md w-full h-auto lg:h-[322px] p-6"
         style={{ 
           border: '0.5px solid #E5E7EB',
-          fontFamily: 'Poppins, sans-serif'
+          fontFamily: 'Andika, sans-serif'
         }}
       >
-        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
           Continue Learning
         </h2>
         <div className="space-y-4">
@@ -70,10 +70,10 @@ export default function ContinueLearningSection({
                       />
                     </div>
                     <div>
-                      <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
                         {module.title}
                       </h3>
-                      <p className="text-sm lg:text-base text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <p className="text-sm lg:text-base text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
                         {module.subtitle}
                       </p>
                     </div>
@@ -90,7 +90,7 @@ export default function ContinueLearningSection({
             );
           })) : (
             <div className="text-center py-8">
-              <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <p className="text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
                 No courses available. Start learning to see your progress here!
               </p>
             </div>
