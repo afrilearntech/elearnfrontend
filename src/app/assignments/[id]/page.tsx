@@ -324,142 +324,202 @@ export default function AssignmentDetailPage() {
               </div>
             </div>
 
-            {/* Submission Form */}
-            <form onSubmit={handleSubmit} className="sm:mx-8 mx-4">
-              <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-[#E5E7EB]">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                    <Icon icon="mdi:file-document-edit" width={28} height={28} />
-                    Your Solution
-                  </h2>
-                  
-                  {/* Status Display */}
-                  <div className={`px-4 py-2 rounded-xl ${statusConfig.bgColor} ${statusConfig.textColor} border-2 ${statusConfig.borderColor} flex items-center gap-2`}>
-                    <span className="text-lg">{statusConfig.emoji}</span>
-                    <Icon icon={statusConfig.icon} width={20} height={20} />
-                    <span className="font-semibold text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {statusConfig.label}
-                    </span>
+            {assignment.status?.toLowerCase() === 'submitted' && assignment.solution ? (
+              <div className="sm:mx-8 mx-4">
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      <Icon icon="mdi:check-circle" width={28} height={28} className="text-green-500" />
+                      Your Submitted Solution
+                    </h2>
+                    
+                    <div className={`px-4 py-2 rounded-xl ${statusConfig.bgColor} ${statusConfig.textColor} border-2 ${statusConfig.borderColor} flex items-center gap-2`}>
+                      <span className="text-lg">{statusConfig.emoji}</span>
+                      <Icon icon={statusConfig.icon} width={20} height={20} />
+                      <span className="font-semibold text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        {statusConfig.label}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Text Solution */}
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                    Write your answer here ✍️
-                  </label>
-                  <textarea
-                    value={solution}
-                    onChange={(e) => setSolution(e.target.value)}
-                    placeholder="Type your answer here... Be creative and show what you learned! 🌟"
-                    disabled={assignment.status?.toLowerCase() === 'submitted'}
-                    className={`w-full h-48 sm:h-64 p-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:border-transparent resize-none text-sm sm:text-base ${
-                      assignment.status?.toLowerCase() === 'submitted' 
-                        ? 'bg-gray-100 border-gray-200 cursor-not-allowed' 
-                        : 'border-gray-300'
-                    }`}
-                    style={{ fontFamily: 'Andika, sans-serif' }}
-                  />
-                  <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                    You can write your answer or attach a file, or both!
-                  </p>
-                </div>
-
-                {/* File Upload */}
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                    Or attach a file 📎
-                  </label>
-                  
-                  {assignment.status?.toLowerCase() === 'submitted' ? (
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50">
-                      <Icon 
-                        icon="mdi:file-check" 
-                        className="mx-auto mb-3 text-gray-400" 
-                        width={48} 
-                        height={48} 
-                      />
-                      <p className="text-sm text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        File upload is disabled. This assignment has already been submitted.
-                      </p>
+                  <div className="mb-6 p-4 bg-green-50 rounded-xl border-2 border-green-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon icon="mdi:calendar-check" className="text-green-600" width={20} height={20} />
+                      <span className="text-sm font-semibold text-green-700" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        Submitted on:
+                      </span>
                     </div>
-                  ) : !selectedFile ? (
-                    <div
-                      onDragEnter={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDragOver={handleDrag}
-                      onDrop={handleDrop}
-                      className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
-                        dragActive
-                          ? 'border-[#9333EA] bg-purple-50'
-                          : 'border-gray-300 hover:border-[#9333EA] hover:bg-purple-50'
-                      }`}
-                    >
-                      <Icon 
-                        icon="mdi:cloud-upload" 
-                        className="mx-auto mb-3 text-[#9333EA]" 
-                        width={48} 
-                        height={48} 
-                      />
-                      <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        Drag and drop your file here, or
-                      </p>
-                      <label className="inline-block">
-                        <input
-                          type="file"
-                          onChange={handleFileChange}
-                          className="hidden"
-                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                          disabled={assignment.status?.toLowerCase() === 'submitted'}
-                        />
-                        <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          assignment.status?.toLowerCase() === 'submitted'
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-[#9333EA] text-white cursor-pointer hover:bg-[#7C3AED]'
-                        }`} style={{ fontFamily: 'Andika, sans-serif' }}>
-                          <Icon icon="mdi:file-upload" width={18} height={18} />
-                          Choose File
-                        </span>
+                    <p className="text-sm text-gray-700 ml-7" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      {new Date(assignment.solution.submitted_at).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+
+                  {assignment.solution.solution && assignment.solution.solution.trim() && (
+                    <div className="mb-6">
+                      <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        <Icon icon="mdi:text-box" className="text-[#9333EA]" width={20} height={20} />
+                        Your Answer ✍️
                       </label>
-                      <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        PDF, Word, Images, or Text files
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="border-2 border-green-300 bg-green-50 rounded-xl p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center shrink-0">
-                          <Icon icon="mdi:file-check" className="text-green-700" width={24} height={24} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
-                            {fileName}
-                          </p>
-                          <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
-                            {(selectedFile.size / 1024).toFixed(1)} KB
-                          </p>
-                        </div>
+                      <div className="w-full min-h-[200px] p-4 border-2 border-gray-200 rounded-xl bg-gray-50 text-sm sm:text-base whitespace-pre-wrap" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        {assignment.solution.solution}
                       </div>
-                      <button
-                        type="button"
-                        onClick={removeFile}
-                        className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors shrink-0"
-                        aria-label="Remove file"
-                      >
-                        <Icon icon="mdi:close" width={18} height={18} />
-                      </button>
                     </div>
                   )}
-                </div>
 
-                {/* Submit Button */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {assignment.status?.toLowerCase() === 'submitted' ? (
-                    <div className="flex-1 h-12 sm:h-14 rounded-xl bg-green-100 text-green-700 font-bold text-base sm:text-lg flex items-center justify-center gap-2 border-2 border-green-300">
-                      <Icon icon="mdi:check-circle" width={24} height={24} />
-                      <span style={{ fontFamily: 'Andika, sans-serif' }}>Already Submitted ✅</span>
+                  {assignment.solution.attachment && (
+                    <div className="mb-6">
+                      <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        <Icon icon="mdi:paperclip" className="text-[#9333EA]" width={20} height={20} />
+                        Your Attachment 📎
+                      </label>
+                      <div className="border-2 border-green-300 bg-green-50 rounded-xl p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-green-200 rounded-lg flex items-center justify-center shrink-0">
+                            <Icon icon="mdi:file-check" className="text-green-700" width={28} height={28} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              Attachment File
+                            </p>
+                            <a
+                              href={assignment.solution.attachment}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-sm text-[#9333EA] hover:text-[#7C3AED] transition-colors"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:open-in-new" width={16} height={16} />
+                              <span>View Attachment</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  ) : (
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link
+                      href="/assignments"
+                      className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6"
+                      style={{ fontFamily: 'Andika, sans-serif' }}
+                    >
+                      <Icon icon="mdi:arrow-left" width={18} height={18} />
+                      <span>Back to Assignments</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="sm:mx-8 mx-4">
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-[#E5E7EB]">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      <Icon icon="mdi:file-document-edit" width={28} height={28} />
+                      Your Solution
+                    </h2>
+                    
+                    <div className={`px-4 py-2 rounded-xl ${statusConfig.bgColor} ${statusConfig.textColor} border-2 ${statusConfig.borderColor} flex items-center gap-2`}>
+                      <span className="text-lg">{statusConfig.emoji}</span>
+                      <Icon icon={statusConfig.icon} width={20} height={20} />
+                      <span className="font-semibold text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        {statusConfig.label}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      Write your answer here ✍️
+                    </label>
+                    <textarea
+                      value={solution}
+                      onChange={(e) => setSolution(e.target.value)}
+                      placeholder="Type your answer here... Be creative and show what you learned! 🌟"
+                      className="w-full h-48 sm:h-64 p-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:border-transparent resize-none text-sm sm:text-base border-gray-300"
+                      style={{ fontFamily: 'Andika, sans-serif' }}
+                    />
+                    <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      You can write your answer or attach a file, or both!
+                    </p>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      Or attach a file 📎
+                    </label>
+                    
+                    {!selectedFile ? (
+                      <div
+                        onDragEnter={handleDrag}
+                        onDragLeave={handleDrag}
+                        onDragOver={handleDrag}
+                        onDrop={handleDrop}
+                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
+                          dragActive
+                            ? 'border-[#9333EA] bg-purple-50'
+                            : 'border-gray-300 hover:border-[#9333EA] hover:bg-purple-50'
+                        }`}
+                      >
+                        <Icon 
+                          icon="mdi:cloud-upload" 
+                          className="mx-auto mb-3 text-[#9333EA]" 
+                          width={48} 
+                          height={48} 
+                        />
+                        <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                          Drag and drop your file here, or
+                        </p>
+                        <label className="inline-block">
+                          <input
+                            type="file"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                          />
+                          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-[#9333EA] text-white cursor-pointer hover:bg-[#7C3AED]" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            <Icon icon="mdi:file-upload" width={18} height={18} />
+                            Choose File
+                          </span>
+                        </label>
+                        <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                          PDF, Word, Images, or Text files
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="border-2 border-green-300 bg-green-50 rounded-xl p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center shrink-0">
+                            <Icon icon="mdi:file-check" className="text-green-700" width={24} height={24} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              {fileName}
+                            </p>
+                            <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              {(selectedFile.size / 1024).toFixed(1)} KB
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={removeFile}
+                          className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors shrink-0"
+                          aria-label="Remove file"
+                        >
+                          <Icon icon="mdi:close" width={18} height={18} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <button
                       type="submit"
                       disabled={isSubmitting || (!solution.trim() && !selectedFile)}
@@ -481,19 +541,19 @@ export default function AssignmentDetailPage() {
                         </>
                       )}
                     </button>
-                  )}
-                  
-                  <Link
-                    href="/assignments"
-                    className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6 min-w-0 overflow-hidden"
-                    style={{ fontFamily: 'Andika, sans-serif' }}
-                  >
-                    <Icon icon="mdi:cancel" width={18} height={18} className="shrink-0" />
-                    <span className="hidden sm:inline whitespace-nowrap">Cancel</span>
-                  </Link>
+                    
+                    <Link
+                      href="/assignments"
+                      className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6 min-w-0 overflow-hidden"
+                      style={{ fontFamily: 'Andika, sans-serif' }}
+                    >
+                      <Icon icon="mdi:cancel" width={18} height={18} className="shrink-0" />
+                      <span className="hidden sm:inline whitespace-nowrap">Cancel</span>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            )}
           </div>
         </main>
       </div>

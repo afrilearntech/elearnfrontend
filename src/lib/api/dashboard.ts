@@ -139,6 +139,17 @@ export async function getElementarySubjectsAndLessons(token: string): Promise<El
   });
 }
 
+export interface AssignmentSolution {
+  id: number;
+  assessment: number;
+  student: number;
+  solution: string;
+  attachment: string | null;
+  submitted_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface KidsAssignment {
   id: number;
   title: string;
@@ -146,6 +157,7 @@ export interface KidsAssignment {
   due_at: string;
   status: string;
   instructions: string;
+  solution?: AssignmentSolution | null;
 }
 
 export interface KidsAssignmentsStats {

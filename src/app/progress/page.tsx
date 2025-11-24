@@ -484,7 +484,7 @@ export default function ProgressPage() {
                   <div className="space-y-4">
                     <div className="bg-gray-50 rounded-2xl p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        <span className="text-sm font-semibold text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>                                                                                                                                                                      
                           Level {selectedPlant.level}
                         </span>
                         <span className="text-xs text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
