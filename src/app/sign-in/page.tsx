@@ -64,9 +64,15 @@ export default function SignInPage() {
         setStep("non-student");
       }
     } else {
-      const contentUrl =
-        process.env.NEXT_PUBLIC_CONTENT_URL || "http://localhost:3001";
-      window.location.href = `${contentUrl}/sign-in`;
+      if (selectedNonStudentRole === "content-manager") {
+        const contentUrl =
+          process.env.NEXT_PUBLIC_CONTENT_URL || "http://localhost:3001";
+        window.location.href = `${contentUrl}/sign-in`;
+      } else {
+        const contentUrl =
+          process.env.NEXT_PUBLIC_CONTENT_URL || "http://localhost:3001";
+        window.location.href = `${contentUrl}/sign-in`;
+      }
     }
   };
 

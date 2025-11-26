@@ -113,3 +113,22 @@ export async function aboutUser(
   });
 }
 
+export interface ContentLoginRequest {
+  identifier: string;
+  password: string;
+}
+
+export interface ContentLoginResponse {
+  token: string;
+  user: User;
+}
+
+export async function contentLogin(
+  data: ContentLoginRequest
+): Promise<ContentLoginResponse> {
+  return apiRequest<ContentLoginResponse>('/auth/content/', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
