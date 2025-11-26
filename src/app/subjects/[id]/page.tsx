@@ -210,8 +210,8 @@ export default function SubjectLessonDetail() {
                 </div>
               </div>
               {lesson?.duration_minutes && (
-                <div className="mt-3">
-                  <div className="h-[13px] w-full bg-gray-200 rounded-full">
+              <div className="mt-3">
+                <div className="h-[13px] w-full bg-gray-200 rounded-full">
                     <div className="h-[13px] rounded-full bg-linear-to-r from-[#10B981] to-[#3B82F6]" style={{ width: '100%' }}></div>
                   </div>
                   <div className="text-[12px] text-[#4B5563] mt-1 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
