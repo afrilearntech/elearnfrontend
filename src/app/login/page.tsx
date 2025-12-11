@@ -107,7 +107,15 @@ export default function LoginPage() {
       }, 1500);
     } catch (error: unknown) {
       if (error instanceof ApiClientError) {
-        if (error.errors) {
+        if (error.status === 403) {
+          showErrorToast(
+            'Your account is pending approval. Please wait for your account to be approved before logging in. You will be notified once your account is ready.',
+            { duration: 6000 }
+          );
+          setErrors({
+            general: 'Account pending approval. Please wait for approval before logging in.'
+          });
+        } else if (error.errors) {
           const fieldErrors: Record<string, string> = {};
           Object.keys(error.errors).forEach((key) => {
             const errorMessages = error.errors![key];

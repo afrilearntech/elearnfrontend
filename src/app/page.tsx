@@ -67,10 +67,12 @@ export default function Home() {
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 sm:mt-20">
-          <button className="w-full max-w-[305px] h-[50px] bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">
-            <Icon icon="logos:google-icon" className="w-5 h-5" />
-            Continue with Google
-          </button>
+          <Link href="/profile-setup">
+            <button className="w-full max-w-[305px] h-[50px] bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">
+              <Icon icon="logos:google-icon" className="w-5 h-5" />
+              Continue with Google
+            </button>
+          </Link>
           
           <Link href="/profile-setup">
             <button className="w-full max-w-[305px] h-[50px] bg-linear-to-r from-[#1E40AF] to-[#059669] text-white font-semibold px-6 rounded-full flex items-center justify-center gap-3 hover:from-[#1E3A8A] hover:to-[#047857] transition-all duration-200">

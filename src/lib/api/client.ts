@@ -26,7 +26,9 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
   if (!response.ok) {
     const errorMessage = 
-      isJson && data.message 
+      isJson && data.detail
+        ? data.detail
+        : isJson && data.message 
         ? data.message 
         : isJson && data.error
         ? data.error

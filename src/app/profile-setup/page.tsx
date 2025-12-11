@@ -87,15 +87,27 @@ export default function ProfileSetup() {
         confirm_password: formData.confirmPassword,
       });
 
+      if (!response || !response.token) {
+        throw new Error('Authentication token not received. Please try again.');
+      }
+
+      const token = response.token;
+      if (typeof token !== 'string' || token.trim() === '') {
+        throw new Error('Invalid token received. Please try again.');
+      }
+
       if (typeof window !== 'undefined') {
-        localStorage.setItem('auth_token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('auth_token', token.trim());
+        
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
       }
 
       showSuccessToast('🎉 Profile setup successful! Redirecting to next step...');
       
       setTimeout(() => {
-    router.push('/who-are-you');
+        router.push('/who-are-you');
       }, 1500);
     } catch (error: unknown) {
       if (error instanceof ApiClientError) {

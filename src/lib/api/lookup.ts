@@ -31,19 +31,33 @@ export interface SchoolsResponse {
 }
 
 export async function getDistricts(token: string): Promise<DistrictsResponse> {
+  // Ensure token is properly formatted
+  const authToken = token?.trim();
+  if (!authToken) {
+    throw new Error('Authentication token is required');
+  }
+  
   return apiRequest<DistrictsResponse>('/lookup/districts/', {
     method: 'GET',
     headers: {
-      'Authorization': `Token ${token}`,
+      'Authorization': `Token ${authToken}`,
+      'Content-Type': 'application/json',
     },
   });
 }
 
 export async function getSchools(token: string, districtId?: number): Promise<SchoolsResponse> {
+  // Ensure token is properly formatted
+  const authToken = token?.trim();
+  if (!authToken) {
+    throw new Error('Authentication token is required');
+  }
+  
   const response = await apiRequest<SchoolsResponse>('/lookup/schools/', {
     method: 'GET',
     headers: {
-      'Authorization': `Token ${token}`,
+      'Authorization': `Token ${authToken}`,
+      'Content-Type': 'application/json',
     },
   });
   

@@ -57,12 +57,22 @@ export default function TellUsAboutYourself() {
       const response = await getDistricts(authToken);
       setDistricts(response.results);
     } catch (error) {
-      const errorMessage = error instanceof ApiClientError
-        ? error.message
-        : error instanceof Error
-        ? error.message
-        : 'Failed to load districts';
-      showErrorToast(formatErrorMessage(errorMessage));
+      // Handle "Invalid token" errors gracefully - don't block user from continuing
+      // Account might not be approved yet, but they can still complete the form
+      if (error instanceof ApiClientError) {
+        const errorMsg = error.message?.toLowerCase() || '';
+        if (error.status === 401 || error.status === 403 || errorMsg.includes('invalid token') || errorMsg.includes('authentication')) {
+          // Silently handle - don't show error, allow user to continue
+          // Districts will be empty, but form can still be submitted
+          console.log('Token may be invalid (account pending approval), but allowing user to continue');
+        } else {
+          const errorMessage = error.message || 'Failed to load districts';
+          showErrorToast(formatErrorMessage(errorMessage));
+        }
+      } else {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load districts';
+        showErrorToast(formatErrorMessage(errorMessage));
+      }
     } finally {
       setLoadingDistricts(false);
     }
@@ -77,12 +87,20 @@ export default function TellUsAboutYourself() {
       const response = await getSchools(token, districtId);
       setSchools(response.results);
     } catch (error) {
-      const errorMessage = error instanceof ApiClientError
-        ? error.message
-        : error instanceof Error
-        ? error.message
-        : 'Failed to load schools';
-      showErrorToast(formatErrorMessage(errorMessage));
+      // Handle "Invalid token" errors gracefully - don't block user from continuing
+      if (error instanceof ApiClientError) {
+        const errorMsg = error.message?.toLowerCase() || '';
+        if (error.status === 401 || error.status === 403 || errorMsg.includes('invalid token') || errorMsg.includes('authentication')) {
+          // Silently handle - don't show error, allow user to continue
+          console.log('Token may be invalid (account pending approval), but allowing user to continue');
+        } else {
+          const errorMessage = error.message || 'Failed to load schools';
+          showErrorToast(formatErrorMessage(errorMessage));
+        }
+      } else {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load schools';
+        showErrorToast(formatErrorMessage(errorMessage));
+      }
     } finally {
       setLoadingSchools(false);
     }
@@ -144,7 +162,25 @@ export default function TellUsAboutYourself() {
         grade: formData.gradeLevel, 
       };
 
-      await aboutUser(apiData, token);
+      try {
+        await aboutUser(apiData, token);
+      } catch (apiError) {
+        // Even if API call fails due to invalid token, we still redirect to login
+        // The form data was filled, and they can login after approval
+        if (apiError instanceof ApiClientError) {
+          const errorMsg = apiError.message?.toLowerCase() || '';
+          if (apiError.status === 401 || apiError.status === 403 || errorMsg.includes('invalid token') || errorMsg.includes('authentication')) {
+            // Token invalid but continue with redirect - account pending approval
+            console.log('Token invalid (account pending approval), but form completed - redirecting to login');
+          } else {
+            // Re-throw other errors to be handled below
+            throw apiError;
+          }
+        } else {
+          // Re-throw other errors to be handled below
+          throw apiError;
+        }
+      }
 
       const gradeMatch = formData.gradeLevel.match(/\d+/);
       const gradeNumber = gradeMatch ? parseInt(gradeMatch[0]) : null;
@@ -164,17 +200,61 @@ export default function TellUsAboutYourself() {
         }
       }
 
-      showSuccessToast('🎉 Profile completed successfully! Redirecting...');
-
-      setTimeout(() => {
-        if (gradeNumber && gradeNumber >= 1 && gradeNumber <= 3) {
-      router.push('/dashboard/elementary');
-    } else {
-      router.push('/dashboard');
+      // Check user role to determine redirect destination
+      const storedUser = localStorage.getItem('user');
+      let userRole = 'student';
+      if (storedUser) {
+        try {
+          const user = JSON.parse(storedUser);
+          userRole = user.role?.toLowerCase() || 'student';
+        } catch (e) {
+          console.error('Error parsing user data:', e);
         }
-      }, 1500);
+      }
+
+      // Always redirect to login after form submission, even if token exists
+      // Account is pending approval, so they need to login after approval
+      if (userRole === 'teacher') {
+        showSuccessToast('🎉 Profile completed successfully! Your account is pending approval. Please login once your account is approved. Redirecting to login...', { duration: 6000 });
+        setTimeout(() => {
+          const parentTeacherUrl = process.env.NEXT_PUBLIC_PARENT_TEACHER_URL || 'http://localhost:3003';
+          window.location.href = `${parentTeacherUrl}/sign-in`;
+        }, 2000);
+      } else {
+        showSuccessToast('🎉 Profile completed successfully! Your account is pending approval. Please login once your account is approved. Redirecting to login...', { duration: 6000 });
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      }
     } catch (error: unknown) {
       if (error instanceof ApiClientError) {
+        const errorMsg = error.message?.toLowerCase() || '';
+        if (error.status === 401 || error.status === 403 || errorMsg.includes('invalid token') || errorMsg.includes('authentication')) {
+          // Check user role to determine redirect destination
+          const storedUser = localStorage.getItem('user');
+          let userRole = 'student';
+          if (storedUser) {
+            try {
+              const user = JSON.parse(storedUser);
+              userRole = user.role?.toLowerCase() || 'student';
+            } catch (e) {
+              console.error('Error parsing user data:', e);
+            }
+          }
+
+          showErrorToast('Your account is pending approval. Please login once your account is approved. Redirecting to login...', { duration: 6000 });
+          setTimeout(() => {
+            if (userRole === 'teacher') {
+              const parentTeacherUrl = process.env.NEXT_PUBLIC_PARENT_TEACHER_URL || 'http://localhost:3003';
+              window.location.href = `${parentTeacherUrl}/sign-in`;
+            } else {
+              router.push('/login');
+            }
+          }, 2000);
+          setIsSubmitting(false);
+          return;
+        }
+        
         if (error.errors) {
           const errorMessages = Object.values(error.errors).flat();
           if (errorMessages.length > 0) {

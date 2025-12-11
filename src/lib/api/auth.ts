@@ -132,3 +132,50 @@ export async function contentLogin(
   });
 }
 
+export interface LinkChildRequest {
+  student_id?: string;
+  student_email?: string;
+  student_phone?: string;
+}
+
+export interface LinkChildResponse {
+  id: number;
+}
+
+export async function linkChild(
+  data: LinkChildRequest,
+  token: string
+): Promise<LinkChildResponse> {
+  return apiRequest<LinkChildResponse>('/onboarding/linkchild/', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+export interface ChangePasswordResponse {
+  message?: string;
+  detail?: string;
+}
+
+export async function changePassword(
+  payload: ChangePasswordRequest,
+  token: string
+): Promise<ChangePasswordResponse> {
+  return apiRequest<ChangePasswordResponse>('/auth/change-password/', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+

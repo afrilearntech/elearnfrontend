@@ -64,11 +64,20 @@ export default function SignInPage() {
         setStep("non-student");
       }
     } else {
-      if (selectedNonStudentRole === "content-manager") {
+      if (selectedNonStudentRole === "administrator") {
+        const adminUrl =
+          process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3002";
+        window.location.href = `${adminUrl}/sign-in`;
+      } else if (selectedNonStudentRole === "content-manager") {
         const contentUrl =
           process.env.NEXT_PUBLIC_CONTENT_URL || "http://localhost:3001";
         window.location.href = `${contentUrl}/sign-in`;
+      } else if (selectedNonStudentRole === "parent" || selectedNonStudentRole === "teacher") {
+        const parentTeacherUrl =
+          process.env.NEXT_PUBLIC_PARENT_TEACHER_URL || "http://localhost:3003";
+        window.location.href = `${parentTeacherUrl}/sign-in`;
       } else {
+        // Fallback for any other role
         const contentUrl =
           process.env.NEXT_PUBLIC_CONTENT_URL || "http://localhost:3001";
         window.location.href = `${contentUrl}/sign-in`;

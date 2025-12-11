@@ -68,6 +68,14 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
       href: '/avatar',
       bgColor: 'bg-[#FFEDD5]',
       hoverColor: 'hover:opacity-90'
+    },
+    {
+      id: 'profile',
+      title: 'My Profile',
+      icon: '👤',
+      href: '/dashboard/elementary/profile',
+      bgColor: 'bg-[#E0F2FE]',
+      hoverColor: 'hover:opacity-90'
     }
   ];
 
@@ -182,6 +190,13 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
                       />
                     </div>
                     <span className="text-[18px] font-semibold text-[#C2410C]">{item.title}</span>
+                  </div>
+                ) : item.id === 'profile' ? (
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-[#0EA5E9] rounded-full flex items-center justify-center mr-4">
+                      <span className="text-xl">👤</span>
+                    </div>
+                    <span className="text-[18px] font-semibold text-[#0369A1]">{item.title}</span>
                   </div>
                 ) : (
                   <>
@@ -323,6 +338,13 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
                       />
                     </div>
                     <span className="text-xs text-center leading-tight text-[#C2410C]">{item.title}</span>
+                  </div>
+                ) : item.id === 'profile' ? (
+                  <div className="flex flex-col items-center">
+                    <div className="w-10 h-10 bg-[#0EA5E9] rounded-full flex items-center justify-center mb-2">
+                      <span className="text-xl">👤</span>
+                    </div>
+                    <span className="text-xs text-center leading-tight text-[#0369A1]">{item.title}</span>
                   </div>
                 ) : (
                   <>

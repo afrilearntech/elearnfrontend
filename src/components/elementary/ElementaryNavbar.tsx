@@ -46,6 +46,17 @@ export default function ElementaryNavbar({ onMenuToggle }: ElementaryNavbarProps
       </div>
       
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Profile Button */}
+        <button
+          onClick={() => router.push('/dashboard/elementary/profile')}
+          className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm"
+          style={{ fontFamily: 'Andika, sans-serif' }}
+          aria-label="Profile"
+        >
+          <Icon icon="material-symbols:person" className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="hidden sm:inline">Profile</span>
+        </button>
+        
         {/* Logout Button */}
         <button
           onClick={handleLogout}

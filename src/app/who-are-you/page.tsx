@@ -61,12 +61,24 @@ export default function WhoAreYou() {
       showSuccessToast('🎉 Role set successfully! Redirecting...');
       
       setTimeout(() => {
-        router.push('/tell-us-about-yourself');
+        // If parent, redirect to link child page, otherwise continue with normal flow
+        if (selectedRole === 'parent') {
+          router.push('/link-child');
+        } else {
+          router.push('/tell-us-about-yourself');
+        }
       }, 1500);
     } catch (error: unknown) {
       if (error instanceof ApiClientError) {
-        const friendlyMessage = formatErrorMessage(error.message || 'Failed to set user role');
-        showErrorToast(friendlyMessage);
+        const errorMsg = error.message?.toLowerCase() || '';
+        if (error.status === 401 || error.status === 403 || errorMsg.includes('invalid token') || errorMsg.includes('authentication')) {
+          setTimeout(() => {
+            router.push('/tell-us-about-yourself');
+          }, 500);
+        } else {
+          const friendlyMessage = formatErrorMessage(error.message || 'Failed to set user role');
+          showErrorToast(friendlyMessage);
+        }
       } else {
         showErrorToast('An unexpected error occurred. Please check your connection and try again.');
       }

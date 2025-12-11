@@ -16,13 +16,15 @@ interface NavbarProps {
   notifications?: number;
   messages?: number;
   activeLink?: string;
+  disableNavigation?: boolean;
 }
 
 export default function Navbar({ 
   user = { name: 'Sarah Johnson', role: 'Student', initials: 'SJ' },
   notifications = 3,
   messages = 0,
-  activeLink = 'dashboard'
+  activeLink = 'dashboard',
+  disableNavigation = false
 }: NavbarProps) {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -72,13 +74,14 @@ export default function Navbar({
           </div>
 
           {/* Center - Search */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <div className="hidden md:flex flex-1 max-w-md mx-8" style={{ pointerEvents: disableNavigation ? 'none' : 'auto', opacity: disableNavigation ? 0.5 : 1 }}>
             <div className="relative w-full">
               <Icon icon="material-symbols:search" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search courses, lessons, teachers..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={disableNavigation}
+                className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${disableNavigation ? 'cursor-not-allowed bg-gray-100' : ''}`}
                 style={{ fontFamily: 'Andika, sans-serif' }}
               />
             </div>
@@ -157,16 +160,22 @@ export default function Navbar({
       {/* Bottom Row - Main Navigation */}
       <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
         <div className="flex items-center justify-between h-12">
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex space-x-8" style={{ pointerEvents: disableNavigation ? 'none' : 'auto', opacity: disableNavigation ? 0.5 : 1 }}>
             {navigationLinks.map((link) => (
               <Link
                 key={link.key}
-                href={link.href}
+                href={disableNavigation ? '#' : link.href}
+                onClick={(e) => {
+                  if (disableNavigation) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }
+                }}
                 className={`pb-2 text-sm font-medium transition-colors ${
                   activeLink === link.key
                     ? 'text-blue-600 border-b-2 border-blue-600'
                     : 'text-gray-600 hover:text-gray-900'
-                }`}
+                } ${disableNavigation ? 'cursor-not-allowed' : ''}`}
                 style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 {link.label}
@@ -180,18 +189,25 @@ export default function Navbar({
       {isMenuOpen && (
         <div className="md:hidden fixed inset-x-0 top-[112px] bg-white border-t border-gray-200 shadow-lg z-50 max-h-[calc(100vh-112px)] overflow-y-auto">
           <div className="px-4 py-4">
-            <div className="space-y-1">
+            <div className="space-y-1" style={{ pointerEvents: disableNavigation ? 'none' : 'auto', opacity: disableNavigation ? 0.5 : 1 }}>
               {navigationLinks.map((link) => (
                 <Link
                   key={link.key}
-                  href={link.href}
+                  href={disableNavigation ? '#' : link.href}
+                  onClick={(e) => {
+                    if (disableNavigation) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    } else {
+                      setIsMenuOpen(false);
+                    }
+                  }}
                   className={`block py-3 px-3 text-base font-medium rounded-lg transition-colors ${
                     activeLink === link.key
                       ? 'text-blue-600 bg-blue-50'
                       : 'text-gray-700 hover:bg-gray-50'
-                  }`}
+                  } ${disableNavigation ? 'cursor-not-allowed' : ''}`}
                   style={{ fontFamily: 'Andika, sans-serif' }}
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
