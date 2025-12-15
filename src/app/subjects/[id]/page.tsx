@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
-import { getLessonById, LessonDetail, markLessonTaken } from '@/lib/api/lessons';
+import { getLessonById, LessonDetail, markLessonTaken, getAllLessons, LessonListItem } from '@/lib/api/lessons';
 import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
@@ -57,7 +57,10 @@ export default function SubjectLessonDetail() {
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [hasRecordedProgress, setHasRecordedProgress] = useState(false);
   const [isRecordingProgress, setIsRecordingProgress] = useState(false);
+  const [allLessons, setAllLessons] = useState<LessonListItem[]>([]);
+  const [nextLessonId, setNextLessonId] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const fallbackVideoSources = [
     '/__mocks__/Addition using sets.mp4',
@@ -69,8 +72,78 @@ export default function SubjectLessonDetail() {
   const fallbackThumbnail = '/grade3.png';
   
   const videoSrc = lesson?.resource || fallbackVideoSources[0];
+  const audioSrc = lesson?.resource;
+  const pdfSrc = lesson?.resource;
+  const pptSrc = lesson?.resource;
+  const docSrc = lesson?.resource;
   
   const thumbnailSrc = lesson?.thumbnail || fallbackThumbnail;
+  
+  const lessonType = lesson?.type?.toUpperCase()?.trim() || '';
+  const isVideo = lessonType === 'VIDEO';
+  const isAudio = lessonType === 'AUDIO';
+  const isPDF = lessonType === 'PDF';
+  const isPPT = lessonType === 'PPT' || lessonType === 'POWERPOINT';
+  const isDOC = lessonType === 'DOC' || lessonType === 'DOCX' || lessonType === 'DOCUMENT';
+  
+  const getTypeInfo = () => {
+    if (isVideo) {
+      return {
+        label: 'VIDEO',
+        icon: 'mdi:play-circle',
+        headerTitle: 'Watch & Learn!',
+        headerSubtitle: 'Get ready for an exciting video lesson!',
+        action: 'Watch',
+        color: 'from-red-500 to-pink-500'
+      };
+    } else if (isAudio) {
+      return {
+        label: 'AUDIO',
+        icon: 'mdi:headphones',
+        headerTitle: 'Listen & Learn!',
+        headerSubtitle: 'Get ready for an exciting audio lesson!',
+        action: 'Listen',
+        color: 'from-purple-500 to-indigo-500'
+      };
+    } else if (isPDF) {
+      return {
+        label: 'PDF',
+        icon: 'mdi:file-pdf-box',
+        headerTitle: 'Read & Learn!',
+        headerSubtitle: 'Get ready for an exciting reading lesson!',
+        action: 'Read',
+        color: 'from-red-600 to-orange-500'
+      };
+    } else if (isPPT) {
+      return {
+        label: 'PPT',
+        icon: 'mdi:file-powerpoint-box',
+        headerTitle: 'View & Learn!',
+        headerSubtitle: 'Get ready for an exciting presentation!',
+        action: 'View',
+        color: 'from-orange-500 to-red-500'
+      };
+    } else if (isDOC) {
+      return {
+        label: 'DOC',
+        icon: 'mdi:file-word-box',
+        headerTitle: 'Read & Learn!',
+        headerSubtitle: 'Get ready for an exciting document lesson!',
+        action: 'Read',
+        color: 'from-blue-600 to-blue-500'
+      };
+    }
+    return {
+      label: 'LESSON',
+      icon: 'mdi:book-open-variant',
+      headerTitle: 'Learn & Explore!',
+      headerSubtitle: 'Get ready for an exciting lesson!',
+      action: 'Learn',
+      color: 'from-blue-500 to-indigo-500'
+    };
+  };
+  
+  const typeInfo = getTypeInfo();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -102,8 +175,28 @@ export default function SubjectLessonDetail() {
 
       setIsLoading(true);
       try {
-        const lessonData = await getLessonById(lessonId, token);
+        // Fetch current lesson and all lessons in parallel
+        const [lessonData, allLessonsData] = await Promise.all([
+          getLessonById(lessonId, token),
+          getAllLessons(token)
+        ]);
+        
         setLesson(lessonData);
+        
+        // Filter only APPROVED lessons and find next lesson
+        const approvedLessons = allLessonsData
+          .filter(l => l.status === 'APPROVED')
+          .sort((a, b) => a.id - b.id); // Sort by ID for consistent ordering
+        
+        setAllLessons(approvedLessons);
+        
+        // Find current lesson index and get next lesson
+        const currentIndex = approvedLessons.findIndex(l => l.id === parseInt(lessonId));
+        if (currentIndex >= 0 && currentIndex < approvedLessons.length - 1) {
+          setNextLessonId(approvedLessons[currentIndex + 1].id);
+        } else {
+          setNextLessonId(null);
+        }
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message
@@ -125,18 +218,17 @@ export default function SubjectLessonDetail() {
       hasRecordedProgress ||
       isRecordingProgress ||
       !studentId ||
-      !authToken ||
-      !videoRef.current
+      !authToken
     ) {
       return;
     }
 
-    const videoElement = videoRef.current;
-    if (!videoElement.duration || videoElement.duration === Infinity) {
+    const mediaElement = (isVideo ? videoRef.current : audioRef.current) as HTMLVideoElement | HTMLAudioElement | null;
+    if (!mediaElement || !mediaElement.duration || mediaElement.duration === Infinity) {
       return;
     }
 
-    const progress = videoElement.currentTime / videoElement.duration;
+    const progress = mediaElement.currentTime / mediaElement.duration;
     if (progress >= 0.5) {
       try {
         setIsRecordingProgress(true);
@@ -181,13 +273,33 @@ export default function SubjectLessonDetail() {
             <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:mx-8 mx-4 h-auto lg:h-[187px] flex flex-col justify-between border" style={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center space-x-3">
-                  <div className="w-[55px] h-[60px] rounded-lg bg-linear-to-r from-[#3B82F6] to-[#10B981] flex items-center justify-center">
-                    <Image src="/settings.png" alt="settings" width={27} height={32} />
+                  <div className={`w-[55px] h-[60px] rounded-lg bg-linear-to-r ${
+                    isVideo ? 'from-red-500 to-pink-500' :
+                    isAudio ? 'from-purple-500 to-indigo-500' :
+                    isPDF ? 'from-red-600 to-orange-500' :
+                    isPPT ? 'from-orange-500 to-red-500' :
+                    isDOC ? 'from-blue-600 to-blue-500' :
+                    'from-[#3B82F6] to-[#10B981]'
+                  } flex items-center justify-center`}>
+                    <Icon icon={typeInfo.icon} width={28} height={32} className="text-white" />
                   </div>
                   <div>
+                    <div className="flex items-center gap-2 mb-1">
                     <h2 className="text-[25px] font-normal text-[#9333EA]" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {lesson?.title || 'Loading Lesson...'}
                     </h2>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${
+                        isVideo ? 'bg-red-50 text-red-700 border border-red-200' :
+                        isAudio ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                        isPDF ? 'bg-red-50 text-red-800 border border-red-300' :
+                        isPPT ? 'bg-orange-50 text-orange-700 border border-orange-200' :
+                        isDOC ? 'bg-blue-50 text-blue-700 border border-blue-300' :
+                        'bg-blue-50 text-blue-700 border border-blue-200'
+                      }`}>
+                        <Icon icon={typeInfo.icon} width={14} height={14} />
+                        {typeInfo.label}
+                      </span>
+                    </div>
                     <p className="text-[15px] font-normal text-[#4B5563]" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {lesson?.duration_minutes ? `Duration: ${lesson.duration_minutes} minutes` : 'Lesson Details'}
                     </p>
@@ -225,12 +337,37 @@ export default function SubjectLessonDetail() {
               {/* Main video/content */}
               <div>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                  <div className="px-6 py-3 bg-linear-to-r from-[#EC4899] to-[#6366F1] text-white" style={{ fontFamily: 'Andika, sans-serif' }}>
-                    <div className="text-[16px] font-semibold">Watch & Learn!</div>
-                    <div className="text-[12px] opacity-90">Get ready for an exciting lesson!</div>
+                  <div className={`px-6 py-3 bg-linear-to-r ${typeInfo.color} text-white`} style={{ fontFamily: 'Andika, sans-serif' }}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Icon icon={typeInfo.icon} width={20} height={20} />
+                      <div className="text-[16px] font-semibold">{typeInfo.headerTitle}</div>
+                    </div>
+                    <div className="text-[12px] opacity-90">{typeInfo.headerSubtitle}</div>
                   </div>
-                  <div className="relative h-[220px] sm:h-[320px] lg:h-[460px] w-full bg-gray-100">
-                    {isVideoOpen ? (
+                  
+                  {/* Type Badge */}
+                  <div className="px-6 py-2 bg-gray-50 border-b border-gray-200">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg ${
+                      isVideo ? 'bg-red-50 text-red-700 border border-red-200' :
+                      isAudio ? 'bg-purple-50 text-purple-700 border border-purple-200' :
+                      isPDF ? 'bg-red-50 text-red-800 border border-red-300' :
+                      isPPT ? 'bg-orange-50 text-orange-700 border border-orange-200' :
+                      isDOC ? 'bg-blue-50 text-blue-700 border border-blue-300' :
+                      'bg-blue-50 text-blue-700 border border-blue-200'
+                    }`}>
+                      <Icon icon={typeInfo.icon} width={16} height={16} />
+                      <span className="text-xs font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        {typeInfo.label} Lesson
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className={`relative w-full bg-gray-100 ${
+                    isPDF && isVideoOpen 
+                      ? 'h-[500px] sm:h-[600px] lg:h-[700px]' 
+                      : 'h-[220px] sm:h-[320px] lg:h-[460px]'
+                  }`}>
+                    {isVideo && isVideoOpen ? (
                       <video
                         ref={videoRef}
                         className="w-full h-full object-cover"
@@ -239,15 +376,177 @@ export default function SubjectLessonDetail() {
                         autoPlay
                         onTimeUpdate={handleVideoProgress}
                         onError={(e) => {
-                          // If API video fails, try fallback
                           const currentSrc = (e.target as HTMLVideoElement).src;
                           if (lesson?.resource && currentSrc === lesson.resource) {
-                            // API video failed, switch to fallback
                             const fallbackVideo = fallbackVideoSources[0];
                             (e.target as HTMLVideoElement).src = fallbackVideo;
                           }
                         }}
                       />
+                    ) : isAudio && isVideoOpen ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50 p-6">
+                        <div className="w-24 h-24 bg-purple-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                          <Icon icon="mdi:headphones" width={48} height={48} className="text-white" />
+                        </div>
+                        {audioSrc ? (
+                          <>
+                            <audio
+                              ref={audioRef}
+                              className="w-full max-w-md"
+                              src={audioSrc}
+                              controls
+                              autoPlay
+                              onTimeUpdate={handleVideoProgress}
+                            />
+                            <p className="text-sm text-gray-600 mt-4 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              Listen to the audio lesson
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            Audio resource not available
+                          </p>
+                        )}
+                      </div>
+                    ) : isPDF && isVideoOpen ? (
+                      <div className="w-full h-full flex flex-col bg-gradient-to-br from-red-50 to-orange-50">
+                        {pdfSrc ? (
+                          <>
+                            {/* PDF Viewer - Takes full height */}
+                            <div className="flex-1 min-h-0">
+                              <iframe
+                                src={pdfSrc}
+                                className="w-full h-full border-0"
+                                title="PDF Viewer"
+                                style={{ minHeight: '500px' }}
+                              />
+                            </div>
+                            {/* Action buttons at bottom */}
+                            <div className="p-4 bg-white border-t border-gray-200 flex flex-col sm:flex-row gap-3 justify-center">
+                              <a
+                                href={pdfSrc}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <Icon icon="mdi:open-in-new" width={18} height={18} />
+                                Open in New Tab
+                              </a>
+                              <a
+                                href={pdfSrc}
+                                download
+                                className="px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <Icon icon="mdi:download" width={18} height={18} />
+                                Download PDF
+                              </a>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                            <div className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                              <Icon icon="mdi:file-pdf-box" width={48} height={48} className="text-white" />
+                            </div>
+                            <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              PDF resource not available
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ) : isPPT && isVideoOpen ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 p-6">
+                        <div className="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                          <Icon icon="mdi:file-powerpoint-box" width={48} height={48} className="text-white" />
+                        </div>
+                        {pptSrc ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center">
+                            <div className="w-full h-[400px] bg-white rounded-lg border-2 border-orange-200 flex items-center justify-center mb-4">
+                              <div className="text-center">
+                                <Icon icon="mdi:file-powerpoint-box" width={64} height={64} className="text-orange-500 mx-auto mb-3" />
+                                <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+                                  PowerPoint Presentation
+                                </p>
+                                <p className="text-xs text-gray-500 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+                                  Click the buttons below to view or download
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                              <a
+                                href={pptSrc}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <Icon icon="mdi:open-in-new" width={18} height={18} />
+                                Open Presentation
+                              </a>
+                              <a
+                                href={pptSrc}
+                                download
+                                className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <Icon icon="mdi:download" width={18} height={18} />
+                                Download
+                              </a>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            PowerPoint resource not available
+                          </p>
+                        )}
+                      </div>
+                    ) : isDOC && isVideoOpen ? (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+                        <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                          <Icon icon="mdi:file-word-box" width={48} height={48} className="text-white" />
+                        </div>
+                        {docSrc ? (
+                          <div className="w-full h-full flex flex-col items-center justify-center">
+                            <div className="w-full h-[400px] bg-white rounded-lg border-2 border-blue-200 flex items-center justify-center mb-4">
+                              <div className="text-center">
+                                <Icon icon="mdi:file-word-box" width={64} height={64} className="text-blue-600 mx-auto mb-3" />
+                                <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+                                  Word Document
+                                </p>
+                                <p className="text-xs text-gray-500 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+                                  Click the buttons below to view or download
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                              <a
+                                href={docSrc}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <Icon icon="mdi:open-in-new" width={18} height={18} />
+                                Open Document
+                              </a>
+                              <a
+                                href={docSrc}
+                                download
+                                className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <Icon icon="mdi:download" width={18} height={18} />
+                                Download
+                              </a>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            Document resource not available
+                          </p>
+                        )}
+                      </div>
                     ) : (
                       <>
                         <VideoThumbnail 
@@ -259,27 +558,92 @@ export default function SubjectLessonDetail() {
                           <button
                             type="button"
                             onClick={() => setIsVideoOpen(true)}
-                            className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F59E0B]"
-                            aria-label="Play video"
+                            className={`w-14 h-14 ${
+                              isVideo ? 'bg-white' :
+                              isAudio ? 'bg-purple-100 border-2 border-purple-300' :
+                              isPDF ? 'bg-red-100 border-2 border-red-300' :
+                              isPPT ? 'bg-orange-100 border-2 border-orange-300' :
+                              isDOC ? 'bg-blue-100 border-2 border-blue-300' :
+                              'bg-blue-100 border-2 border-blue-300'
+                            } rounded-full flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                              isVideo ? 'focus:ring-[#F59E0B]' :
+                              isAudio ? 'focus:ring-purple-500' :
+                              isPDF ? 'focus:ring-red-500' :
+                              isPPT ? 'focus:ring-orange-500' :
+                              isDOC ? 'focus:ring-blue-600' :
+                              'focus:ring-blue-500'
+                            }`}
+                            aria-label={`${typeInfo.action} lesson`}
                           >
-                            <Icon icon="mdi:play" width={28} height={28} className="text-[#F59E0B]" />
+                            <Icon 
+                              icon={typeInfo.icon} 
+                              width={28} 
+                              height={28} 
+                              className={
+                                isVideo ? 'text-[#F59E0B]' :
+                                isAudio ? 'text-purple-600' :
+                                isPDF ? 'text-red-600' :
+                                isPPT ? 'text-orange-600' :
+                                isDOC ? 'text-blue-600' :
+                                'text-blue-600'
+                              } 
+                            />
                           </button>
                         </div>
                       </>
                     )}
                   </div>
                   <div className="p-6">
-                    <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {lesson?.title || 'Lesson Content'}
                     </h3>
-                    <p className="text-[12px] sm:text-[13px] text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {lesson?.description || 'No description available for this lesson.'}
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold ${
+                        isVideo ? 'bg-red-50 text-red-700' :
+                        isAudio ? 'bg-purple-50 text-purple-700' :
+                        isPDF ? 'bg-red-50 text-red-800' :
+                        isPPT ? 'bg-orange-50 text-orange-700' :
+                        isDOC ? 'bg-blue-50 text-blue-700' :
+                        'bg-blue-50 text-blue-700'
+                      }`}>
+                        <Icon icon={typeInfo.icon} width={12} height={12} />
+                        {typeInfo.label}
+                      </span>
+                    </div>
+                    <p className="text-[12px] sm:text-[13px] text-gray-700 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      {lesson?.description || `This is a ${typeInfo.label.toLowerCase()} lesson. ${typeInfo.action} the content to learn and explore!`}
                     </p>
+                    {lesson?.duration_minutes && (
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">
+                        <Icon icon="mdi:clock-outline" width={14} height={14} />
+                        <span style={{ fontFamily: 'Andika, sans-serif' }}>
+                          Duration: {lesson.duration_minutes} minutes
+                        </span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-4 mt-4">
-                      <button className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#10B981] to-[#3B82F6] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      {nextLessonId ? (
+                        <button
+                          onClick={() => router.push(`/subjects/${nextLessonId}`)}
+                          className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#10B981] to-[#3B82F6] text-white text-xs sm:text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                          style={{ fontFamily: 'Andika, sans-serif' }}
+                        >
                         <Icon icon="mdi:chevron-right-circle" /> Next Lesson
                       </button>
-                      <button className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#FB923C] to-[#EF4444] text-white text-xs sm:text-sm flex items-center justify-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      ) : (
+                        <button
+                          disabled
+                          className="flex-1 h-10 rounded-lg bg-gray-300 text-gray-500 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-not-allowed"
+                          style={{ fontFamily: 'Andika, sans-serif' }}
+                        >
+                          <Icon icon="mdi:check-circle" /> Last Lesson
+                        </button>
+                      )}
+                      <button
+                        onClick={() => router.push('/assignments')}
+                        className="flex-1 h-10 rounded-lg bg-linear-to-r from-[#FB923C] to-[#EF4444] text-white text-xs sm:text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+                        style={{ fontFamily: 'Andika, sans-serif' }}
+                      >
                         <Icon icon="mdi:clipboard-text" /> Try Quiz
                       </button>
                     </div>

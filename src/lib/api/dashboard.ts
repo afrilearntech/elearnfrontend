@@ -123,6 +123,8 @@ export interface ElementaryLesson {
   resource_type?: string;
   thumbnail: string | null;
   resource?: string | null;
+  grade?: string;
+  status?: string;
 }
 
 export interface ElementarySubjectsAndLessonsResponse {

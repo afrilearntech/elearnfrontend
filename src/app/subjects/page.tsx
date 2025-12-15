@@ -91,6 +91,74 @@ function getPlayColor(index: number): string {
   return playColors[index % playColors.length];
 }
 
+function getLessonTypeInfo(type: string | undefined) {
+  const normalizedType = type?.toUpperCase()?.trim() || '';
+  
+  // Exact match first for better accuracy
+  if (normalizedType === 'VIDEO') {
+    return {
+      label: 'VIDEO',
+      icon: 'mdi:play-circle',
+      color: 'bg-red-500',
+      textColor: 'text-white',
+      bgColor: 'bg-red-50',
+      borderColor: 'border-red-200',
+      action: 'Watch'
+    };
+  } else if (normalizedType === 'AUDIO') {
+    return {
+      label: 'AUDIO',
+      icon: 'mdi:headphones',
+      color: 'bg-purple-500',
+      textColor: 'text-white',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+      action: 'Listen'
+    };
+  } else if (normalizedType === 'PDF') {
+    return {
+      label: 'PDF',
+      icon: 'mdi:file-pdf-box',
+      color: 'bg-red-600',
+      textColor: 'text-white',
+      bgColor: 'bg-red-50',
+      borderColor: 'border-red-200',
+      action: 'Read'
+    };
+  } else if (normalizedType === 'PPT' || normalizedType === 'POWERPOINT') {
+    return {
+      label: 'PPT',
+      icon: 'mdi:file-powerpoint-box',
+      color: 'bg-orange-500',
+      textColor: 'text-white',
+      bgColor: 'bg-orange-50',
+      borderColor: 'border-orange-200',
+      action: 'View'
+    };
+  } else if (normalizedType === 'DOC' || normalizedType === 'DOCX' || normalizedType === 'DOCUMENT') {
+    return {
+      label: 'DOC',
+      icon: 'mdi:file-word-box',
+      color: 'bg-blue-600',
+      textColor: 'text-white',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      action: 'Read'
+    };
+  }
+  
+  // Default fallback
+  return {
+    label: 'LESSON',
+    icon: 'mdi:book-open-variant',
+    color: 'bg-blue-500',
+    textColor: 'text-white',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    action: 'Learn'
+  };
+}
+
 export default function SubjectsLessonsPage() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -109,15 +177,34 @@ export default function SubjectsLessonsPage() {
 
       setIsLoading(true);
       try {
+        // Fetch subjects and lessons from the elementary endpoint
         const data = await getElementarySubjectsAndLessons(token);
-        setSubjects(data.subjects || []);
-        setLessons(data.lessons || []);
+        
+        // Use subjects directly from the API response
+        const subjectsData = data.subjects || [];
+        
+        // Use lessons directly from the API response (they already have subject_name, subject_id, resource_type, etc.)
+        const lessonsData = (data.lessons || []).map(lesson => ({
+          id: lesson.id,
+          title: lesson.title,
+          subject_id: lesson.subject_id,
+          subject_name: lesson.subject_name || `Subject ${lesson.subject_id}`,
+          type: lesson.resource_type || 'VIDEO', // Use resource_type from API
+          resource_type: lesson.resource_type || 'VIDEO',
+          thumbnail: lesson.thumbnail,
+          resource: lesson.resource,
+          grade: lesson.grade,
+          status: lesson.status,
+        }));
+        
+        setSubjects(subjectsData);
+        setLessons(lessonsData);
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message
           : error instanceof Error
           ? error.message
-          : 'Failed to load subjects and lessons';
+          : 'Failed to load lessons';
         showErrorToast(formatErrorMessage(errorMessage));
       } finally {
         setIsLoading(false);
@@ -130,13 +217,15 @@ export default function SubjectsLessonsPage() {
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const handleMenuClose = () => setIsMobileMenuOpen(false);
 
+  // Filter lessons based on selected subject
   const filteredLessons = selectedSubject === 'all'
     ? lessons
     : lessons.filter((lesson) => lesson.subject_id === parseInt(selectedSubject));
 
+  // Get unique subjects (deduplicate by ID to ensure correct filtering)
   const uniqueSubjects = Array.from(
-    new Map(subjects.map((s) => [s.name, s])).values()
-  );
+    new Map(subjects.map((s) => [s.id, s])).values()
+  ).sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically for better UX
 
   if (isLoading) {
     return (
@@ -158,10 +247,10 @@ export default function SubjectsLessonsPage() {
             {/* Title Section */}
             <div className="sm:ml-8 sm:mr-8 mb-6">
               <h1 className="text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                Fun Video Lessons
+                Subject World 🌍
               </h1>
               <p className="text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
-                Watch, Learn, and Have Fun with Our Amazing Videos!
+                Explore amazing lessons - Watch videos, listen to audio, read PDFs, and view presentations!
               </p>
             </div>
 
@@ -220,9 +309,10 @@ export default function SubjectsLessonsPage() {
                   const borderColor = getBorderColor(index);
                   const playColor = getPlayColor(index);
                   const fallbackImage = getFallbackImage(index);
+                  const typeInfo = getLessonTypeInfo(lesson.type || lesson.resource_type);
 
                   return (
-                    <Link href={`/subjects/${lesson.id}`} key={lesson.id} className={`bg-white rounded-xl shadow-md overflow-hidden border ${borderColor}`}>
+                    <Link href={`/subjects/${lesson.id}`} key={lesson.id} className={`bg-white rounded-xl shadow-md overflow-hidden border ${borderColor} hover:shadow-lg transition-shadow duration-200`}>
                   {/* Thumbnail */}
                   <div className="relative h-[160px] w-full">
                         <LessonThumbnail 
@@ -231,20 +321,33 @@ export default function SubjectsLessonsPage() {
                           alt={lesson.title}
                         />
                         <div className="absolute inset-0 bg-linear-to-t from-black/30 to-transparent" />
+                        
+                        {/* Type Badge - Top Right */}
+                        <div className={`absolute top-2 right-2 ${typeInfo.color} ${typeInfo.textColor} px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-md`}>
+                          <Icon icon={typeInfo.icon} width={14} height={14} />
+                          <span className="text-[10px] font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            {typeInfo.label}
+                          </span>
+                        </div>
+                        
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow">
-                            <Icon icon="mdi:play" width={22} height={22} style={{ color: playColor }} />
+                      <div className={`w-12 h-12 ${typeInfo.bgColor} rounded-full flex items-center justify-center shadow-lg border-2 ${typeInfo.borderColor}`}>
+                            <Icon icon={typeInfo.icon} width={22} height={22} className={typeInfo.color.replace('bg-', 'text-')} />
                       </div>
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="p-4">
-                        <h3 className="text-[16px] font-semibold text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>{lesson.title}</h3>
-                        <p className="text-[12px] text-gray-600 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>Learn and explore with fun activities</p>
+                        <h3 className="text-[16px] font-semibold text-gray-900 mb-1 line-clamp-2" style={{ fontFamily: 'Andika, sans-serif' }}>{lesson.title}</h3>
+                        <p className="text-[12px] text-gray-600 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>
+                          {typeInfo.action} and explore with fun activities
+                        </p>
                     <div className="flex items-center justify-between">
                           <span className="text-[10px] px-2 py-0.5 rounded-lg bg-gray-100 text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>{lesson.subject_name}</span>
-                          <span className="text-[10px] text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>Lesson</span>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-lg ${typeInfo.bgColor} ${typeInfo.color.replace('bg-', 'text-')} font-medium`} style={{ fontFamily: 'Andika, sans-serif' }}>
+                            {typeInfo.label}
+                          </span>
                     </div>
                   </div>
                 </Link>

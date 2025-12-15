@@ -65,7 +65,7 @@ export default function WhoAreYou() {
         if (selectedRole === 'parent') {
           router.push('/link-child');
         } else {
-          router.push('/tell-us-about-yourself');
+        router.push('/tell-us-about-yourself');
         }
       }, 1500);
     } catch (error: unknown) {

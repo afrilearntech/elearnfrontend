@@ -221,10 +221,10 @@ export default function TellUsAboutYourself() {
           window.location.href = `${parentTeacherUrl}/sign-in`;
         }, 2000);
       } else {
-        showSuccessToast('🎉 Profile completed successfully! Your account is pending approval. Please login once your account is approved. Redirecting to login...', { duration: 6000 });
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
+      showSuccessToast('🎉 Profile completed successfully! Your account is pending approval. Please login once your account is approved. Redirecting to login...', { duration: 6000 });
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
       }
     } catch (error: unknown) {
       if (error instanceof ApiClientError) {
@@ -248,7 +248,7 @@ export default function TellUsAboutYourself() {
               const parentTeacherUrl = process.env.NEXT_PUBLIC_PARENT_TEACHER_URL || 'http://localhost:3003';
               window.location.href = `${parentTeacherUrl}/sign-in`;
             } else {
-              router.push('/login');
+            router.push('/login');
             }
           }, 2000);
           setIsSubmitting(false);
