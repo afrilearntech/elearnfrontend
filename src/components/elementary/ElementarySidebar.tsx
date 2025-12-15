@@ -55,7 +55,7 @@ export default function ElementarySidebar({ activeItem = 'home', isMobileMenuOpe
     },
     {
       id: 'resources',
-      title: 'My Assignments',
+      title: 'My Assessments',
       icon: '📄',
       href: '/assignments',
       bgColor: 'bg-[#E0E7FF]',
