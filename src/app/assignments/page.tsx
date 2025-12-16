@@ -7,12 +7,12 @@ import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
-import { getKidsAssignments, KidsAssignment } from '@/lib/api/dashboard';
+import { getKidsAssessments, KidsAssessment } from '@/lib/api/dashboard';
 import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
 
-interface AssignmentCard extends KidsAssignment {
+interface AssessmentCard extends KidsAssessment {
   displayStatus: 'pending' | 'due_soon' | 'overdue' | 'submitted';
   daysUntilDue: number;
   bgColor: string;
@@ -24,6 +24,9 @@ interface AssignmentCard extends KidsAssignment {
   badgeText: string;
   titleColor: string;
   isSubmitted: boolean;
+  due_at: string;
+  status: string;
+  instructions: string;
 }
 
 const calculateDaysUntilDue = (dueDateString: string): number => {
@@ -36,70 +39,28 @@ const calculateDaysUntilDue = (dueDateString: string): number => {
   return diffDays;
 };
 
-const getStatusConfig = (assignment: KidsAssignment) => {
-  const isSubmitted = assignment.status?.toLowerCase() === 'submitted';
+const getStatusConfig = (assessment: KidsAssessment) => {
+  const today = new Date();
+  const dueDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const due_at = dueDate.toISOString();
+  const daysUntilDue = 7;
   
-  if (isSubmitted) {
-    return {
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      iconBg: 'bg-green-100',
-      icon: 'mdi:check-circle-outline',
-      iconColor: '#22C55E',
-      badgeColor: 'bg-green-100 text-green-700',
-      badgeText: 'Submitted',
-      titleColor: 'text-green-900',
-      displayStatus: 'submitted' as const,
-      daysUntilDue: calculateDaysUntilDue(assignment.due_at),
-      isSubmitted: true,
-    };
-  }
-
-  const daysUntilDue = calculateDaysUntilDue(assignment.due_at);
-  let displayStatus: 'pending' | 'due_soon' | 'overdue' = 'pending';
-  
-  if (daysUntilDue < 0) {
-    displayStatus = 'overdue';
-  } else if (daysUntilDue === 0) {
-    displayStatus = 'due_soon';
-  } else if (daysUntilDue <= 3) {
-    displayStatus = 'due_soon';
-  }
-
-  const configs = {
-    pending: {
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      iconBg: 'bg-blue-100',
-      icon: 'mdi:clipboard-text-outline',
-      iconColor: '#3B82F6',
-      badgeColor: 'bg-blue-100 text-blue-700',
-      badgeText: 'Not Submitted',
-      titleColor: 'text-blue-900',
-    },
-    due_soon: {
-      bgColor: 'bg-orange-50',
-      borderColor: 'border-orange-200',
-      iconBg: 'bg-orange-100',
-      icon: 'mdi:clock-alert-outline',
-      iconColor: '#F97316',
-      badgeColor: 'bg-orange-100 text-orange-700',
-      badgeText: daysUntilDue === 0 ? 'Due Today!' : `Due in ${daysUntilDue} day${daysUntilDue === 1 ? '' : 's'}`,
-      titleColor: 'text-orange-900',
-    },
-    overdue: {
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      iconBg: 'bg-red-100',
-      icon: 'mdi:alert-circle-outline',
-      iconColor: '#EF4444',
-      badgeColor: 'bg-red-100 text-red-700',
-      badgeText: 'Overdue',
-      titleColor: 'text-red-900',
-    },
+  return {
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
+    iconBg: 'bg-blue-100',
+    icon: 'mdi:clipboard-text-outline',
+    iconColor: '#3B82F6',
+    badgeColor: 'bg-blue-100 text-blue-700',
+    badgeText: 'Pending',
+    titleColor: 'text-blue-900',
+    displayStatus: 'pending' as const,
+    daysUntilDue,
+    isSubmitted: false,
+    due_at,
+    status: 'pending',
+    instructions: '',
   };
-
-  return { ...configs[displayStatus], displayStatus, daysUntilDue, isSubmitted: false };
 };
 
 const getSubjectIcon = (assignmentType: string, title: string): string => {
@@ -147,7 +108,7 @@ export default function MyAssignmentsPage() {
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [assignments, setAssignments] = useState<AssignmentCard[]>([]);
+  const [assessments, setAssessments] = useState<AssessmentCard[]>([]);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -158,7 +119,7 @@ export default function MyAssignmentsPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'due_soon' | 'overdue' | 'submitted'>('all');
 
   useEffect(() => {
-    const fetchAssignments = async () => {
+    const fetchAssessments = async () => {
       const token = localStorage.getItem('auth_token');
       if (!token) {
         router.push('/login');
@@ -167,43 +128,40 @@ export default function MyAssignmentsPage() {
 
       setIsLoading(true);
       try {
-        const data = await getKidsAssignments(token);
-        const assignmentsWithStatus = (data.assignments || []).map((assignment) => {
-          const config = getStatusConfig(assignment);
+        const data = await getKidsAssessments(token);
+        const assessmentsWithStatus = (data.assessments || []).map((assessment) => {
+          const config = getStatusConfig(assessment);
           return {
-            ...assignment,
+            ...assessment,
             ...config,
           };
         });
-        setAssignments(assignmentsWithStatus);
-        // Use stats from API response
-        if (data.stats) {
-          setStats({
-            total: data.stats.total || 0,
-            pending: data.stats.pending || 0,
-            due_soon: data.stats.due_soon || 0,
-            overdue: data.stats.overdue || 0,
-            submitted: data.stats.submitted || 0,
-          });
-        }
+        setAssessments(assessmentsWithStatus);
+        setStats({
+          total: assessmentsWithStatus.length,
+          pending: assessmentsWithStatus.filter(a => !a.isSubmitted).length,
+          due_soon: 0,
+          overdue: 0,
+          submitted: assessmentsWithStatus.filter(a => a.isSubmitted).length,
+        });
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message
           : error instanceof Error
           ? error.message
-          : 'Failed to load assignments';
+          : 'Failed to load assessments';
         showErrorToast(formatErrorMessage(errorMessage));
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchAssignments();
+    fetchAssessments();
     
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        fetchAssignments();
+        fetchAssessments();
       }
     };
     
@@ -217,11 +175,11 @@ export default function MyAssignmentsPage() {
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const handleMenuClose = () => setIsMobileMenuOpen(false);
 
-  const filteredAssignments = filter === 'all'
-    ? assignments
+  const filteredAssessments = filter === 'all'
+    ? assessments
     : filter === 'submitted'
-    ? assignments.filter((assignment) => assignment.isSubmitted)
-    : assignments.filter((assignment) => !assignment.isSubmitted && assignment.displayStatus === filter);
+    ? assessments.filter((assessment) => assessment.isSubmitted)
+    : assessments.filter((assessment) => !assessment.isSubmitted && assessment.displayStatus === filter);
 
   if (isLoading) {
     return (
@@ -364,49 +322,46 @@ export default function MyAssignmentsPage() {
               </button>
             </div>
 
-            {/* Assignment Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 sm:mx-8 mx-4">
-              {filteredAssignments.length > 0 ? (
-                filteredAssignments.map((assignment, index) => {
-                  const subjectIcon = getSubjectIcon(assignment.type, assignment.title);
+              {filteredAssessments.length > 0 ? (
+                filteredAssessments.map((assessment, index) => {
+                  const subjectIcon = getSubjectIcon(assessment.type, assessment.title);
                   
                   return (
                     <Link
-                      href={`/assignments/${assignment.id}`}
-                      key={assignment.id}
-                      className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assignment.borderColor} transition-transform hover:scale-105 hover:shadow-xl w-full max-w-full block cursor-pointer`}
+                      href={`/assignments/${assessment.id}`}
+                      key={assessment.id}
+                      className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assessment.borderColor} transition-transform hover:scale-105 hover:shadow-xl w-full max-w-full block cursor-pointer`}
                     >
-                      {/* Card Header with Gradient */}
-                      <div className={`${assignment.bgColor} p-4 sm:p-5 border-b-2 ${assignment.borderColor}`}>
+                      <div className={`${assessment.bgColor} p-4 sm:p-5 border-b-2 ${assessment.borderColor}`}>
                         <div className="flex items-start justify-between mb-2 sm:mb-3 gap-2">
-                          <div className={`w-10 h-10 sm:w-12 sm:h-12 ${assignment.iconBg} rounded-full flex items-center justify-center shrink-0`}>
+                          <div className={`w-10 h-10 sm:w-12 sm:h-12 ${assessment.iconBg} rounded-full flex items-center justify-center shrink-0`}>
                             <Icon 
                               icon={subjectIcon} 
                               width={20} 
                               height={20}
                               className="sm:w-6 sm:h-6"
-                              style={{ color: assignment.iconColor }} 
+                              style={{ color: assessment.iconColor }} 
                             />
                           </div>
-                          <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${assignment.badgeColor} truncate max-w-[60%] sm:max-w-none`} style={{ fontFamily: 'Andika, sans-serif' }}>
-                            {assignment.badgeText}
+                          <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${assessment.badgeColor} truncate max-w-[60%] sm:max-w-none`} style={{ fontFamily: 'Andika, sans-serif' }}>
+                            {assessment.badgeText}
                           </span>
                         </div>
-                        <h3 className={`text-base sm:text-lg font-bold ${assignment.titleColor} mb-2 truncate`} style={{ fontFamily: 'Andika, sans-serif' }}>
-                          {assignment.title}
+                        <h3 className={`text-base sm:text-lg font-bold ${assessment.titleColor} mb-2 truncate`} style={{ fontFamily: 'Andika, sans-serif' }}>
+                          {assessment.title}
                         </h3>
                         <p className="text-xs sm:text-sm text-gray-600 truncate capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
-                          {assignment.type}
+                          {assessment.type}
                         </p>
                       </div>
 
-                      {/* Card Body */}
                       <div className="p-4 sm:p-5">
                         <div className="flex items-center justify-between mb-3 sm:mb-4">
                           <div className="flex items-center gap-2 min-w-0">
-                            <Icon icon="mdi:calendar-clock" width={16} height={16} className="sm:w-[18px] sm:h-[18px] text-gray-500 shrink-0" />
+                            <Icon icon="mdi:star" width={16} height={16} className="sm:w-[18px] sm:h-[18px] text-yellow-500 shrink-0" />
                             <span className="text-xs sm:text-sm text-gray-600 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              {formatDueDate(assignment.due_at)}
+                              {assessment.marks} marks
                             </span>
                           </div>
                         </div>
@@ -415,22 +370,18 @@ export default function MyAssignmentsPage() {
                           <div className="flex items-center gap-2 min-w-0">
                             <Icon icon="mdi:book-open-page-variant" width={14} height={14} className="sm:w-4 sm:h-4 text-gray-400 shrink-0" />
                             <span className="text-[10px] sm:text-xs text-gray-500 truncate capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              {assignment.type}
+                              {assessment.type}
                             </span>
                           </div>
                           <div
                             className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 ${
-                              assignment.isSubmitted
+                              assessment.isSubmitted
                                 ? 'bg-green-100 text-green-700'
-                                : assignment.status === 'overdue'
-                                ? 'bg-red-100 text-red-700'
-                                : assignment.status === 'due_soon'
-                                ? 'bg-orange-100 text-orange-700'
                                 : 'bg-blue-100 text-blue-700'
                             }`}
                             style={{ fontFamily: 'Andika, sans-serif' }}
                           >
-                            {assignment.isSubmitted ? (
+                            {assessment.isSubmitted ? (
                               <>
                                 <Icon icon="mdi:check-circle" width={16} height={16} />
                                 <span>View</span>

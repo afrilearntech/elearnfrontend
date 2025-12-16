@@ -66,3 +66,60 @@ export async function submitSolution(
   return responseData as SubmitSolutionResponse;
 }
 
+export interface QuestionOption {
+  id: number;
+  value: string;
+}
+
+export interface AssessmentQuestion {
+  id: number;
+  type: "MULTIPLE_CHOICE" | "TRUE_FALSE" | "SHORT_ANSWER" | "ESSAY" | "FILL_IN_THE_BLANK";
+  question: string;
+  options?: QuestionOption[];
+}
+
+export interface AssessmentInfo {
+  id: number;
+  title: string;
+  type: string;
+}
+
+export interface AssessmentQuestionsResponse {
+  assessment: AssessmentInfo;
+  questions: AssessmentQuestion[];
+}
+
+export async function getAssessmentQuestions(
+  params: { general_id?: number; lesson_id?: number },
+  token: string
+): Promise<AssessmentQuestionsResponse> {
+  const queryParams = new URLSearchParams();
+  if (params.general_id) {
+    queryParams.append('general_id', params.general_id.toString());
+  }
+  if (params.lesson_id) {
+    queryParams.append('lesson_id', params.lesson_id.toString());
+  }
+
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api-v1';
+  const endpoint = `/kids/assessment-questions/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+  
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new ApiClientError(
+      errorData.detail || errorData.message || `Failed to fetch questions: ${response.status}`,
+      response.status
+    );
+  }
+
+  return await response.json();
+}
+

@@ -246,3 +246,24 @@ export async function getKidsGrades(token: string): Promise<KidsGradesResponse> 
   });
 }
 
+export interface KidsAssessment {
+  id: number;
+  title: string;
+  type: string;
+  lesson_id?: number;
+  marks: number;
+}
+
+export interface KidsAssessmentsResponse {
+  assessments: KidsAssessment[];
+}
+
+export async function getKidsAssessments(token: string): Promise<KidsAssessmentsResponse> {
+  return apiRequest<KidsAssessmentsResponse>('/kids/assessments/', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Token ${token}`,
+    },
+  });
+}
+

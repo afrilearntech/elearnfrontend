@@ -7,10 +7,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
-import { getKidsAssignments, KidsAssignment } from '@/lib/api/dashboard';
+import { getKidsAssessments, KidsAssessment } from '@/lib/api/dashboard';
 import { 
   submitSolution, 
-  SubmitSolutionRequest
+  SubmitSolutionRequest,
+  getAssessmentQuestions,
+  AssessmentQuestionsResponse,
+  AssessmentQuestion
 } from '@/lib/api/assignments';
 import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, showSuccessToast, formatErrorMessage } from '@/lib/toast';
@@ -24,14 +27,14 @@ export default function AssignmentDetailPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [assignment, setAssignment] = useState<KidsAssignment | null>(null);
-  const [solution, setSolution] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileName, setFileName] = useState('');
-  const [dragActive, setDragActive] = useState(false);
+  const [assessment, setAssessment] = useState<KidsAssessment | null>(null);
+  const [assessmentData, setAssessmentData] = useState<AssessmentQuestionsResponse | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
 
   useEffect(() => {
-    const fetchAssignment = async () => {
+    const fetchAssessment = async () => {
       if (!assignmentId) {
         router.push('/assignments');
         return;
@@ -45,24 +48,41 @@ export default function AssignmentDetailPage() {
 
       setIsLoading(true);
       try {
-        const data = await getKidsAssignments(token);
-        const foundAssignment = data.assignments.find(
+        const data = await getKidsAssessments(token);
+        const foundAssessment = data.assessments.find(
           (a) => a.id.toString() === assignmentId
         );
         
-        if (!foundAssignment) {
-          showErrorToast('Assignment not found');
+        if (!foundAssessment) {
+          showErrorToast('Assessment not found');
           router.push('/assignments');
           return;
         }
         
-        setAssignment(foundAssignment);
+        setAssessment(foundAssessment);
+        
+        setIsLoadingQuestions(true);
+        try {
+          const params: { general_id?: number; lesson_id?: number } = {};
+          if (foundAssessment.type === 'general') {
+            params.general_id = foundAssessment.id;
+          } else {
+            params.lesson_id = foundAssessment.id;
+          }
+          
+          const questionsData = await getAssessmentQuestions(params, token);
+          setAssessmentData(questionsData);
+        } catch (error) {
+          console.error('Failed to load questions:', error);
+        } finally {
+          setIsLoadingQuestions(false);
+        }
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message
           : error instanceof Error
           ? error.message
-          : 'Failed to load assignment';
+          : 'Failed to load assessment';
         showErrorToast(formatErrorMessage(errorMessage));
         router.push('/assignments');
       } finally {
@@ -70,49 +90,38 @@ export default function AssignmentDetailPage() {
       }
     };
 
-    fetchAssignment();
+    fetchAssessment();
   }, [assignmentId, router]);
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
+
+  const handleAnswerChange = (questionId: number, answer: string) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
+  const handleNextQuestion = () => {
+    if (assessmentData && currentQuestionIndex < assessmentData.questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const file = e.dataTransfer.files[0];
-      setSelectedFile(file);
-      setFileName(file.name);
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedFile(file);
-      setFileName(file.name);
-    }
-  };
+  const handleSubmitAssessment = async () => {
+    if (!assessmentData) return;
 
-  const removeFile = () => {
-    setSelectedFile(null);
-    setFileName('');
-  };
+    const unansweredQuestions = assessmentData.questions.filter(
+      q => !answers[q.id] || answers[q.id].trim() === ''
+    );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!solution.trim() && !selectedFile) {
-      showErrorToast('Please provide a solution or attach a file');
+    if (unansweredQuestions.length > 0) {
+      showErrorToast(`Please answer all ${assessmentData.questions.length} questions! 🎯`);
       return;
     }
 
@@ -124,125 +133,37 @@ export default function AssignmentDetailPage() {
 
     setIsSubmitting(true);
     try {
+      const formattedSolution = assessmentData.questions
+        .map((q, index) => {
+          const questionText = q.question.trim();
+          const answerText = answers[q.id] || '';
+          return `question${index + 1}: ${answerText}`;
+        })
+        .join(' ');
+
       const submitData: SubmitSolutionRequest = {
-        general_id: assignment?.id,
-        solution: solution.trim() || undefined,
-        attachment: selectedFile || undefined,
+        ...(assessment?.type === 'general' ? { general_id: assessment.id } : {}),
+        ...(assessment?.type === 'lesson' ? { lesson_id: assessment.id } : {}),
+        solution: formattedSolution,
       };
 
       await submitSolution(submitData, token);
-      
-      showSuccessToast('🎉 Assignment submitted successfully!');
-      
-      // Refresh assignment data to get updated status
-      const updatedData = await getKidsAssignments(token);
-      const updatedAssignment = updatedData.assignments.find(
-        (a) => a.id.toString() === assignmentId
-      );
-      if (updatedAssignment) {
-        setAssignment(updatedAssignment);
-      }
-      
+      showSuccessToast('🎉 Assessment submitted successfully! Great job! ⭐');
       setTimeout(() => {
         router.push('/assignments');
-      }, 1500);
+      }, 2000);
     } catch (error) {
       const errorMessage = error instanceof ApiClientError
         ? error.message
         : error instanceof Error
         ? error.message
-        : 'Failed to submit assignment';
+        : 'Failed to submit assessment';
       showErrorToast(formatErrorMessage(errorMessage));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const formatDueDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const diffTime = date.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) {
-      return `${Math.abs(diffDays)} day${Math.abs(diffDays) === 1 ? '' : 's'} ago`;
-    } else if (diffDays === 0) {
-      return 'Due Today';
-    } else if (diffDays === 1) {
-      return 'Due Tomorrow';
-    } else if (diffDays <= 7) {
-      return `Due in ${diffDays} days`;
-    } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-  };
-
-  const calculateDaysUntilDue = (dueDateString: string): number => {
-    const dueDate = new Date(dueDateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    dueDate.setHours(0, 0, 0, 0);
-    const diffTime = dueDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
-  const getStatusConfig = (status: string, daysUntilDue: number) => {
-    const statusLower = status?.toLowerCase() || '';
-    
-    if (statusLower === 'submitted') {
-      return {
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-700',
-        borderColor: 'border-green-300',
-        icon: 'mdi:check-circle',
-        label: 'Submitted',
-        emoji: '✅',
-      };
-    }
-    
-    if (daysUntilDue < 0) {
-      return {
-        bgColor: 'bg-red-100',
-        textColor: 'text-red-700',
-        borderColor: 'border-red-300',
-        icon: 'mdi:alert-circle',
-        label: 'Overdue',
-        emoji: '⚠️',
-      };
-    }
-    
-    if (daysUntilDue === 0) {
-      return {
-        bgColor: 'bg-orange-100',
-        textColor: 'text-orange-700',
-        borderColor: 'border-orange-300',
-        icon: 'mdi:clock-alert',
-        label: 'Due Today',
-        emoji: '⏰',
-      };
-    }
-    
-    if (daysUntilDue <= 3) {
-      return {
-        bgColor: 'bg-yellow-100',
-        textColor: 'text-yellow-700',
-        borderColor: 'border-yellow-300',
-        icon: 'mdi:clock-outline',
-        label: 'Due Soon',
-        emoji: '⏳',
-      };
-    }
-    
-    return {
-      bgColor: 'bg-blue-100',
-      textColor: 'text-blue-700',
-      borderColor: 'border-blue-300',
-      icon: 'mdi:clipboard-text-outline',
-      label: 'Not Submitted',
-      emoji: '📝',
-    };
-  };
 
   if (isLoading) {
     return (
@@ -252,12 +173,14 @@ export default function AssignmentDetailPage() {
     );
   }
 
-  if (!assignment) {
+  if (!assessment) {
     return null;
   }
 
-  const daysUntilDue = calculateDaysUntilDue(assignment.due_at);
-  const statusConfig = getStatusConfig(assignment.status, daysUntilDue);
+  const currentQuestion = assessmentData?.questions[currentQuestionIndex];
+  const totalQuestions = assessmentData?.questions.length || 0;
+  const answeredCount = Object.keys(answers).length;
+  const progress = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
   return (
     <div className="min-h-screen">
@@ -287,39 +210,14 @@ export default function AssignmentDetailPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="flex-1">
                     <h1 className="text-2xl sm:text-3xl font-bold text-[#9333EA] mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {assignment.title}
+                      {assessmentData?.assessment.title || assessment.title}
                     </h1>
-                    
-                    {assignment.instructions && assignment.instructions.trim() && (
-                      <div className="mb-4 p-4 bg-linear-to-r from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
-                            <Icon icon="mdi:information" className="text-white" width={20} height={20} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              <span>📋</span>
-                              <span>Instructions</span>
-                            </h3>
-                            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              {assignment.instructions}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
                     <div className="flex flex-wrap items-center gap-3">
-                      <span className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${statusConfig.borderColor} ${statusConfig.bgColor} ${statusConfig.textColor} flex items-center gap-2`} style={{ fontFamily: 'Andika, sans-serif' }}>
-                        <span className="text-base">{statusConfig.emoji}</span>
-                        <Icon icon={statusConfig.icon} width={18} height={18} />
-                        <span>{statusConfig.label}</span>
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.borderColor}`} style={{ fontFamily: 'Andika, sans-serif' }}>
-                        {formatDueDate(assignment.due_at)}
-                      </span>
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        {assignment.type}
+                        {assessment.type}
+                      </span>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        {assessment.marks} marks
                       </span>
                     </div>
                   </div>
@@ -327,236 +225,240 @@ export default function AssignmentDetailPage() {
               </div>
             </div>
 
-            {assignment.status?.toLowerCase() === 'submitted' && assignment.solution ? (
+            {isLoadingQuestions ? (
               <div className="sm:mx-8 mx-4">
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-green-200">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      <Icon icon="mdi:check-circle" width={28} height={28} className="text-green-500" />
-                      Your Submitted Solution
-                    </h2>
-                    
-                    <div className={`px-4 py-2 rounded-xl ${statusConfig.bgColor} ${statusConfig.textColor} border-2 ${statusConfig.borderColor} flex items-center gap-2`}>
-                      <span className="text-lg">{statusConfig.emoji}</span>
-                      <Icon icon={statusConfig.icon} width={20} height={20} />
-                      <span className="font-semibold text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        {statusConfig.label}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mb-6 p-4 bg-green-50 rounded-xl border-2 border-green-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon icon="mdi:calendar-check" className="text-green-600" width={20} height={20} />
-                      <span className="text-sm font-semibold text-green-700" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        Submitted on:
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-700 ml-7" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {new Date(assignment.solution.submitted_at).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
-
-                  {assignment.solution.solution && assignment.solution.solution.trim() && (
-                    <div className="mb-6">
-                      <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        <Icon icon="mdi:text-box" className="text-[#9333EA]" width={20} height={20} />
-                        Your Answer ✍️
-                      </label>
-                      <div className="w-full min-h-[200px] p-4 border-2 border-gray-200 rounded-xl bg-gray-50 text-sm sm:text-base whitespace-pre-wrap" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        {assignment.solution.solution}
-                      </div>
-                    </div>
-                  )}
-
-                  {assignment.solution.attachment && (
-                    <div className="mb-6">
-                      <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        <Icon icon="mdi:paperclip" className="text-[#9333EA]" width={20} height={20} />
-                        Your Attachment 📎
-                      </label>
-                      <div className="border-2 border-green-300 bg-green-50 rounded-xl p-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-green-200 rounded-lg flex items-center justify-center shrink-0">
-                            <Icon icon="mdi:file-check" className="text-green-700" width={28} height={28} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 mb-1" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              Attachment File
-                            </p>
-                            <a
-                              href={assignment.solution.attachment}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-sm text-[#9333EA] hover:text-[#7C3AED] transition-colors"
-                              style={{ fontFamily: 'Andika, sans-serif' }}
-                            >
-                              <Icon icon="mdi:open-in-new" width={16} height={16} />
-                              <span>View Attachment</span>
-                            </a>
-                          </div>
+                <div className="bg-white rounded-2xl shadow-lg p-12 border-2 border-[#E5E7EB] flex items-center justify-center">
+                  <Spinner size="lg" />
+                </div>
+              </div>
+            ) : assessmentData && assessmentData.questions.length > 0 ? (
+              <div className="sm:mx-8 mx-4">
+                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-[#E5E7EB]">
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-[#9333EA] to-[#3B82F6] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md" style={{ fontFamily: 'Andika, sans-serif' }}>
+                          {currentQuestionIndex + 1}
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            Question {currentQuestionIndex + 1} of {totalQuestions}
+                          </p>
+                          <p className="text-xs text-gray-500" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            {answeredCount} answered
+                          </p>
                         </div>
                       </div>
+                      {answers[currentQuestion?.id || 0] && (
+                        <div className="flex items-center gap-2 text-green-600">
+                          <Icon icon="mdi:check-circle" width={24} height={24} />
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Andika, sans-serif' }}>Answered</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden mb-6">
+                      <div
+                        className="h-full bg-gradient-to-r from-[#9333EA] to-[#3B82F6] transition-all duration-500"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {currentQuestion && (
+                    <div className="mb-8">
+                      <div className="mb-6 p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200">
+                        <div className="flex items-start gap-3 mb-4">
+                          <span className="px-3 py-1 bg-white rounded-full text-xs font-semibold text-gray-700 border border-gray-300 capitalize" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            {currentQuestion.type.replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-relaxed" style={{ fontFamily: 'Andika, sans-serif' }}>
+                          {currentQuestion.question}
+                        </h2>
+                      </div>
+
+                      <div className="space-y-4">
+                        {currentQuestion.type === 'MULTIPLE_CHOICE' && currentQuestion.options ? (
+                          currentQuestion.options.map((option) => {
+                            const isSelected = answers[currentQuestion.id] === option.value;
+                            return (
+                              <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => handleAnswerChange(currentQuestion.id, option.value)}
+                                className={`w-full text-left p-5 rounded-xl border-2 transition-all ${
+                                  isSelected
+                                    ? 'bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white border-[#9333EA] shadow-lg scale-[1.02]'
+                                    : 'bg-white text-gray-900 border-gray-300 hover:border-[#9333EA] hover:bg-purple-50 hover:shadow-md'
+                                }`}
+                                style={{ fontFamily: 'Andika, sans-serif' }}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                    isSelected ? 'border-white bg-white' : 'border-gray-400 bg-white'
+                                  }`}>
+                                    {isSelected && (
+                                      <Icon icon="mdi:check" width={20} height={20} className="text-[#9333EA]" />
+                                    )}
+                                  </div>
+                                  <span className="text-base sm:text-lg font-medium flex-1">{option.value}</span>
+                                </div>
+                              </button>
+                            );
+                          })
+                        ) : currentQuestion.type === 'TRUE_FALSE' ? (
+                          <div className="grid grid-cols-2 gap-4">
+                            {['True', 'False'].map((option) => {
+                              const isSelected = answers[currentQuestion.id]?.toLowerCase() === option.toLowerCase();
+                              return (
+                                <button
+                                  key={option}
+                                  type="button"
+                                  onClick={() => handleAnswerChange(currentQuestion.id, option)}
+                                  className={`p-6 rounded-xl border-2 transition-all font-semibold ${
+                                    isSelected
+                                      ? 'bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white border-[#9333EA] shadow-lg scale-[1.02]'
+                                      : 'bg-white text-gray-900 border-gray-300 hover:border-[#9333EA] hover:bg-purple-50 hover:shadow-md'
+                                  }`}
+                                  style={{ fontFamily: 'Andika, sans-serif' }}
+                                >
+                                  <div className="flex items-center justify-center gap-3">
+                                    {isSelected && <Icon icon="mdi:check-circle" width={24} height={24} />}
+                                    <span className="text-lg sm:text-xl">{option}</span>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : currentQuestion.type === 'FILL_IN_THE_BLANK' && currentQuestion.options ? (
+                          <div className="space-y-3">
+                            {currentQuestion.options.map((option) => {
+                              const isSelected = answers[currentQuestion.id] === option.value;
+                              return (
+                                <button
+                                  key={option.id}
+                                  type="button"
+                                  onClick={() => handleAnswerChange(currentQuestion.id, option.value)}
+                                  className={`w-full text-left p-5 rounded-xl border-2 transition-all ${
+                                    isSelected
+                                      ? 'bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white border-[#9333EA] shadow-lg scale-[1.02]'
+                                      : 'bg-white text-gray-900 border-gray-300 hover:border-[#9333EA] hover:bg-purple-50 hover:shadow-md'
+                                  }`}
+                                  style={{ fontFamily: 'Andika, sans-serif' }}
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                                      isSelected ? 'border-white bg-white' : 'border-gray-400 bg-white'
+                                    }`}>
+                                      {isSelected && (
+                                        <Icon icon="mdi:check" width={20} height={20} className="text-[#9333EA]" />
+                                      )}
+                                    </div>
+                                    <span className="text-base sm:text-lg font-medium flex-1">{option.value}</span>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : currentQuestion.type === 'SHORT_ANSWER' ? (
+                          <input
+                            type="text"
+                            value={answers[currentQuestion.id] || ''}
+                            onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
+                            placeholder="Type your answer here..."
+                            className="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:border-[#9333EA] text-base sm:text-lg"
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          />
+                        ) : currentQuestion.type === 'ESSAY' ? (
+                          <textarea
+                            value={answers[currentQuestion.id] || ''}
+                            onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
+                            placeholder="Write your answer here... Be creative! ✍️"
+                            rows={6}
+                            className="w-full px-5 py-4 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:border-[#9333EA] text-base sm:text-lg resize-none"
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          />
+                        ) : null}
+                      </div>
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Link
-                      href="/assignments"
-                      className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6"
+                  <div className="flex items-center justify-between gap-4 pt-6 border-t-2 border-gray-200">
+                    <button
+                      type="button"
+                      onClick={handlePreviousQuestion}
+                      disabled={currentQuestionIndex === 0}
+                      className="px-6 py-3 rounded-xl bg-gray-100 text-gray-700 font-semibold flex items-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ fontFamily: 'Andika, sans-serif' }}
                     >
-                      <Icon icon="mdi:arrow-left" width={18} height={18} />
-                      <span>Back to Assignments</span>
-                    </Link>
+                      <Icon icon="mdi:arrow-left" width={20} height={20} />
+                      <span>Previous</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      {assessmentData.questions.map((_, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => setCurrentQuestionIndex(index)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                            index === currentQuestionIndex
+                              ? 'bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white shadow-md scale-110'
+                              : answers[assessmentData.questions[index].id]
+                              ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                          }`}
+                          style={{ fontFamily: 'Andika, sans-serif' }}
+                        >
+                          {index + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    {currentQuestionIndex < totalQuestions - 1 ? (
+                      <button
+                        type="button"
+                        onClick={handleNextQuestion}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white font-semibold flex items-center gap-2 hover:shadow-lg transition-all"
+                        style={{ fontFamily: 'Andika, sans-serif' }}
+                      >
+                        <span>Next</span>
+                        <Icon icon="mdi:arrow-right" width={20} height={20} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleSubmitAssessment}
+                        disabled={isSubmitting || answeredCount !== totalQuestions}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#10B981] to-[#3B82F6] text-white font-bold flex items-center gap-2 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ fontFamily: 'Andika, sans-serif' }}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Spinner size="sm" className="text-white" />
+                            <span>Submitting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Icon icon="mdi:send" width={20} height={20} />
+                            <span>Submit Assessment 🚀</span>
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="sm:mx-8 mx-4">
-                <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-[#E5E7EB]">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-[#7C3AED] flex items-center gap-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      <Icon icon="mdi:file-document-edit" width={28} height={28} />
-                      Your Solution
-                    </h2>
-                    
-                    <div className={`px-4 py-2 rounded-xl ${statusConfig.bgColor} ${statusConfig.textColor} border-2 ${statusConfig.borderColor} flex items-center gap-2`}>
-                      <span className="text-lg">{statusConfig.emoji}</span>
-                      <Icon icon={statusConfig.icon} width={20} height={20} />
-                      <span className="font-semibold text-sm" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        {statusConfig.label}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      Write your answer here ✍️
-                    </label>
-                    <textarea
-                      value={solution}
-                      onChange={(e) => setSolution(e.target.value)}
-                      placeholder="Type your answer here... Be creative and show what you learned! 🌟"
-                      className="w-full h-48 sm:h-64 p-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#9333EA] focus:border-transparent resize-none text-sm sm:text-base border-gray-300"
-                      style={{ fontFamily: 'Andika, sans-serif' }}
-                    />
-                    <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      You can write your answer or attach a file, or both!
-                    </p>
-                  </div>
-
-                  <div className="mb-6">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      Or attach a file 📎
-                    </label>
-                    
-                    {!selectedFile ? (
-                      <div
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
-                          dragActive
-                            ? 'border-[#9333EA] bg-purple-50'
-                            : 'border-gray-300 hover:border-[#9333EA] hover:bg-purple-50'
-                        }`}
-                      >
-                        <Icon 
-                          icon="mdi:cloud-upload" 
-                          className="mx-auto mb-3 text-[#9333EA]" 
-                          width={48} 
-                          height={48} 
-                        />
-                        <p className="text-sm text-gray-600 mb-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                          Drag and drop your file here, or
-                        </p>
-                        <label className="inline-block">
-                          <input
-                            type="file"
-                            onChange={handleFileChange}
-                            className="hidden"
-                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                          />
-                          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-[#9333EA] text-white cursor-pointer hover:bg-[#7C3AED]" style={{ fontFamily: 'Andika, sans-serif' }}>
-                            <Icon icon="mdi:file-upload" width={18} height={18} />
-                            Choose File
-                          </span>
-                        </label>
-                        <p className="text-xs text-gray-500 mt-2" style={{ fontFamily: 'Andika, sans-serif' }}>
-                          PDF, Word, Images, or Text files
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="border-2 border-green-300 bg-green-50 rounded-xl p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center shrink-0">
-                            <Icon icon="mdi:file-check" className="text-green-700" width={24} height={24} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              {fileName}
-                            </p>
-                            <p className="text-xs text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              {(selectedFile.size / 1024).toFixed(1)} KB
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={removeFile}
-                          className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors shrink-0"
-                          aria-label="Remove file"
-                        >
-                          <Icon icon="mdi:close" width={18} height={18} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting || (!solution.trim() && !selectedFile)}
-                      className="flex-1 h-12 sm:h-14 rounded-xl text-white font-bold text-base sm:text-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ 
-                        background: 'linear-gradient(135deg, #10B981 0%, #3B82F6 100%)',
-                        fontFamily: 'Andika, sans-serif'
-                      }}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Spinner size="sm" className="text-white" />
-                          <span>Submitting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Icon icon="mdi:send" width={24} height={24} />
-                          <span>Submit Assignment 🚀</span>
-                        </>
-                      )}
-                    </button>
-                    
-                    <Link
-                      href="/assignments"
-                      className="flex-1 sm:flex-initial sm:w-auto h-12 sm:h-14 rounded-xl bg-gray-100 text-gray-700 font-semibold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors px-4 sm:px-6 min-w-0 overflow-hidden"
-                      style={{ fontFamily: 'Andika, sans-serif' }}
-                    >
-                      <Icon icon="mdi:cancel" width={18} height={18} className="shrink-0" />
-                      <span className="hidden sm:inline whitespace-nowrap">Cancel</span>
-                    </Link>
-                  </div>
+            ) : assessmentData && assessmentData.questions.length === 0 ? (
+              <div className="sm:mx-8 mx-4">
+                <div className="bg-white rounded-2xl shadow-lg p-12 border-2 border-yellow-200 text-center">
+                  <Icon icon="mdi:information" width={64} height={64} className="mx-auto text-yellow-600 mb-4" />
+                  <p className="text-lg font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
+                    No questions available for this assessment yet.
+                  </p>
                 </div>
-              </form>
-            )}
+              </div>
+            ) : null}
           </div>
         </main>
       </div>
