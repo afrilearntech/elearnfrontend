@@ -53,3 +53,6 @@ next-env.d.ts
 
 # mocks
 public/__mocks__/
+
+# deployment scrips
+deployment
