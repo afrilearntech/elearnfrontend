@@ -146,15 +146,17 @@ export default function SubjectLessonDetail() {
   const typeInfo = getTypeInfo();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    // Get student ID from localStorage (stored during login)
+    // This is the actual student ID, not the profile ID
+    const storedStudentId = localStorage.getItem('student_id');
+    if (storedStudentId) {
       try {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser?.id) {
-          setStudentId(parsedUser.id);
+        const studentIdNum = parseInt(storedStudentId, 10);
+        if (!isNaN(studentIdNum)) {
+          setStudentId(studentIdNum);
         }
       } catch (error) {
-        console.error('Failed to parse user from storage', error);
+        console.error('Failed to parse student ID from storage', error);
       }
     }
   }, []);

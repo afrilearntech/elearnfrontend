@@ -73,6 +73,9 @@ export default function LoginPage() {
           const gradeMatch = response.student.grade.match(/\d+/);
           const gradeNumber = gradeMatch ? parseInt(gradeMatch[0]) : null;
           
+          // Store student ID for lesson tracking
+          localStorage.setItem('student_id', response.student.id.toString());
+          
           if (gradeNumber) {
             localStorage.setItem('user_grade', gradeNumber.toString());
             

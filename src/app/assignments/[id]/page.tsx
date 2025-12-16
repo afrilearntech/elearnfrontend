@@ -8,7 +8,10 @@ import Link from 'next/link';
 import ElementaryNavbar from '@/components/elementary/ElementaryNavbar';
 import ElementarySidebar from '@/components/elementary/ElementarySidebar';
 import { getKidsAssignments, KidsAssignment } from '@/lib/api/dashboard';
-import { submitSolution, SubmitSolutionRequest } from '@/lib/api/assignments';
+import { 
+  submitSolution, 
+  SubmitSolutionRequest
+} from '@/lib/api/assignments';
 import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, showSuccessToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';

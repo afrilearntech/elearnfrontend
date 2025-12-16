@@ -125,6 +125,8 @@ export default function GamesPage() {
   const hintButtonRef = useRef<HTMLButtonElement | null>(null);
   const checkButtonRef = useRef<HTMLButtonElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const [activeTouchLetter, setActiveTouchLetter] = useState<{ letter: string; from: 'pool' | number } | null>(null);
+  const [touchTargetSlot, setTouchTargetSlot] = useState<number | null>(null);
 
   const playDragSound = () => {
     if (typeof window === 'undefined') return;
@@ -439,12 +441,156 @@ export default function GamesPage() {
 
   const handleSlotClick = (index: number) => {
     const letter = slots[index];
-    if (!letter) return;
+    if (!letter) {
+      // If slot is empty and we have an active touch letter, place it here
+      if (activeTouchLetter) {
+        const { letter: touchLetter, from } = activeTouchLetter;
+        const nextSlots = [...slots];
+        nextSlots[index] = touchLetter;
+        setSlots(nextSlots);
+        if (from === 'pool') {
+          setPool((prev) => {
+            const idx = prev.indexOf(touchLetter);
+            if (idx >= 0) {
+              const copy = [...prev];
+              copy.splice(idx, 1);
+              return copy;
+            }
+            return prev;
+          });
+        } else {
+          const prevIndex = from as number;
+          nextSlots[prevIndex] = null;
+          setSlots(nextSlots);
+        }
+        playDragSound();
+        setActiveTouchLetter(null);
+        setTouchTargetSlot(null);
+        setShowCheckModal(false);
+        return;
+      }
+      return;
+    }
+    // If slot has a letter, remove it and send back to pool
     const nextSlots = [...slots];
     nextSlots[index] = null;
     setSlots(nextSlots);
     setPool((prev) => [...prev, letter]);
     setShowCheckModal(false);
+  };
+
+  // Click-to-drop: Click on a pool letter to auto-fill next available slot
+  const handlePoolLetterClick = (letter: string) => {
+    // Find the first empty slot
+    const emptySlotIndex = slots.findIndex((slot) => !slot);
+    if (emptySlotIndex >= 0) {
+      const nextSlots = [...slots];
+      nextSlots[emptySlotIndex] = letter;
+      setSlots(nextSlots);
+      setPool((prev) => {
+        const idx = prev.indexOf(letter);
+        if (idx >= 0) {
+          const copy = [...prev];
+          copy.splice(idx, 1);
+          return copy;
+        }
+        return prev;
+      });
+      playDragSound();
+      setShowCheckModal(false);
+    }
+  };
+
+  // Touch event handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>, letter: string, from: 'pool' | number) => {
+    e.preventDefault();
+    setActiveTouchLetter({ letter, from });
+    playDragSound();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!activeTouchLetter) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (element) {
+      const slotElement = element.closest('[data-slot-index]');
+      if (slotElement) {
+        const slotIndex = parseInt(slotElement.getAttribute('data-slot-index') || '-1', 10);
+        if (slotIndex >= 0 && slotIndex < slots.length) {
+          setTouchTargetSlot(slotIndex);
+        }
+      } else {
+        setTouchTargetSlot(null);
+      }
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!activeTouchLetter) {
+      setActiveTouchLetter(null);
+      setTouchTargetSlot(null);
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    if (element) {
+      const slotElement = element.closest('[data-slot-index]');
+      if (slotElement) {
+        const slotIndex = parseInt(slotElement.getAttribute('data-slot-index') || '-1', 10);
+        if (slotIndex >= 0 && slotIndex < slots.length && !slots[slotIndex]) {
+          // Place letter in slot (same logic as handleDropOnSlot)
+          const { letter, from } = activeTouchLetter;
+          const nextSlots = [...slots];
+          if (from === 'pool') {
+            nextSlots[slotIndex] = letter;
+            setSlots(nextSlots);
+            setPool((prev) => {
+              const idx = prev.indexOf(letter);
+              if (idx >= 0) {
+                const copy = [...prev];
+                copy.splice(idx, 1);
+                return copy;
+              }
+              return prev;
+            });
+            playDragSound();
+            setShowCheckModal(false);
+          } else {
+            const prevIndex = from as number;
+            const movingLetter = nextSlots[prevIndex];
+            if (movingLetter) {
+              nextSlots[prevIndex] = null;
+              nextSlots[slotIndex] = movingLetter;
+              setSlots(nextSlots);
+              playDragSound();
+              setShowCheckModal(false);
+            }
+          }
+        }
+      } else {
+        // Check if dropped on pool area
+        const poolElement = element.closest('[data-pool-area]');
+        if (poolElement && activeTouchLetter.from !== 'pool') {
+          // Return letter to pool (same logic as handleDropBackToPool)
+          const { letter, from } = activeTouchLetter;
+          const fromIndex = from as number;
+          const nextSlots = [...slots];
+          if (nextSlots[fromIndex] === letter) {
+            nextSlots[fromIndex] = null;
+            setSlots(nextSlots);
+            setPool((prev) => [...prev, letter]);
+            playDragSound();
+            setShowCheckModal(false);
+          }
+        }
+      }
+    }
+    
+    setActiveTouchLetter(null);
+    setTouchTargetSlot(null);
   };
 
   const handleClear = () => {
@@ -633,7 +779,7 @@ export default function GamesPage() {
                         <div className="w-24"></div>
                       </div>
 
-                      <div className="bg-gray-50 rounded-2xl w-full max-w-3xl p-4 sm:p-6 shadow-inner">
+                      <div className="bg-gray-50 rounded-2xl w-full max-w-3xl p-3 sm:p-4 md:p-6 shadow-inner">
                         {isGameDataLoading ? (
                           <div className="w-full flex justify-center py-12">
                             <Spinner size="lg" />
@@ -642,42 +788,88 @@ export default function GamesPage() {
                         <div className="flex flex-col items-center w-full">
                           <div className="mb-4">
                             {currentGameDetails?.image ? (
-                            <div className="w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] rounded-xl overflow-hidden shadow">
+                            <div className="w-[100px] h-[100px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] rounded-xl overflow-hidden shadow mx-auto">
                                 <Image
                                   src={currentGameDetails.image}
                                   alt={currentGameDetails.name || 'game'}
-                                  width={140}
-                                  height={140}
+                                  width={160}
+                                  height={160}
                                   className="object-cover w-full h-full"
                                 />
                               </div>
                             ) : (
-                              <div className="w-[110px] h-[110px] sm:w-[140px] sm:h-[140px] rounded-xl shadow bg-gray-200 flex items-center justify-center">
+                              <div className="w-[100px] h-[100px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px] rounded-xl shadow bg-gray-200 flex items-center justify-center mx-auto">
                                 <Icon icon="mdi:image-off-outline" className="text-gray-500" width={32} height={32} />
                               </div>
                             )}
                             </div>
-                          <div className="text-[15px] sm:text-[16px] text-[#111827] mb-3 text-center">
+                          <div className="text-[14px] sm:text-[15px] md:text-[16px] text-[#111827] mb-3 text-center px-2">
                             {currentGameDetails?.instructions || selectedGame?.instructions || 'Spell the word!'}
                           </div>
 
                           {/* Drop slots */}
-                          <div className="w-full flex items-center justify-center gap-2 sm:gap-3 mb-6 flex-wrap">
+                          <div className="w-full flex items-center justify-center gap-2 sm:gap-3 mb-6 flex-wrap px-2">
                             {slots.map((s, idx) => (
                               <div
                                 key={idx}
+                                data-slot-index={idx}
                                 onDrop={(e) => handleDropOnSlot(e, idx)}
                                 onDragOver={handleAllowDrop}
+                                onTouchEnd={(e) => {
+                                  if (activeTouchLetter && !s) {
+                                    // Place letter in slot from touch
+                                    const { letter, from } = activeTouchLetter;
+                                    const nextSlots = [...slots];
+                                    if (from === 'pool') {
+                                      nextSlots[idx] = letter;
+                                      setSlots(nextSlots);
+                                      setPool((prev) => {
+                                        const idx = prev.indexOf(letter);
+                                        if (idx >= 0) {
+                                          const copy = [...prev];
+                                          copy.splice(idx, 1);
+                                          return copy;
+                                        }
+                                        return prev;
+                                      });
+                                      playDragSound();
+                                      setShowCheckModal(false);
+                                    } else {
+                                      const prevIndex = from as number;
+                                      const movingLetter = nextSlots[prevIndex];
+                                      if (movingLetter) {
+                                        nextSlots[prevIndex] = null;
+                                        nextSlots[idx] = movingLetter;
+                                        setSlots(nextSlots);
+                                        playDragSound();
+                                        setShowCheckModal(false);
+                                      }
+                                    }
+                                    setActiveTouchLetter(null);
+                                    setTouchTargetSlot(null);
+                                  } else {
+                                    handleSlotClick(idx);
+                                  }
+                                }}
                                 onClick={() => handleSlotClick(idx)}
-                                className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-[16px] sm:text-[18px] font-semibold ${s ? 'bg-white shadow' : 'bg-white border border-dashed border-[#E5E7EB]'}`}
+                                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center text-[16px] sm:text-[18px] md:text-[20px] font-semibold transition-all cursor-pointer touch-none select-none ${
+                                  s 
+                                    ? 'bg-white shadow-md hover:shadow-lg active:scale-95' 
+                                    : touchTargetSlot === idx
+                                    ? 'bg-blue-50 border-2 border-blue-400 border-dashed'
+                                    : 'bg-white border border-dashed border-[#E5E7EB] hover:border-[#3B82F6]'
+                                }`}
                                 style={s ? { border: '2px solid transparent', background: 'linear-gradient(#FFFFFF,#FFFFFF) padding-box, linear-gradient(90deg, #22C55E, #3B82F6) border-box' } : undefined}
-                                title={s ? 'Tap to send back to the letter pool' : 'Drop a letter here'}
+                                title={s ? 'Tap to send back to the letter pool' : 'Tap a letter to fill this slot'}
                               >
                                 {s && (
                                   <div
                                     draggable
                                     onDragStart={(e) => handleDragStart(e, s, idx)}
-                                    className="w-full h-full flex items-center justify-center rounded-xl"
+                                    onTouchStart={(e) => handleTouchStart(e, s, idx)}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                    className="w-full h-full flex items-center justify-center rounded-xl select-none"
                                   >
                                     {s}
                                   </div>
@@ -686,11 +878,15 @@ export default function GamesPage() {
                             ))}
                           </div>
 
-                          <div className="text-[13px] sm:text-[14px] text-[#4B5563] mb-3">Choose the letters:</div>
+                          <div className="text-[13px] sm:text-[14px] md:text-[15px] text-[#4B5563] mb-3 text-center">
+                            <span className="hidden sm:inline">Choose the letters: </span>
+                            <span className="sm:hidden">Tap letters to fill slots:</span>
+                          </div>
 
                           {/* Pool */}
                           <div
-                            className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mb-6 min-h-[72px] w-full border-2 border-dashed border-transparent hover:border-[#C7D2FE] rounded-2xl bg-white/60 transition px-4 py-2"
+                            data-pool-area
+                            className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-6 min-h-[72px] w-full border-2 border-dashed border-transparent hover:border-[#C7D2FE] rounded-2xl bg-white/60 transition px-3 sm:px-4 py-2"
                             onDrop={handleDropBackToPool}
                             onDragOver={handleAllowDrop}
                           >
@@ -699,20 +895,27 @@ export default function GamesPage() {
                                 key={`${ch}-${i}`}
                                 draggable
                                 onDragStart={(e) => handleDragStart(e, ch, 'pool')}
-                                className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-xl flex items-center justify-center text-[16px] sm:text-[18px] font-semibold border border-[#E5E7EB] shadow-sm"
+                                onTouchStart={(e) => handleTouchStart(e, ch, 'pool')}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                                onClick={() => handlePoolLetterClick(ch)}
+                                className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white rounded-xl flex items-center justify-center text-[16px] sm:text-[18px] md:text-[20px] font-semibold border border-[#E5E7EB] shadow-sm cursor-pointer touch-none select-none transition-all hover:shadow-md hover:scale-105 active:scale-95 ${
+                                  activeTouchLetter?.letter === ch && activeTouchLetter?.from === 'pool' ? 'ring-2 ring-blue-400 scale-110' : ''
+                                }`}
+                                title="Tap to auto-fill or drag to a slot"
                               >
                                 {ch}
                               </div>
                             ))}
                           </div>
 
-                          <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+                          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full">
                             <button
                               onClick={handleClear}
-                              className="h-10 px-5 rounded-full text-white text-sm flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center"
+                              className="h-10 sm:h-11 px-5 sm:px-6 rounded-full text-white text-sm sm:text-base flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center shadow-md hover:shadow-lg transition-all active:scale-95"
                               style={{ background: 'linear-gradient(90deg, #FB923C, #F97316)' }}
                             >
-                              <Icon icon="mdi:refresh" /> Clear
+                              <Icon icon="mdi:refresh" width={18} height={18} /> Clear
                             </button>
                             <div className="relative w-full sm:w-auto">
                               {showCheckModal && (
@@ -737,10 +940,10 @@ export default function GamesPage() {
                                 ref={checkButtonRef}
                                 onClick={handleCheckWord}
                                 disabled={isGameDataLoading || !answerKey}
-                                className="h-10 px-5 rounded-full text-white text-sm flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center disabled:opacity-60"
+                                className="h-10 sm:h-11 px-5 sm:px-6 rounded-full text-white text-sm sm:text-base flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center disabled:opacity-60 shadow-md hover:shadow-lg transition-all active:scale-95"
                                 style={{ background: 'linear-gradient(90deg, #22C55E, #16A34A)' }}
                               >
-                              <Icon icon="mdi:check-circle" /> Check Word
+                              <Icon icon="mdi:check-circle" width={18} height={18} /> Check Word
                             </button>
                             </div>
                             <div className="relative w-full sm:w-auto">
@@ -774,10 +977,10 @@ export default function GamesPage() {
                                 type="button"
                                 disabled={isGameDataLoading || (!currentGameDetails?.hint && !selectedGame?.instructions)}
                                 onClick={handleHintClick}
-                                className="h-10 px-5 rounded-full text-white text-sm flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center disabled:opacity-60"
+                                className="h-10 sm:h-11 px-5 sm:px-6 rounded-full text-white text-sm sm:text-base flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center disabled:opacity-60 shadow-md hover:shadow-lg transition-all active:scale-95"
                                 style={{ background: 'linear-gradient(90deg, #60A5FA, #2563EB)' }}
                               >
-                              <Icon icon="mdi:lightbulb-on-outline" /> Hint
+                              <Icon icon="mdi:lightbulb-on-outline" width={18} height={18} /> Hint
                             </button>
                             </div>
                           </div>
@@ -842,8 +1045,8 @@ export default function GamesPage() {
                     2
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-[#111827]">Drag letters from the pool</p>
-                    <p className="text-xs text-[#6B7280] mt-1">Click and drag letters from the letter pool at the bottom to the empty boxes above.</p>
+                    <p className="text-sm font-medium text-[#111827]">Drag or tap letters from the pool</p>
+                    <p className="text-xs text-[#6B7280] mt-1">On desktop: Click and drag letters from the pool to the boxes. On mobile/tablet: Simply tap a letter to automatically fill the next empty slot!</p>
                   </div>
                 </div>
                 
@@ -871,7 +1074,7 @@ export default function GamesPage() {
               <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
                 <p className="text-xs text-[#92400E] flex items-center gap-2">
                   <Icon icon="mdi:lightbulb-on" width={16} height={16} />
-                  <span><strong>Tip:</strong> You can click on a letter in a box to send it back to the pool if you make a mistake!</span>
+                  <span><strong>Tip:</strong> Tap a letter in a box to send it back to the pool. On mobile, tap any letter in the pool to auto-fill the next slot!</span>
                 </p>
               </div>
             </div>

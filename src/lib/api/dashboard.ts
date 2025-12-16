@@ -160,6 +160,9 @@ export interface KidsAssignment {
   status: string;
   instructions: string;
   solution?: AssignmentSolution | null;
+  general_assessment_id?: number | null;
+  lesson_assessment_id?: number | null;
+  has_questions?: boolean;
 }
 
 export interface KidsAssignmentsStats {

@@ -247,10 +247,10 @@ export default function MyAssignmentsPage() {
             {/* Title Section */}
             <div className="sm:mx-8 mx-4 mb-6">
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#9333EA] mb-2 truncate" style={{ fontFamily: 'Andika, sans-serif' }}>
-                My Assignments 📚
+                My Assessments 📚
               </h1>
               <p className="text-sm sm:text-base lg:text-lg text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
-                Complete your homework and earn stars! ⭐
+                Complete your assessments and earn stars! ⭐
               </p>
             </div>
 
@@ -310,7 +310,7 @@ export default function MyAssignmentsPage() {
                 style={{ fontFamily: 'Andika, sans-serif' }}
               >
                 <Icon icon="mdi:view-list" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="hidden sm:inline">All Assignments</span>
+                <span className="hidden sm:inline">All Assessments</span>
                 <span className="sm:hidden">All</span>
               </button>
               <button
@@ -452,14 +452,14 @@ export default function MyAssignmentsPage() {
                   <div className="bg-white rounded-xl shadow-md p-6 sm:p-8 max-w-md mx-auto">
                     <Icon icon="mdi:clipboard-check-outline" width={48} height={48} className="sm:w-16 sm:h-16 mx-auto text-gray-300 mb-4" />
                     <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 px-4" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {filter === 'all' ? 'No Assignments Yet! 🎉' : `No ${filter === 'due_soon' ? 'due soon' : filter === 'submitted' ? 'submitted' : filter.replace('_', ' ')} assignments`}
+                      {filter === 'all' ? 'No Assessments Yet! 🎉' : `No ${filter === 'due_soon' ? 'due soon' : filter === 'submitted' ? 'submitted' : filter.replace('_', ' ')} assessments`}
                     </p>
                     <p className="text-xs sm:text-sm text-gray-500 px-4" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {filter === 'all' 
-                        ? "Great job! You're all caught up. Check back later for new assignments!" 
+                        ? "Great job! You're all caught up. Check back later for new assessments!" 
                         : filter === 'submitted'
-                        ? "You haven't submitted any assignments yet. Start working on them!"
-                        : 'Try selecting a different filter to see more assignments.'}
+                        ? "You haven't submitted any assessments yet. Start working on them!"
+                        : 'Try selecting a different filter to see more assessments.'}
                     </p>
                   </div>
                 </div>

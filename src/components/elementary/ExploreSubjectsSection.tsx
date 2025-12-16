@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Card from '@/components/ui/Card';
 
@@ -44,6 +45,15 @@ export default function ExploreSubjectsSection({
     }
   ]
 }: ExploreSubjectsSectionProps) {
+  const router = useRouter();
+
+  const handleCardClick = (index: number) => {
+    // Skip "Coming Soon" card (Science Lab at index 2)
+    if (index === 2) return;
+    // Redirect to subject world page
+    router.push('/subjects');
+  };
+
   return (
     <div className="mt-8 w-full">
       <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
@@ -53,6 +63,7 @@ export default function ExploreSubjectsSection({
         {subjects.map((subject, index) => (
           <Card
             key={index}
+            onClick={() => handleCardClick(index)}
             className={`${
               index === 0
                 ? 'bg-gradient-to-r from-[#FCA5A5] to-[#EF4444]'
@@ -61,7 +72,11 @@ export default function ExploreSubjectsSection({
                 : index === 2
                 ? 'bg-gradient-to-r from-[#86EFAC] to-[#22C55E]'
                 : subject.bgColor
-            } border-0 shadow-lg relative`}
+            } border-0 shadow-lg relative transition-all duration-300 ${
+              index === 2 
+                ? 'cursor-default' 
+                : 'cursor-pointer hover:shadow-xl hover:scale-105 active:scale-100'
+            }`}
             padding="lg"
           >
             {/* Coming Soon Badge for Science Lab */}
