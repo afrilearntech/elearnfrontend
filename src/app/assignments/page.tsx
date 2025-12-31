@@ -24,6 +24,7 @@ interface AssessmentCard extends KidsAssessment {
   badgeText: string;
   titleColor: string;
   isSubmitted: boolean;
+  isLocked: boolean;
   due_at: string;
   status: string;
   instructions: string;
@@ -39,26 +40,55 @@ const calculateDaysUntilDue = (dueDateString: string): number => {
   return diffDays;
 };
 
-const getStatusConfig = (assessment: KidsAssessment) => {
+// Check if assessment is completed (from localStorage)
+const isAssessmentCompleted = (assessmentId: number): boolean => {
+  if (typeof window === 'undefined') return false;
+  const completed = localStorage.getItem(`assessment_completed_${assessmentId}`);
+  return completed === 'true';
+};
+
+const getStatusConfig = (assessment: KidsAssessment, isLocked: boolean = false) => {
   const today = new Date();
   const dueDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
   const due_at = dueDate.toISOString();
   const daysUntilDue = 7;
+  const isSubmitted = isAssessmentCompleted(assessment.id);
+  
+  if (isLocked) {
+    return {
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-300',
+      iconBg: 'bg-gray-200',
+      icon: 'mdi:lock',
+      iconColor: '#6B7280',
+      badgeColor: 'bg-gray-200 text-gray-600',
+      badgeText: 'Locked',
+      titleColor: 'text-gray-600',
+      displayStatus: 'pending' as const,
+      daysUntilDue,
+      isSubmitted: false,
+      isLocked: true,
+      due_at,
+      status: 'locked',
+      instructions: '',
+    };
+  }
   
   return {
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    iconBg: 'bg-blue-100',
-    icon: 'mdi:clipboard-text-outline',
-    iconColor: '#3B82F6',
-    badgeColor: 'bg-blue-100 text-blue-700',
-    badgeText: 'Pending',
-    titleColor: 'text-blue-900',
-    displayStatus: 'pending' as const,
+    bgColor: isSubmitted ? 'bg-green-50' : 'bg-blue-50',
+    borderColor: isSubmitted ? 'border-green-200' : 'border-blue-200',
+    iconBg: isSubmitted ? 'bg-green-100' : 'bg-blue-100',
+    icon: isSubmitted ? 'mdi:check-circle' : 'mdi:clipboard-text-outline',
+    iconColor: isSubmitted ? '#10B981' : '#3B82F6',
+    badgeColor: isSubmitted ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700',
+    badgeText: isSubmitted ? 'Completed' : 'Pending',
+    titleColor: isSubmitted ? 'text-green-900' : 'text-blue-900',
+    displayStatus: isSubmitted ? 'submitted' as const : 'pending' as const,
     daysUntilDue,
-    isSubmitted: false,
+    isSubmitted,
+    isLocked: false,
     due_at,
-    status: 'pending',
+    status: isSubmitted ? 'submitted' : 'pending',
     instructions: '',
   };
 };
@@ -129,17 +159,45 @@ export default function MyAssignmentsPage() {
       setIsLoading(true);
       try {
         const data = await getKidsAssessments(token);
-        const assessmentsWithStatus = (data.assessments || []).map((assessment) => {
-          const config = getStatusConfig(assessment);
-          return {
-            ...assessment,
-            ...config,
-          };
+        
+        // Separate lesson and general assessments
+        const lessonAssessments = (data.assessments || []).filter(a => a.type === 'lesson' && a.lesson_id);
+        const generalAssessments = (data.assessments || []).filter(a => a.type === 'general' || !a.lesson_id);
+        
+        // Sort lesson assessments by lesson_id (sequential order)
+        lessonAssessments.sort((a, b) => (a.lesson_id || 0) - (b.lesson_id || 0));
+        
+        // Determine lock status for lesson assessments
+        const lessonAssessmentsWithLocks = lessonAssessments.map((assessment, index) => {
+          // First lesson assessment is always unlocked
+          if (index === 0) {
+            const config = getStatusConfig(assessment, false);
+            return { ...assessment, ...config };
+          }
+          
+          // Check if previous assessment is completed
+          const previousAssessment = lessonAssessments[index - 1];
+          const previousCompleted = isAssessmentCompleted(previousAssessment.id);
+          
+          // Lock if previous is not completed
+          const isLocked = !previousCompleted;
+          const config = getStatusConfig(assessment, isLocked);
+          return { ...assessment, ...config };
         });
+        
+        // General assessments are always unlocked
+        const generalAssessmentsWithStatus = generalAssessments.map((assessment) => {
+          const config = getStatusConfig(assessment, false);
+          return { ...assessment, ...config };
+        });
+        
+        // Combine: lesson assessments first (in order), then general assessments
+        const assessmentsWithStatus = [...lessonAssessmentsWithLocks, ...generalAssessmentsWithStatus];
+        
         setAssessments(assessmentsWithStatus);
         setStats({
           total: assessmentsWithStatus.length,
-          pending: assessmentsWithStatus.filter(a => !a.isSubmitted).length,
+          pending: assessmentsWithStatus.filter(a => !a.isSubmitted && !a.isLocked).length,
           due_soon: 0,
           overdue: 0,
           submitted: assessmentsWithStatus.filter(a => a.isSubmitted).length,
@@ -327,11 +385,23 @@ export default function MyAssignmentsPage() {
                 filteredAssessments.map((assessment, index) => {
                   const subjectIcon = getSubjectIcon(assessment.type, assessment.title);
                   
+                  const handleCardClick = (e: React.MouseEvent) => {
+                    if (assessment.isLocked) {
+                      e.preventDefault();
+                      showErrorToast('🔒 Complete the previous lesson quiz first to unlock this one!');
+                    }
+                  };
+                  
                   return (
                     <Link
-                      href={`/assignments/${assessment.id}`}
+                      href={assessment.isLocked ? '#' : `/assignments/${assessment.id}`}
                       key={assessment.id}
-                      className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assessment.borderColor} transition-transform hover:scale-105 hover:shadow-xl w-full max-w-full block cursor-pointer`}
+                      onClick={handleCardClick}
+                      className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assessment.borderColor} transition-all w-full max-w-full block ${
+                        assessment.isLocked 
+                          ? 'cursor-not-allowed opacity-60 hover:scale-100' 
+                          : 'cursor-pointer hover:scale-105 hover:shadow-xl'
+                      }`}
                     >
                       <div className={`${assessment.bgColor} p-4 sm:p-5 border-b-2 ${assessment.borderColor}`}>
                         <div className="flex items-start justify-between mb-2 sm:mb-3 gap-2">
@@ -373,27 +443,41 @@ export default function MyAssignmentsPage() {
                               {assessment.type}
                             </span>
                           </div>
-                          <div
-                            className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 ${
-                              assessment.isSubmitted
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-blue-100 text-blue-700'
-                            }`}
-                            style={{ fontFamily: 'Andika, sans-serif' }}
-                          >
-                            {assessment.isSubmitted ? (
-                              <>
-                                <Icon icon="mdi:check-circle" width={16} height={16} />
-                                <span>View</span>
-                              </>
-                            ) : (
-                              <>
-                                <Icon icon="mdi:play-circle" width={16} height={16} />
-                                <span>Start</span>
-                              </>
-                            )}
-                          </div>
+                          {assessment.isLocked ? (
+                            <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 bg-gray-200 text-gray-600" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              <Icon icon="mdi:lock" width={16} height={16} />
+                              <span>Locked</span>
+                            </div>
+                          ) : (
+                            <div
+                              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap shrink-0 flex items-center gap-1 ${
+                                assessment.isSubmitted
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-blue-100 text-blue-700'
+                              }`}
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              {assessment.isSubmitted ? (
+                                <>
+                                  <Icon icon="mdi:check-circle" width={16} height={16} />
+                                  <span>View</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Icon icon="mdi:play-circle" width={16} height={16} />
+                                  <span>Start</span>
+                                </>
+                              )}
+                            </div>
+                          )}
                         </div>
+                        {assessment.isLocked && assessment.type === 'lesson' && (
+                          <div className="mt-3 pt-3 border-t border-gray-200">
+                            <p className="text-xs text-gray-500 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                              Complete previous lesson quiz to unlock
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </Link>
                   );

@@ -199,6 +199,12 @@ export default function SubjectsLessonsPage() {
         
         setSubjects(subjectsData);
         setLessons(lessonsData);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectIdParam = urlParams.get('subjectId');
+        if (subjectIdParam && subjectsData.some((s: any) => s.id.toString() === subjectIdParam)) {
+          setSelectedSubject(subjectIdParam);
+        }
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message

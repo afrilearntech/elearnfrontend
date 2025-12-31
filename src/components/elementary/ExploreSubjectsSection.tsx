@@ -1,8 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Card from '@/components/ui/Card';
+import { getElementarySubjectsAndLessons } from '@/lib/api/dashboard';
 
 interface Subject {
   title: string;
@@ -46,12 +48,50 @@ export default function ExploreSubjectsSection({
   ]
 }: ExploreSubjectsSectionProps) {
   const router = useRouter();
+  const [availableSubjects, setAvailableSubjects] = useState<any[]>([]);
 
-  const handleCardClick = (index: number) => {
-    // Skip "Coming Soon" card (Science Lab at index 2)
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      try {
+        const data = await getElementarySubjectsAndLessons(token);
+        setAvailableSubjects(data.subjects || []);
+      } catch (error) {
+        console.error('Failed to fetch subjects:', error);
+      }
+    };
+
+    fetchSubjects();
+  }, []);
+
+  const findSubjectId = (title: string): number | null => {
+    const titleLower = title.toLowerCase();
+    for (const subject of availableSubjects) {
+      const subjectName = subject.name.toLowerCase();
+      if (titleLower.includes('math') || titleLower.includes('kingdom')) {
+        if (subjectName.includes('math') || subjectName.includes('numeracy')) {
+          return subject.id;
+        }
+      } else if (titleLower.includes('reading') || titleLower.includes('forest')) {
+        if (subjectName.includes('reading') || subjectName.includes('literacy') || subjectName.includes('english')) {
+          return subject.id;
+        }
+      }
+    }
+    return null;
+  };
+
+  const handleCardClick = (index: number, title: string) => {
     if (index === 2) return;
-    // Redirect to subject world page
-    router.push('/subjects');
+    
+    const subjectId = findSubjectId(title);
+    if (subjectId) {
+      router.push(`/subjects?subjectId=${subjectId}`);
+    } else {
+      router.push('/subjects');
+    }
   };
 
   return (
@@ -63,7 +103,7 @@ export default function ExploreSubjectsSection({
         {subjects.map((subject, index) => (
           <Card
             key={index}
-            onClick={() => handleCardClick(index)}
+            onClick={() => handleCardClick(index, subject.title)}
             className={`${
               index === 0
                 ? 'bg-gradient-to-r from-[#FCA5A5] to-[#EF4444]'

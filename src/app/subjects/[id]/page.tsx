@@ -50,7 +50,8 @@ export default function SubjectLessonDetail() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const handleMenuToggle = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const handleMenuClose = () => setIsMobileMenuOpen(false);
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [activeResourceTab, setActiveResourceTab] = useState<'video' | 'audio' | 'pdf' | 'ppt' | 'doc'>('video');
+  const [isResourceOpen, setIsResourceOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [lesson, setLesson] = useState<LessonDetail | null>(null);
   const [studentId, setStudentId] = useState<number | null>(null);
@@ -59,6 +60,13 @@ export default function SubjectLessonDetail() {
   const [isRecordingProgress, setIsRecordingProgress] = useState(false);
   const [allLessons, setAllLessons] = useState<LessonListItem[]>([]);
   const [nextLessonId, setNextLessonId] = useState<number | null>(null);
+  const [availableResources, setAvailableResources] = useState<{
+    video?: string;
+    audio?: string;
+    pdf?: string;
+    ppt?: string;
+    doc?: string;
+  }>({});
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -71,79 +79,74 @@ export default function SubjectLessonDetail() {
   
   const fallbackThumbnail = '/grade3.png';
   
-  const videoSrc = lesson?.resource || fallbackVideoSources[0];
-  const audioSrc = lesson?.resource;
-  const pdfSrc = lesson?.resource;
-  const pptSrc = lesson?.resource;
-  const docSrc = lesson?.resource;
-  
   const thumbnailSrc = lesson?.thumbnail || fallbackThumbnail;
   
-  const lessonType = lesson?.type?.toUpperCase()?.trim() || '';
-  const isVideo = lessonType === 'VIDEO';
-  const isAudio = lessonType === 'AUDIO';
-  const isPDF = lessonType === 'PDF';
-  const isPPT = lessonType === 'PPT' || lessonType === 'POWERPOINT';
-  const isDOC = lessonType === 'DOC' || lessonType === 'DOCX' || lessonType === 'DOCUMENT';
+  const currentResourceSrc = availableResources[activeResourceTab] || lesson?.resource || fallbackVideoSources[0];
   
-  const getTypeInfo = () => {
-    if (isVideo) {
-      return {
+  const hasMultipleResources = Object.keys(availableResources).length > 1;
+  
+  const getResourceTypeInfo = (type: 'video' | 'audio' | 'pdf' | 'ppt' | 'doc') => {
+    const types = {
+      video: {
         label: 'VIDEO',
         icon: 'mdi:play-circle',
         headerTitle: 'Watch & Learn!',
         headerSubtitle: 'Get ready for an exciting video lesson!',
         action: 'Watch',
-        color: 'from-red-500 to-pink-500'
-      };
-    } else if (isAudio) {
-      return {
+        color: 'from-red-500 to-pink-500',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-700',
+        borderColor: 'border-red-200'
+      },
+      audio: {
         label: 'AUDIO',
         icon: 'mdi:headphones',
         headerTitle: 'Listen & Learn!',
         headerSubtitle: 'Get ready for an exciting audio lesson!',
         action: 'Listen',
-        color: 'from-purple-500 to-indigo-500'
-      };
-    } else if (isPDF) {
-      return {
+        color: 'from-purple-500 to-indigo-500',
+        bgColor: 'bg-purple-50',
+        textColor: 'text-purple-700',
+        borderColor: 'border-purple-200'
+      },
+      pdf: {
         label: 'PDF',
         icon: 'mdi:file-pdf-box',
         headerTitle: 'Read & Learn!',
         headerSubtitle: 'Get ready for an exciting reading lesson!',
         action: 'Read',
-        color: 'from-red-600 to-orange-500'
-      };
-    } else if (isPPT) {
-      return {
+        color: 'from-red-600 to-orange-500',
+        bgColor: 'bg-red-50',
+        textColor: 'text-red-800',
+        borderColor: 'border-red-300'
+      },
+      ppt: {
         label: 'PPT',
         icon: 'mdi:file-powerpoint-box',
         headerTitle: 'View & Learn!',
         headerSubtitle: 'Get ready for an exciting presentation!',
         action: 'View',
-        color: 'from-orange-500 to-red-500'
-      };
-    } else if (isDOC) {
-      return {
+        color: 'from-orange-500 to-red-500',
+        bgColor: 'bg-orange-50',
+        textColor: 'text-orange-700',
+        borderColor: 'border-orange-200'
+      },
+      doc: {
         label: 'DOC',
         icon: 'mdi:file-word-box',
         headerTitle: 'Read & Learn!',
         headerSubtitle: 'Get ready for an exciting document lesson!',
         action: 'Read',
-        color: 'from-blue-600 to-blue-500'
-      };
-    }
-    return {
-      label: 'LESSON',
-      icon: 'mdi:book-open-variant',
-      headerTitle: 'Learn & Explore!',
-      headerSubtitle: 'Get ready for an exciting lesson!',
-      action: 'Learn',
-      color: 'from-blue-500 to-indigo-500'
+        color: 'from-blue-600 to-blue-500',
+        bgColor: 'bg-blue-50',
+        textColor: 'text-blue-700',
+        borderColor: 'border-blue-300'
+      }
     };
+    return types[type];
   };
   
-  const typeInfo = getTypeInfo();
+  const currentTypeInfo = getResourceTypeInfo(activeResourceTab) || getResourceTypeInfo('video');
 
   useEffect(() => {
     // Get student ID from localStorage (stored during login)
@@ -185,14 +188,53 @@ export default function SubjectLessonDetail() {
         
         setLesson(lessonData);
         
-        // Filter only APPROVED lessons and find next lesson
+        const resources: { video?: string; audio?: string; pdf?: string; ppt?: string; doc?: string } = {};
+        const lessonType = lessonData.type?.toUpperCase()?.trim() || '';
+        
+        if (lessonData.resource) {
+          if (lessonType === 'VIDEO') {
+            resources.video = lessonData.resource;
+          } else if (lessonType === 'AUDIO') {
+            resources.audio = lessonData.resource;
+          } else if (lessonType === 'PDF') {
+            resources.pdf = lessonData.resource;
+          } else if (lessonType === 'PPT' || lessonType === 'POWERPOINT') {
+            resources.ppt = lessonData.resource;
+          } else if (lessonType === 'DOC' || lessonType === 'DOCX' || lessonType === 'DOCUMENT') {
+            resources.doc = lessonData.resource;
+          }
+        }
+        
+        const sameTitleLessons = allLessonsData.filter(
+          l => l.status === 'APPROVED' && 
+          l.title.toLowerCase().trim() === lessonData.title.toLowerCase().trim() &&
+          l.id !== lessonData.id
+        );
+        
+        sameTitleLessons.forEach(l => {
+          const type = l.type?.toUpperCase()?.trim() || '';
+          if (l.resource) {
+            if (type === 'VIDEO' && !resources.video) resources.video = l.resource;
+            else if (type === 'AUDIO' && !resources.audio) resources.audio = l.resource;
+            else if (type === 'PDF' && !resources.pdf) resources.pdf = l.resource;
+            else if ((type === 'PPT' || type === 'POWERPOINT') && !resources.ppt) resources.ppt = l.resource;
+            else if ((type === 'DOC' || type === 'DOCX' || type === 'DOCUMENT') && !resources.doc) resources.doc = l.resource;
+          }
+        });
+        
+        setAvailableResources(resources);
+        
+        const firstAvailable = Object.keys(resources)[0] as 'video' | 'audio' | 'pdf' | 'ppt' | 'doc' | undefined;
+        if (firstAvailable) {
+          setActiveResourceTab(firstAvailable);
+        }
+        
         const approvedLessons = allLessonsData
           .filter(l => l.status === 'APPROVED')
-          .sort((a, b) => a.id - b.id); // Sort by ID for consistent ordering
+          .sort((a, b) => a.id - b.id);
         
         setAllLessons(approvedLessons);
         
-        // Find current lesson index and get next lesson
         const currentIndex = approvedLessons.findIndex(l => l.id === parseInt(lessonId));
         if (currentIndex >= 0 && currentIndex < approvedLessons.length - 1) {
           setNextLessonId(approvedLessons[currentIndex + 1].id);
@@ -214,18 +256,19 @@ export default function SubjectLessonDetail() {
     fetchLessonData();
   }, [lessonId, router]);
 
-  const handleVideoProgress = async () => {
+  const handleMediaProgress = async () => {
     if (
       !lesson ||
       hasRecordedProgress ||
       isRecordingProgress ||
       !studentId ||
-      !authToken
+      !authToken ||
+      (activeResourceTab !== 'video' && activeResourceTab !== 'audio')
     ) {
       return;
     }
 
-    const mediaElement = (isVideo ? videoRef.current : audioRef.current) as HTMLVideoElement | HTMLAudioElement | null;
+    const mediaElement = (activeResourceTab === 'video' ? videoRef.current : audioRef.current) as HTMLVideoElement | HTMLAudioElement | null;
     if (!mediaElement || !mediaElement.duration || mediaElement.duration === Infinity) {
       return;
     }
@@ -275,32 +318,24 @@ export default function SubjectLessonDetail() {
             <div className="bg-white/60 rounded-xl shadow-md px-4 sm:px-6 py-4 sm:mx-8 mx-4 h-auto lg:h-[187px] flex flex-col justify-between border" style={{ borderColor: 'rgba(59, 130, 246, 0.3)' }}>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-[55px] h-[60px] rounded-lg bg-linear-to-r ${
-                    isVideo ? 'from-red-500 to-pink-500' :
-                    isAudio ? 'from-purple-500 to-indigo-500' :
-                    isPDF ? 'from-red-600 to-orange-500' :
-                    isPPT ? 'from-orange-500 to-red-500' :
-                    isDOC ? 'from-blue-600 to-blue-500' :
-                    'from-[#3B82F6] to-[#10B981]'
-                  } flex items-center justify-center`}>
-                    <Icon icon={typeInfo.icon} width={28} height={32} className="text-white" />
+                  <div className={`w-[55px] h-[60px] rounded-lg bg-linear-to-r ${currentTypeInfo.color} flex items-center justify-center`}>
+                    <Icon icon={currentTypeInfo.icon} width={28} height={32} className="text-white" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-[25px] font-normal text-[#9333EA]" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {lesson?.title || 'Loading Lesson...'}
-                    </h2>
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                        isVideo ? 'bg-red-50 text-red-700 border border-red-200' :
-                        isAudio ? 'bg-purple-50 text-purple-700 border border-purple-200' :
-                        isPDF ? 'bg-red-50 text-red-800 border border-red-300' :
-                        isPPT ? 'bg-orange-50 text-orange-700 border border-orange-200' :
-                        isDOC ? 'bg-blue-50 text-blue-700 border border-blue-300' :
-                        'bg-blue-50 text-blue-700 border border-blue-200'
-                      }`}>
-                        <Icon icon={typeInfo.icon} width={14} height={14} />
-                        {typeInfo.label}
+                      <h2 className="text-[25px] font-normal text-[#9333EA]" style={{ fontFamily: 'Andika, sans-serif' }}>
+                        {lesson?.title || 'Loading Lesson...'}
+                      </h2>
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${currentTypeInfo.bgColor} ${currentTypeInfo.textColor} border ${currentTypeInfo.borderColor}`}>
+                        <Icon icon={currentTypeInfo.icon} width={14} height={14} />
+                        {currentTypeInfo.label}
                       </span>
+                      {hasMultipleResources && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                          <Icon icon="mdi:star" width={12} height={12} />
+                          {Object.keys(availableResources).length} formats
+                        </span>
+                      )}
                     </div>
                     <p className="text-[15px] font-normal text-[#4B5563]" style={{ fontFamily: 'Andika, sans-serif' }}>
                       {lesson?.duration_minutes ? `Duration: ${lesson.duration_minutes} minutes` : 'Lesson Details'}
@@ -336,219 +371,261 @@ export default function SubjectLessonDetail() {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 mt-6 sm:mx-8 mx-4">
-              {/* Main video/content */}
               <div>
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                  <div className={`px-6 py-3 bg-linear-to-r ${typeInfo.color} text-white`} style={{ fontFamily: 'Andika, sans-serif' }}>
+                  <div className={`px-6 py-3 bg-linear-to-r ${currentTypeInfo.color} text-white`} style={{ fontFamily: 'Andika, sans-serif' }}>
                     <div className="flex items-center gap-2 mb-1">
-                      <Icon icon={typeInfo.icon} width={20} height={20} />
-                      <div className="text-[16px] font-semibold">{typeInfo.headerTitle}</div>
+                      <Icon icon={currentTypeInfo.icon} width={20} height={20} />
+                      <div className="text-[16px] font-semibold">{currentTypeInfo.headerTitle}</div>
                     </div>
-                    <div className="text-[12px] opacity-90">{typeInfo.headerSubtitle}</div>
+                    <div className="text-[12px] opacity-90">{currentTypeInfo.headerSubtitle}</div>
                   </div>
                   
-                  {/* Type Badge */}
-                  <div className="px-6 py-2 bg-gray-50 border-b border-gray-200">
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg ${
-                      isVideo ? 'bg-red-50 text-red-700 border border-red-200' :
-                      isAudio ? 'bg-purple-50 text-purple-700 border border-purple-200' :
-                      isPDF ? 'bg-red-50 text-red-800 border border-red-300' :
-                      isPPT ? 'bg-orange-50 text-orange-700 border border-orange-200' :
-                      isDOC ? 'bg-blue-50 text-blue-700 border border-blue-300' :
-                      'bg-blue-50 text-blue-700 border border-blue-200'
-                    }`}>
-                      <Icon icon={typeInfo.icon} width={16} height={16} />
-                      <span className="text-xs font-semibold" style={{ fontFamily: 'Andika, sans-serif' }}>
-                        {typeInfo.label} Lesson
-                      </span>
+                  {hasMultipleResources && (
+                    <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-semibold text-gray-600 mr-2" style={{ fontFamily: 'Andika, sans-serif' }}>
+                          Choose Format:
+                        </span>
+                        {availableResources.video && (
+                          <button
+                            onClick={() => {
+                              setActiveResourceTab('video');
+                              setIsResourceOpen(true);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                              activeResourceTab === 'video'
+                                ? 'bg-red-500 text-white shadow-md'
+                                : 'bg-white text-red-600 border-2 border-red-200 hover:bg-red-50'
+                            }`}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          >
+                            <Icon icon="mdi:play-circle" width={18} height={18} />
+                            Video
+                          </button>
+                        )}
+                        {availableResources.audio && (
+                          <button
+                            onClick={() => {
+                              setActiveResourceTab('audio');
+                              setIsResourceOpen(true);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                              activeResourceTab === 'audio'
+                                ? 'bg-purple-500 text-white shadow-md'
+                                : 'bg-white text-purple-600 border-2 border-purple-200 hover:bg-purple-50'
+                            }`}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          >
+                            <Icon icon="mdi:headphones" width={18} height={18} />
+                            Audio
+                          </button>
+                        )}
+                        {availableResources.pdf && (
+                          <button
+                            onClick={() => {
+                              setActiveResourceTab('pdf');
+                              setIsResourceOpen(true);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                              activeResourceTab === 'pdf'
+                                ? 'bg-red-600 text-white shadow-md'
+                                : 'bg-white text-red-700 border-2 border-red-300 hover:bg-red-50'
+                            }`}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          >
+                            <Icon icon="mdi:file-pdf-box" width={18} height={18} />
+                            PDF
+                          </button>
+                        )}
+                        {availableResources.ppt && (
+                          <button
+                            onClick={() => {
+                              setActiveResourceTab('ppt');
+                              setIsResourceOpen(true);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                              activeResourceTab === 'ppt'
+                                ? 'bg-orange-500 text-white shadow-md'
+                                : 'bg-white text-orange-600 border-2 border-orange-200 hover:bg-orange-50'
+                            }`}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          >
+                            <Icon icon="mdi:file-powerpoint-box" width={18} height={18} />
+                            PPT
+                          </button>
+                        )}
+                        {availableResources.doc && (
+                          <button
+                            onClick={() => {
+                              setActiveResourceTab('doc');
+                              setIsResourceOpen(true);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${
+                              activeResourceTab === 'doc'
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-white text-blue-600 border-2 border-blue-300 hover:bg-blue-50'
+                            }`}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                          >
+                            <Icon icon="mdi:file-word-box" width={18} height={18} />
+                            DOC
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                   
                   <div className={`relative w-full bg-gray-100 ${
-                    isPDF && isVideoOpen 
+                    (activeResourceTab === 'pdf' || activeResourceTab === 'ppt' || activeResourceTab === 'doc') && isResourceOpen
                       ? 'h-[500px] sm:h-[600px] lg:h-[700px]' 
                       : 'h-[220px] sm:h-[320px] lg:h-[460px]'
                   }`}>
-                    {isVideo && isVideoOpen ? (
-                      <video
-                        ref={videoRef}
-                        className="w-full h-full object-cover"
-                        src={videoSrc}
-                        controls
-                        autoPlay
-                        onTimeUpdate={handleVideoProgress}
-                        onError={(e) => {
-                          const currentSrc = (e.target as HTMLVideoElement).src;
-                          if (lesson?.resource && currentSrc === lesson.resource) {
-                            const fallbackVideo = fallbackVideoSources[0];
-                            (e.target as HTMLVideoElement).src = fallbackVideo;
-                          }
-                        }}
-                      />
-                    ) : isAudio && isVideoOpen ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50 p-6">
-                        <div className="w-24 h-24 bg-purple-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                          <Icon icon="mdi:headphones" width={48} height={48} className="text-white" />
+                    {isResourceOpen ? (
+                      activeResourceTab === 'video' && availableResources.video ? (
+                        <video
+                          ref={videoRef}
+                          className="w-full h-full object-cover"
+                          src={availableResources.video}
+                          controls
+                          autoPlay
+                          onTimeUpdate={handleMediaProgress}
+                          onError={(e) => {
+                            const currentSrc = (e.target as HTMLVideoElement).src;
+                            if (availableResources.video && currentSrc === availableResources.video) {
+                              (e.target as HTMLVideoElement).src = fallbackVideoSources[0];
+                            }
+                          }}
+                        />
+                      ) : activeResourceTab === 'audio' && availableResources.audio ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50 p-6">
+                          <div className="w-24 h-24 bg-purple-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                            <Icon icon="mdi:headphones" width={48} height={48} className="text-white" />
+                          </div>
+                          <audio
+                            ref={audioRef}
+                            className="w-full max-w-md"
+                            src={availableResources.audio}
+                            controls
+                            autoPlay
+                            onTimeUpdate={handleMediaProgress}
+                          />
+                          <p className="text-sm text-gray-600 mt-4 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
+                            Listen to the audio lesson
+                          </p>
                         </div>
-                        {audioSrc ? (
-                          <>
-                            <audio
-                              ref={audioRef}
-                              className="w-full max-w-md"
-                              src={audioSrc}
-                              controls
-                              autoPlay
-                              onTimeUpdate={handleVideoProgress}
+                      ) : activeResourceTab === 'pdf' && availableResources.pdf ? (
+                        <div className="w-full h-full flex flex-col bg-gradient-to-br from-red-50 to-orange-50">
+                          <div className="flex-1 min-h-0">
+                            <iframe
+                              src={availableResources.pdf}
+                              className="w-full h-full border-0"
+                              title="PDF Viewer"
+                              style={{ minHeight: '500px' }}
                             />
-                            <p className="text-sm text-gray-600 mt-4 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              Listen to the audio lesson
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
-                            Audio resource not available
-                          </p>
-                        )}
-                      </div>
-                    ) : isPDF && isVideoOpen ? (
-                      <div className="w-full h-full flex flex-col bg-gradient-to-br from-red-50 to-orange-50">
-                        {pdfSrc ? (
-                          <>
-                            {/* PDF Viewer - Takes full height */}
-                            <div className="flex-1 min-h-0">
-                              <iframe
-                                src={pdfSrc}
-                                className="w-full h-full border-0"
-                                title="PDF Viewer"
-                                style={{ minHeight: '500px' }}
-                              />
-                            </div>
-                            {/* Action buttons at bottom */}
-                            <div className="p-4 bg-white border-t border-gray-200 flex flex-col sm:flex-row gap-3 justify-center">
-                              <a
-                                href={pdfSrc}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
-                                style={{ fontFamily: 'Andika, sans-serif' }}
-                              >
-                                <Icon icon="mdi:open-in-new" width={18} height={18} />
-                                Open in New Tab
-                              </a>
-                              <a
-                                href={pdfSrc}
-                                download
-                                className="px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
-                                style={{ fontFamily: 'Andika, sans-serif' }}
-                              >
-                                <Icon icon="mdi:download" width={18} height={18} />
-                                Download PDF
-                              </a>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                            <div className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                              <Icon icon="mdi:file-pdf-box" width={48} height={48} className="text-white" />
-                            </div>
-                            <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
-                              PDF resource not available
-                            </p>
                           </div>
-                        )}
-                      </div>
-                    ) : isPPT && isVideoOpen ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 p-6">
-                        <div className="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                          <Icon icon="mdi:file-powerpoint-box" width={48} height={48} className="text-white" />
+                          <div className="p-4 bg-white border-t border-gray-200 flex flex-col sm:flex-row gap-3 justify-center">
+                            <a
+                              href={availableResources.pdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-4 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:open-in-new" width={18} height={18} />
+                              Open in New Tab
+                            </a>
+                            <a
+                              href={availableResources.pdf}
+                              download
+                              className="px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:download" width={18} height={18} />
+                              Download PDF
+                            </a>
+                          </div>
                         </div>
-                        {pptSrc ? (
-                          <div className="w-full h-full flex flex-col items-center justify-center">
-                            <div className="w-full h-[400px] bg-white rounded-lg border-2 border-orange-200 flex items-center justify-center mb-4">
-                              <div className="text-center">
-                                <Icon icon="mdi:file-powerpoint-box" width={64} height={64} className="text-orange-500 mx-auto mb-3" />
-                                <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
-                                  PowerPoint Presentation
-                                </p>
-                                <p className="text-xs text-gray-500 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
-                                  Click the buttons below to view or download
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                              <a
-                                href={pptSrc}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-                                style={{ fontFamily: 'Andika, sans-serif' }}
-                              >
-                                <Icon icon="mdi:open-in-new" width={18} height={18} />
-                                Open Presentation
-                              </a>
-                              <a
-                                href={pptSrc}
-                                download
-                                className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-                                style={{ fontFamily: 'Andika, sans-serif' }}
-                              >
-                                <Icon icon="mdi:download" width={18} height={18} />
-                                Download
-                              </a>
+                      ) : activeResourceTab === 'ppt' && availableResources.ppt ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 p-6">
+                          <div className="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                            <Icon icon="mdi:file-powerpoint-box" width={48} height={48} className="text-white" />
+                          </div>
+                          <div className="w-full h-[400px] bg-white rounded-lg border-2 border-orange-200 flex items-center justify-center mb-4">
+                            <div className="text-center">
+                              <Icon icon="mdi:file-powerpoint-box" width={64} height={64} className="text-orange-500 mx-auto mb-3" />
+                              <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+                                PowerPoint Presentation
+                              </p>
                             </div>
                           </div>
-                        ) : (
-                          <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
-                            PowerPoint resource not available
-                          </p>
-                        )}
-                      </div>
-                    ) : isDOC && isVideoOpen ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-                        <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                          <Icon icon="mdi:file-word-box" width={48} height={48} className="text-white" />
+                          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                            <a
+                              href={availableResources.ppt}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:open-in-new" width={18} height={18} />
+                              Open Presentation
+                            </a>
+                            <a
+                              href={availableResources.ppt}
+                              download
+                              className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:download" width={18} height={18} />
+                              Download
+                            </a>
+                          </div>
                         </div>
-                        {docSrc ? (
-                          <div className="w-full h-full flex flex-col items-center justify-center">
-                            <div className="w-full h-[400px] bg-white rounded-lg border-2 border-blue-200 flex items-center justify-center mb-4">
-                              <div className="text-center">
-                                <Icon icon="mdi:file-word-box" width={64} height={64} className="text-blue-600 mx-auto mb-3" />
-                                <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
-                                  Word Document
-                                </p>
-                                <p className="text-xs text-gray-500 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
-                                  Click the buttons below to view or download
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-                              <a
-                                href={docSrc}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-                                style={{ fontFamily: 'Andika, sans-serif' }}
-                              >
-                                <Icon icon="mdi:open-in-new" width={18} height={18} />
-                                Open Document
-                              </a>
-                              <a
-                                href={docSrc}
-                                download
-                                className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-                                style={{ fontFamily: 'Andika, sans-serif' }}
-                              >
-                                <Icon icon="mdi:download" width={18} height={18} />
-                                Download
-                              </a>
+                      ) : activeResourceTab === 'doc' && availableResources.doc ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
+                          <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                            <Icon icon="mdi:file-word-box" width={48} height={48} className="text-white" />
+                          </div>
+                          <div className="w-full h-[400px] bg-white rounded-lg border-2 border-blue-200 flex items-center justify-center mb-4">
+                            <div className="text-center">
+                              <Icon icon="mdi:file-word-box" width={64} height={64} className="text-blue-600 mx-auto mb-3" />
+                              <p className="text-sm text-gray-600 mb-4" style={{ fontFamily: 'Andika, sans-serif' }}>
+                                Word Document
+                              </p>
                             </div>
                           </div>
-                        ) : (
+                          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                            <a
+                              href={availableResources.doc}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:open-in-new" width={18} height={18} />
+                              Open Document
+                            </a>
+                            <a
+                              href={availableResources.doc}
+                              download
+                              className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+                              style={{ fontFamily: 'Andika, sans-serif' }}
+                            >
+                              <Icon icon="mdi:download" width={18} height={18} />
+                              Download
+                            </a>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                          <div className={`w-24 h-24 ${currentTypeInfo.bgColor} rounded-full flex items-center justify-center mb-6 shadow-lg`}>
+                            <Icon icon={currentTypeInfo.icon} width={48} height={48} className={currentTypeInfo.textColor} />
+                          </div>
                           <p className="text-sm text-gray-600 text-center" style={{ fontFamily: 'Andika, sans-serif' }}>
-                            Document resource not available
+                            {currentTypeInfo.label} resource not available
                           </p>
-                        )}
-                      </div>
+                        </div>
+                      )
                     ) : (
                       <>
                         <VideoThumbnail 
@@ -559,36 +636,16 @@ export default function SubjectLessonDetail() {
                         <div className="absolute inset-0 flex items-center justify-center">
                           <button
                             type="button"
-                            onClick={() => setIsVideoOpen(true)}
-                            className={`w-14 h-14 ${
-                              isVideo ? 'bg-white' :
-                              isAudio ? 'bg-purple-100 border-2 border-purple-300' :
-                              isPDF ? 'bg-red-100 border-2 border-red-300' :
-                              isPPT ? 'bg-orange-100 border-2 border-orange-300' :
-                              isDOC ? 'bg-blue-100 border-2 border-blue-300' :
-                              'bg-blue-100 border-2 border-blue-300'
-                            } rounded-full flex items-center justify-center shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                              isVideo ? 'focus:ring-[#F59E0B]' :
-                              isAudio ? 'focus:ring-purple-500' :
-                              isPDF ? 'focus:ring-red-500' :
-                              isPPT ? 'focus:ring-orange-500' :
-                              isDOC ? 'focus:ring-blue-600' :
-                              'focus:ring-blue-500'
-                            }`}
-                            aria-label={`${typeInfo.action} lesson`}
+                            onClick={() => setIsResourceOpen(true)}
+                            className={`w-16 h-16 ${currentTypeInfo.bgColor} border-2 ${currentTypeInfo.borderColor} rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2`}
+                            style={{ fontFamily: 'Andika, sans-serif' }}
+                            aria-label={`${currentTypeInfo.action} lesson`}
                           >
                             <Icon 
-                              icon={typeInfo.icon} 
-                              width={28} 
-                              height={28} 
-                              className={
-                                isVideo ? 'text-[#F59E0B]' :
-                                isAudio ? 'text-purple-600' :
-                                isPDF ? 'text-red-600' :
-                                isPPT ? 'text-orange-600' :
-                                isDOC ? 'text-blue-600' :
-                                'text-blue-600'
-                              } 
+                              icon={currentTypeInfo.icon} 
+                              width={32} 
+                              height={32} 
+                              className={currentTypeInfo.textColor}
                             />
                           </button>
                         </div>
@@ -598,22 +655,17 @@ export default function SubjectLessonDetail() {
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-[15px] sm:text-[16px] font-semibold text-gray-900" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {lesson?.title || 'Lesson Content'}
-                    </h3>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold ${
-                        isVideo ? 'bg-red-50 text-red-700' :
-                        isAudio ? 'bg-purple-50 text-purple-700' :
-                        isPDF ? 'bg-red-50 text-red-800' :
-                        isPPT ? 'bg-orange-50 text-orange-700' :
-                        isDOC ? 'bg-blue-50 text-blue-700' :
-                        'bg-blue-50 text-blue-700'
-                      }`}>
-                        <Icon icon={typeInfo.icon} width={12} height={12} />
-                        {typeInfo.label}
-                      </span>
+                        {lesson?.title || 'Lesson Content'}
+                      </h3>
+                      {hasMultipleResources && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                          <Icon icon="mdi:format-list-bulleted" width={12} height={12} />
+                          {Object.keys(availableResources).length} Formats Available
+                        </span>
+                      )}
                     </div>
                     <p className="text-[12px] sm:text-[13px] text-gray-700 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>
-                      {lesson?.description || `This is a ${typeInfo.label.toLowerCase()} lesson. ${typeInfo.action} the content to learn and explore!`}
+                      {lesson?.description || `This is a ${currentTypeInfo.label.toLowerCase()} lesson. ${currentTypeInfo.action} the content to learn and explore!`}
                     </p>
                     {lesson?.duration_minutes && (
                       <div className="flex items-center gap-2 text-xs text-gray-500 mb-4">

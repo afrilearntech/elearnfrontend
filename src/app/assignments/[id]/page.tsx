@@ -19,6 +19,32 @@ import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, showSuccessToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
 
+// Check if assessment is locked
+const isAssessmentLocked = (assessmentId: number, allAssessments: KidsAssessment[]): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  const assessment = allAssessments.find(a => a.id === assessmentId);
+  if (!assessment || assessment.type !== 'lesson' || !assessment.lesson_id) {
+    return false; // General assessments are never locked
+  }
+  
+  // Find all lesson assessments and sort by lesson_id
+  const lessonAssessments = allAssessments
+    .filter(a => a.type === 'lesson' && a.lesson_id)
+    .sort((a, b) => (a.lesson_id || 0) - (b.lesson_id || 0));
+  
+  const currentIndex = lessonAssessments.findIndex(a => a.id === assessmentId);
+  if (currentIndex === 0) {
+    return false; // First lesson assessment is always unlocked
+  }
+  
+  // Check if previous assessment is completed
+  const previousAssessment = lessonAssessments[currentIndex - 1];
+  const previousCompleted = localStorage.getItem(`assessment_completed_${previousAssessment.id}`) === 'true';
+  
+  return !previousCompleted;
+};
+
 export default function AssignmentDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -29,9 +55,46 @@ export default function AssignmentDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [assessment, setAssessment] = useState<KidsAssessment | null>(null);
   const [assessmentData, setAssessmentData] = useState<AssessmentQuestionsResponse | null>(null);
+  const [shuffledQuestions, setShuffledQuestions] = useState<AssessmentQuestion[]>([]);
+  const [sessionId, setSessionId] = useState<number | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+  // Seeded random number generator for consistent shuffling
+  const seededRandom = (seed: number) => {
+    let value = seed;
+    return () => {
+      value = (value * 9301 + 49297) % 233280;
+      return value / 233280;
+    };
+  };
+
+  // Shuffle array using Fisher-Yates algorithm with seed
+  const shuffleArray = <T,>(array: T[], seed: number): T[] => {
+    const random = seededRandom(seed);
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Shuffle questions and their options
+  const shuffleQuestions = (questions: AssessmentQuestion[], seed: number): AssessmentQuestion[] => {
+    const shuffled = shuffleArray(questions, seed);
+    
+    // Also shuffle options for multiple choice and fill-in-the-blank questions
+    return shuffled.map((question, index) => {
+      if ((question.type === 'MULTIPLE_CHOICE' || question.type === 'FILL_IN_THE_BLANK') && question.options) {
+        const optionSeed = seed + index * 1000; // Different seed for each question's options
+        const shuffledOptions = shuffleArray(question.options, optionSeed);
+        return { ...question, options: shuffledOptions };
+      }
+      return question;
+    });
+  };
 
   useEffect(() => {
     const fetchAssessment = async () => {
@@ -59,6 +122,14 @@ export default function AssignmentDetailPage() {
           return;
         }
         
+        // Check if assessment is locked
+        const locked = isAssessmentLocked(foundAssessment.id, data.assessments);
+        if (locked) {
+          showErrorToast('🔒 This quiz is locked! Complete the previous lesson quiz first.');
+          router.push('/assignments');
+          return;
+        }
+        
         setAssessment(foundAssessment);
         
         setIsLoadingQuestions(true);
@@ -72,8 +143,21 @@ export default function AssignmentDetailPage() {
           
           const questionsData = await getAssessmentQuestions(params, token);
           setAssessmentData(questionsData);
+          
+          // Generate session ID for this attempt (timestamp-based)
+          const newSessionId = Date.now();
+          setSessionId(newSessionId);
+          
+          // Shuffle questions if there are any
+          if (questionsData.questions.length > 0) {
+            const shuffled = shuffleQuestions(questionsData.questions, newSessionId);
+            setShuffledQuestions(shuffled);
+          } else {
+            setShuffledQuestions([]);
+          }
         } catch (error) {
           console.error('Failed to load questions:', error);
+          setShuffledQuestions([]);
         } finally {
           setIsLoadingQuestions(false);
         }
@@ -102,7 +186,7 @@ export default function AssignmentDetailPage() {
   };
 
   const handleNextQuestion = () => {
-    if (assessmentData && currentQuestionIndex < assessmentData.questions.length - 1) {
+    if (shuffledQuestions.length > 0 && currentQuestionIndex < shuffledQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
@@ -114,14 +198,14 @@ export default function AssignmentDetailPage() {
   };
 
   const handleSubmitAssessment = async () => {
-    if (!assessmentData) return;
+    if (shuffledQuestions.length === 0) return;
 
-    const unansweredQuestions = assessmentData.questions.filter(
+    const unansweredQuestions = shuffledQuestions.filter(
       q => !answers[q.id] || answers[q.id].trim() === ''
     );
 
     if (unansweredQuestions.length > 0) {
-      showErrorToast(`Please answer all ${assessmentData.questions.length} questions! 🎯`);
+      showErrorToast(`Please answer all ${shuffledQuestions.length} questions! 🎯`);
       return;
     }
 
@@ -133,9 +217,9 @@ export default function AssignmentDetailPage() {
 
     setIsSubmitting(true);
     try {
-      const formattedSolution = assessmentData.questions
+      // Format solution using shuffled questions order
+      const formattedSolution = shuffledQuestions
         .map((q, index) => {
-          const questionText = q.question.trim();
           const answerText = answers[q.id] || '';
           return `question${index + 1}: ${answerText}`;
         })
@@ -148,6 +232,12 @@ export default function AssignmentDetailPage() {
       };
 
       await submitSolution(submitData, token);
+      
+      // Mark assessment as completed in localStorage
+      if (assessment) {
+        localStorage.setItem(`assessment_completed_${assessment.id}`, 'true');
+      }
+      
       showSuccessToast('🎉 Assessment submitted successfully! Great job! ⭐');
       setTimeout(() => {
         router.push('/assignments');
@@ -177,9 +267,9 @@ export default function AssignmentDetailPage() {
     return null;
   }
 
-  const currentQuestion = assessmentData?.questions[currentQuestionIndex];
-  const totalQuestions = assessmentData?.questions.length || 0;
-  const answeredCount = Object.keys(answers).length;
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
+  const totalQuestions = shuffledQuestions.length;
+  const answeredCount = shuffledQuestions.filter(q => answers[q.id] && answers[q.id].trim() !== '').length;
   const progress = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
   return (
@@ -231,7 +321,7 @@ export default function AssignmentDetailPage() {
                   <Spinner size="lg" />
                 </div>
               </div>
-            ) : assessmentData && assessmentData.questions.length > 0 ? (
+            ) : shuffledQuestions.length > 0 ? (
               <div className="sm:mx-8 mx-4">
                 <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-2 border-[#E5E7EB]">
                   <div className="mb-6">
@@ -396,15 +486,15 @@ export default function AssignmentDetailPage() {
                     </button>
 
                     <div className="flex items-center gap-2">
-                      {assessmentData.questions.map((_, index) => (
+                      {shuffledQuestions.map((question, index) => (
                         <button
-                          key={index}
+                          key={question.id}
                           type="button"
                           onClick={() => setCurrentQuestionIndex(index)}
                           className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
                             index === currentQuestionIndex
                               ? 'bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white shadow-md scale-110'
-                              : answers[assessmentData.questions[index].id]
+                              : answers[question.id]
                               ? 'bg-green-100 text-green-700 hover:bg-green-200'
                               : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                           }`}
@@ -449,16 +539,31 @@ export default function AssignmentDetailPage() {
                   </div>
                 </div>
               </div>
-            ) : assessmentData && assessmentData.questions.length === 0 ? (
+            ) : (
               <div className="sm:mx-8 mx-4">
-                <div className="bg-white rounded-2xl shadow-lg p-12 border-2 border-yellow-200 text-center">
-                  <Icon icon="mdi:information" width={64} height={64} className="mx-auto text-yellow-600 mb-4" />
-                  <p className="text-lg font-medium text-gray-700" style={{ fontFamily: 'Andika, sans-serif' }}>
-                    No questions available for this assessment yet.
-                  </p>
+                <div className="bg-white rounded-2xl shadow-lg p-12 border-2 border-yellow-200">
+                  <div className="flex flex-col items-center justify-center text-center">
+                    <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mb-6">
+                      <Icon icon="mdi:help-circle-outline" width={64} height={64} className="text-yellow-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      No Questions Available Yet! 📝
+                    </h2>
+                    <p className="text-lg text-gray-600 mb-6 max-w-md" style={{ fontFamily: 'Andika, sans-serif' }}>
+                      This assessment doesn't have any questions yet. Check back soon or ask your teacher about it!
+                    </p>
+                    <Link
+                      href="/assignments"
+                      className="px-6 py-3 bg-gradient-to-r from-[#9333EA] to-[#3B82F6] text-white rounded-xl font-semibold flex items-center gap-2 hover:shadow-lg transition-all"
+                      style={{ fontFamily: 'Andika, sans-serif' }}
+                    >
+                      <Icon icon="mdi:arrow-left" width={20} height={20} />
+                      <span>Back to Assessments</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            ) : null}
+            )}
           </div>
         </main>
       </div>
