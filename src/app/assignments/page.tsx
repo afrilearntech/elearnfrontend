@@ -11,6 +11,8 @@ import { getKidsAssessments, KidsAssessment } from '@/lib/api/dashboard';
 import { ApiClientError } from '@/lib/api/client';
 import { showErrorToast, formatErrorMessage } from '@/lib/toast';
 import Spinner from '@/components/ui/Spinner';
+import { useAccessibility } from '@/contexts/AccessibilityContext';
+import { useAutoRead } from '@/hooks/useAutoRead';
 
 interface AssessmentCard extends KidsAssessment {
   displayStatus: 'pending' | 'due_soon' | 'overdue' | 'submitted';
@@ -136,6 +138,7 @@ const formatDueDate = (dateString: string): string => {
 
 export default function MyAssignmentsPage() {
   const router = useRouter();
+  const { isEnabled, announce, playSound } = useAccessibility();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [assessments, setAssessments] = useState<AssessmentCard[]>([]);
@@ -195,13 +198,29 @@ export default function MyAssignmentsPage() {
         const assessmentsWithStatus = [...lessonAssessmentsWithLocks, ...generalAssessmentsWithStatus];
         
         setAssessments(assessmentsWithStatus);
-        setStats({
+        const statsData = {
           total: assessmentsWithStatus.length,
           pending: assessmentsWithStatus.filter(a => !a.isSubmitted && !a.isLocked).length,
           due_soon: 0,
           overdue: 0,
           submitted: assessmentsWithStatus.filter(a => a.isSubmitted).length,
-        });
+        };
+        setStats(statsData);
+        
+        // Auto-read page summary
+        const lockedCount = assessmentsWithStatus.filter(a => a.isLocked).length;
+        const pageContent = `Assessments page loaded. ${statsData.total} total assessments available. ` +
+          `${statsData.pending} pending, ${statsData.submitted} completed. ` +
+          `${lockedCount > 0 ? `${lockedCount} locked. ` : ''}` +
+          `Use Tab or Arrow keys to navigate between items, Enter to open an assessment. ` +
+          `Press question mark for keyboard shortcuts help.`;
+        
+        // This will auto-read when assessments are loaded
+        if (isEnabled) {
+          setTimeout(() => {
+            announce(pageContent, 'polite');
+          }, 500);
+        }
       } catch (error) {
         const errorMessage = error instanceof ApiClientError
           ? error.message
@@ -258,7 +277,7 @@ export default function MyAssignmentsPage() {
           onMobileMenuClose={handleMenuClose} 
         />
 
-        <main className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px] overflow-x-hidden">
+        <main id="main-content" role="main" className="flex-1 bg-linear-to-br from-[#DBEAFE] via-[#F0FDF4] to-[#CFFAFE] sm:pl-[280px] lg:pl-[320px] overflow-x-hidden">
           <div className="p-4 lg:p-8 max-w-full">
             {/* Title Section */}
             <div className="sm:mx-8 mx-4 mb-6">
@@ -317,7 +336,15 @@ export default function MyAssignmentsPage() {
             {/* Filter Buttons */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:mx-8 mx-4 mb-6">
               <button
-                onClick={() => setFilter('all')}
+                onClick={() => {
+                  setFilter('all');
+                  if (isEnabled) {
+                    playSound('click');
+                    announce('Filter: All assessments selected');
+                  }
+                }}
+                aria-label="Filter: All assessments"
+                aria-pressed={filter === 'all'}
                 className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap ${
                   filter === 'all'
                     ? 'bg-[#60A5FA] text-white shadow-sm'
@@ -325,7 +352,7 @@ export default function MyAssignmentsPage() {
                 }`}
                 style={{ fontFamily: 'Andika, sans-serif' }}
               >
-                <Icon icon="mdi:view-list" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" />
+                <Icon icon="mdi:view-list" width={16} height={16} className="sm:w-[18px] sm:h-[18px]" aria-hidden="true" />
                 <span className="hidden sm:inline">All Assessments</span>
                 <span className="sm:hidden">All</span>
               </button>
@@ -389,14 +416,27 @@ export default function MyAssignmentsPage() {
                     if (assessment.isLocked) {
                       e.preventDefault();
                       showErrorToast('🔒 Complete the previous lesson quiz first to unlock this one!');
+                      if (isEnabled) {
+                        announce('Assessment locked. Complete the previous lesson quiz to unlock this one.', 'assertive');
+                        playSound('error');
+                      }
+                    } else if (isEnabled) {
+                      playSound('navigation');
+                      announce(`Opening assessment: ${assessment.title}, ${assessment.type}, ${assessment.marks} marks`);
                     }
                   };
+                  
+                  const cardAriaLabel = assessment.isLocked
+                    ? `${assessment.title}, ${assessment.type}, Locked. Complete previous lesson quiz to unlock.`
+                    : `${assessment.title}, ${assessment.type}, ${assessment.isSubmitted ? 'Completed' : 'Pending'}, ${assessment.marks} marks, ${assessment.isSubmitted ? 'View' : 'Start'} button`;
                   
                   return (
                     <Link
                       href={assessment.isLocked ? '#' : `/assignments/${assessment.id}`}
                       key={assessment.id}
                       onClick={handleCardClick}
+                      aria-label={cardAriaLabel}
+                      aria-disabled={assessment.isLocked}
                       className={`bg-white rounded-xl shadow-lg overflow-hidden border-2 ${assessment.borderColor} transition-all w-full max-w-full block ${
                         assessment.isLocked 
                           ? 'cursor-not-allowed opacity-60 hover:scale-100' 
@@ -411,7 +451,8 @@ export default function MyAssignmentsPage() {
                               width={20} 
                               height={20}
                               className="sm:w-6 sm:h-6"
-                              style={{ color: assessment.iconColor }} 
+                              style={{ color: assessment.iconColor }}
+                              aria-hidden="true"
                             />
                           </div>
                           <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold ${assessment.badgeColor} truncate max-w-[60%] sm:max-w-none`} style={{ fontFamily: 'Andika, sans-serif' }}>

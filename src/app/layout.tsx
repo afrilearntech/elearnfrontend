@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Andika } from "next/font/google";
 import { Toaster } from "react-hot-toast";
+import { AccessibilityProvider } from "@/contexts/AccessibilityContext";
+import SkipLinks from "@/components/accessibility/SkipLinks";
+import KeyboardShortcutsHelp from "@/components/accessibility/KeyboardShortcutsHelp";
+import { GlobalKeyboardNavigation } from "@/components/accessibility/GlobalKeyboardNavigation";
+import StartPrompt from "@/components/accessibility/StartPrompt";
 import "./globals.css";
 
 const andika = Andika({
@@ -28,7 +33,13 @@ export default function RootLayout({
         className={`${andika.variable} antialiased`}
         style={{ fontFamily: 'Andika, sans-serif' }}
       >
-        {children}
+        <AccessibilityProvider>
+          <GlobalKeyboardNavigation />
+          <SkipLinks />
+          <KeyboardShortcutsHelp />
+          <StartPrompt />
+          {children}
+        </AccessibilityProvider>
         <Toaster
           position="top-right"
           containerClassName="!z-[9999]"
